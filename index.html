@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistente Virtual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Biblioteca 'marked' para renderizar Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- ✨ Adicionada a biblioteca MathJax para renderizar LaTeX ✨ -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body class="bg-slate-100 flex items-center justify-center h-screen">
+
+    <div class="w-full max-w-2xl h-full sm:h-[90vh] flex flex-col bg-white shadow-2xl rounded-2xl overflow-hidden">
+        <!-- Header -->
+        <header class="bg-slate-800 text-white p-6 shadow-md z-10 flex items-center justify-center relative">
+            <button id="summarize-button" title="Resumir Conversa" class="absolute left-6 top-1/2 -translate-y-1/2 text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v14a2 2 0 0 0 2 2h4Z"/><path d="M10 17v-1a2 2 0 1 1 4 0v1"/><path d="M10 11v-1a2 2 0 1 1 4 0v1"/><path d="M10 5v-1a2 2 0 1 1 4 0v1"/></svg>
+            </button>
+            <div class="text-center">
+                <h1 class="text-3xl font-bold">Assistente Virtual</h1>
+                <p class="text-slate-300 text-lg mt-1">Como posso te ajudar hoje?</p>
+            </div>
+            <button id="toggle-tts-button" class="absolute right-6 top-1/2 -translate-y-1/2 text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400"><!-- Ícone via JS --></button>
+        </header>
+
+        <!-- Chat Messages -->
+        <main id="chat-messages" class="flex-1 p-8 overflow-y-auto">
+            <div class="flex justify-start mb-6">
+                <div class="bg-indigo-500 text-white p-4 rounded-2xl rounded-bl-none max-w-lg">
+                    <p class="text-lg">Olá! Digite uma mensagem, use o microfone para falar, ou clique na lâmpada para uma sugestão! ✨</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Input Form -->
+        <footer class="p-6 bg-white border-t border-slate-200">
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <input type="text" id="message-input" placeholder="Digite sua mensagem aqui..." autocomplete="off" class="flex-1 p-4 text-lg border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300"/>
+                
+                <button id="suggest-topic-button" title="Sugerir Tópico" class="bg-amber-400 text-white rounded-full p-4 hover:bg-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+                </button>
+                
+                <button id="send-text-button" type="submit" form="chat-form" class="bg-indigo-600 text-white rounded-full p-4 hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400 disabled:cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg>
+                </button>
+
+                <button id="mic-button" class="bg-red-500 text-white rounded-full p-4 hover:bg-red-600 focus:outline-none focus:ring-4 focus:ring-red-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                </button>
+            </div>
+            <form id="chat-form" class="hidden"></form>
+        </footer>
+    </div>
+
+    <script>
+        // Configuração para que o 'marked' respeite as quebras de linha
+        marked.setOptions({
+            breaks: true
+        });
+
+        const chatForm = document.getElementById('chat-form');
+        const messageInput = document.getElementById('message-input');
+        const chatMessages = document.getElementById('chat-messages');
+        const sendTextButton = document.getElementById('send-text-button');
+        const micButton = document.getElementById('mic-button');
+        const summarizeButton = document.getElementById('summarize-button');
+        const suggestTopicButton = document.getElementById('suggest-topic-button');
+        
+        const backendUrl = 'http://127.0.0.1:5000/chat';
+
+        // --- LÓGICA DE GRAVAÇÃO DE VOZ ---
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        micButton.addEventListener('click', async () => {
+            if (isRecording) {
+                mediaRecorder.stop();
+            } else {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.start();
+                    isRecording = true;
+                    audioChunks = [];
+                    
+                    micButton.classList.add('recording', 'bg-red-700');
+                    micButton.classList.remove('bg-red-500');
+                    messageInput.placeholder = "Gravando... Clique para parar.";
+                    setUiDisabled(true, true); // Desabilita tudo, mantendo micButton ativo
+
+                    mediaRecorder.addEventListener("dataavailable", event => {
+                        audioChunks.push(event.data);
+                    });
+
+                    mediaRecorder.addEventListener("stop", () => {
+                        isRecording = false;
+                        micButton.classList.remove('recording', 'bg-red-700');
+                        micButton.classList.add('bg-red-500');
+                        messageInput.placeholder = "Digite sua mensagem aqui...";
+                        setUiDisabled(false);
+
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        sendAudioToServer(audioBlob);
+                        stream.getTracks().forEach(track => track.stop());
+                    });
+
+                } catch (err) {
+                    console.error("Erro ao acessar o microfone:", err);
+                    alert("Não foi possível acessar o microfone. Verifique as permissões.");
+                }
+            }
+        });
+
+        async function sendAudioToServer(audioBlob) {
+            const formData = new FormData();
+            formData.append('audio_file', audioBlob, 'user_audio.webm');
+
+            appendMessage('user', '<i>Mensagem de voz enviada...</i>');
+            showTypingIndicator();
+
+            try {
+                const response = await fetch(backendUrl, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                
+                removeTypingIndicator();
+                appendMessage('bot', data.reply);
+                playAudioFromData(data.audioData);
+
+            } catch (error) {
+                handleFetchError(error);
+            }
+        }
+        
+        // --- LÓGICA: RESUMIR CONVERSA ---
+        summarizeButton.addEventListener('click', async () => {
+            showTypingIndicator();
+            setUiDisabled(true);
+
+            try {
+                const response = await fetch(`${backendUrl.replace('/chat', '/summarize')}`, {
+                    method: 'POST',
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                
+                if (data.summary) {
+                    appendSystemMessage(data.summary);
+                } else if (data.error) {
+                    appendSystemMessage(`<strong>Erro:</strong> ${data.error}`);
+                }
+
+            } catch (error) {
+                console.error('Erro ao resumir conversa:', error);
+                appendSystemMessage('<strong>Erro:</strong> Não foi possível conectar ao servidor para resumir.');
+            } finally {
+                removeTypingIndicator();
+                setUiDisabled(false);
+            }
+        });
+
+        // --- LÓGICA: SUGERIR TÓPICO ---
+        suggestTopicButton.addEventListener('click', async () => {
+            const originalPlaceholder = messageInput.placeholder;
+            messageInput.placeholder = "Buscando uma ideia...";
+            setUiDisabled(true);
+
+            try {
+                const response = await fetch(`${backendUrl.replace('/chat', '/suggest-topic')}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                
+                if (data.topic) {
+                    messageInput.value = data.topic;
+                    messageInput.focus();
+                } else {
+                    messageInput.placeholder = "Erro ao sugerir. Tente novamente.";
+                    setTimeout(() => { messageInput.placeholder = originalPlaceholder; }, 2000);
+                }
+
+            } catch (error) {
+                console.error('Erro ao sugerir tópico:', error);
+                messageInput.placeholder = "Erro de conexão.";
+                setTimeout(() => { messageInput.placeholder = originalPlaceholder; }, 2000);
+            } finally {
+                setUiDisabled(false);
+                if (!messageInput.value) {
+                     messageInput.placeholder = originalPlaceholder;
+                }
+            }
+        });
+
+        // --- Lógica de Envio de Texto ---
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            setUiDisabled(true);
+            appendMessage('user', message);
+            messageInput.value = '';
+            showTypingIndicator();
+
+            try {
+                const response = await fetch(backendUrl, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ message: message }),
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                
+                removeTypingIndicator();
+                appendMessage('bot', data.reply);
+                playAudioFromData(data.audioData);
+
+            } catch (error) {
+                handleFetchError(error);
+            } finally {
+                setUiDisabled(false);
+            }
+        });
+
+        // --- Funções Auxiliares da UI ---
+        function setUiDisabled(isDisabled, recording = false) {
+            messageInput.disabled = isDisabled;
+            sendTextButton.disabled = isDisabled;
+            suggestTopicButton.disabled = isDisabled;
+            summarizeButton.disabled = isDisabled;
+            micButton.disabled = isDisabled && !recording;
+        }
+
+        function handleFetchError(error) {
+            console.error('Erro de comunicação com o backend:', error);
+            removeTypingIndicator();
+            appendMessage('bot', 'Desculpe, ocorreu um erro de conexão.');
+        }
+
+        function appendMessage(sender, message) {
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('flex', 'mb-6');
+            const bubble = document.createElement('div');
+            bubble.classList.add('p-4', 'rounded-2xl', 'max-w-lg', 'text-lg');
+
+            if (sender === 'bot') {
+                wrapper.classList.add('justify-start');
+                bubble.classList.add('bg-indigo-500', 'text-white', 'rounded-bl-none');
+                bubble.innerHTML = marked.parse(message); 
+            } else { 
+                wrapper.classList.add('justify-end');
+                bubble.classList.add('bg-slate-200', 'text-slate-800', 'rounded-br-none');
+                bubble.innerHTML = message;
+            }
+            
+            wrapper.appendChild(bubble);
+            chatMessages.appendChild(wrapper);
+
+            // ✨ Avisa ao MathJax para renderizar a nova mensagem ✨
+            if (typeof MathJax !== "undefined" && sender === 'bot') {
+                MathJax.typesetPromise([wrapper]).catch((err) => console.log('Erro MathJax:', err));
+            }
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        };
+
+        function appendSystemMessage(message) {
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('flex', 'justify-center', 'my-4', 'mx-2');
+            const bubble = document.createElement('div');
+            bubble.classList.add('bg-slate-600', 'text-white', 'p-3', 'rounded-xl', 'max-w-xl', 'text-base', 'italic');
+            bubble.innerHTML = `✨ **Resumo da Conversa:**<br>${marked.parse(message)}`;
+            wrapper.appendChild(bubble);
+            chatMessages.appendChild(wrapper);
+            
+            // ✨ Renderiza também a matemática no resumo ✨
+            if (typeof MathJax !== "undefined") {
+                MathJax.typesetPromise([wrapper]).catch((err) => console.log('Erro MathJax:', err));
+            }
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        const showTypingIndicator=()=>{const t=document.createElement('div');t.id='typing-indicator';t.classList.add('flex','justify-start','mb-6');t.innerHTML=`<div class="bg-indigo-500 text-white p-4 rounded-2xl rounded-bl-none"><div class="flex items-center space-x-1"><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.2s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.4s"></span></div></div>`;chatMessages.appendChild(t);chatMessages.scrollTop=chatMessages.scrollHeight};
+        const removeTypingIndicator=()=>{const t=document.getElementById('typing-indicator');if(t){t.remove()}};
+        
+        // Lógica de TTS (inalterada)
+        const ttsButton=document.getElementById('toggle-tts-button');let isTtsEnabled=true;let currentAudio=null;const iconSoundOn=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;const iconSoundOff=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>`;function base64ToArrayBuffer(b){const s=window.atob(b);const l=s.length;const B=new Uint8Array(l);for(let i=0;i<l;i++){B[i]=s.charCodeAt(i)}return B.buffer}
+        function pcmToWavBlob(d){const r=24000;const p=base64ToArrayBuffer(d);const D=new Int16Array(p);const h=new ArrayBuffer(44);const v=new DataView(h);v.setUint32(0,1380533830,false);v.setUint32(4,36+D.byteLength,true);v.setUint32(8,1463899717,false);v.setUint32(12,1718449184,false);v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,r,true);v.setUint32(28,r*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);v.setUint32(36,1684108385,false);v.setUint32(40,D.byteLength,true);return new Blob([h,D],{type:'audio/wav'})}
+        const playAudioFromData=(d)=>{if(!isTtsEnabled||!d)return;if(currentAudio){currentAudio.pause()}try{const b=pcmToWavBlob(d);const u=URL.createObjectURL(b);currentAudio=new Audio(u);currentAudio.play()}catch(e){console.error("Erro ao tocar áudio:",e)}};const updateTtsButtonIcon=()=>{ttsButton.innerHTML=isTtsEnabled?iconSoundOn:iconSoundOff};ttsButton.addEventListener('click',()=>{isTtsEnabled=!isTtsEnabled;updateTtsButtonIcon();if(!isTtsEnabled&&currentAudio){currentAudio.pause()}});updateTtsButtonIcon();
+    </script>
+
+</body>
+</html>
+

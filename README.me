@@ -1,0 +1,81 @@
+# Assistente Virtual com Gemini API (Chat de Voz e Texto)
+
+Este projeto é um **web app de chatbot**, idealizado para ser utilizado em um totem interativo. Ele oferece uma interface moderna de conversação, com suporte a **interações por texto e voz**, utilizando as APIs do Google Gemini para:
+
+- Processamento de linguagem natural
+- Reconhecimento de fala (Speech-to-Text)
+- Síntese de voz (Text-to-Speech)
+
+---
+
+## ✨ Funcionalidades
+
+- **Interface de Chat Moderna**  
+  Visual responsivo e estilizado com Tailwind CSS.
+
+- **Conversa por Texto**  
+  Permite enviar mensagens de texto e receber respostas geradas por IA.
+
+- **Síntese de Voz (Text-to-Speech)**  
+  Respostas são lidas com voz feminina natural utilizando a API Gemini.
+
+- **Reconhecimento de Voz (Speech-to-Text)**  
+  Permite gravar mensagens diretamente na interface, com transcrição automática e entendimento pela IA.
+
+- **Botão de Controle de Áudio**  
+  Usuário pode ativar ou desativar a reprodução de áudio com facilidade.
+
+- **Backend Robusto em Python**  
+  Servidor Flask para gerenciar a comunicação com as APIs do Gemini.
+
+---
+
+##  Tecnologias Utilizadas
+
+- **Frontend**: HTML5, Tailwind CSS, JavaScript (Web Speech API para gravação e reprodução)
+- **Backend**: Python 3, Flask
+- **IA (Gemini API)**:  
+  - `gemini-2.5-flash`: conversação multimodal (texto + áudio)  
+  - `gemini-2.5-flash-preview-tts`: geração de áudio de alta qualidade  
+- **Gerenciamento de Dependências**: pip (`requirements.txt`)
+- **Variáveis de Ambiente**: `python-dotenv`
+
+---
+
+##  Instalação & Execução
+
+### Pré-requisitos
+
+- Python 3.8 ou superior  
+- Chave da API Google Gemini (obtenha via Google AI Studio)
+
+### Passo a Passo
+
+```bash
+# 1. Clone o repositório
+git clone https://github.com/seu-usuario/nome-do-repositorio.git
+cd nome-do-repositorio
+
+# 2. Crie e ative um ambiente virtual
+# No Windows:
+python -m venv venv
+.\venv\Scripts\activate
+# No macOS/Linux:
+python -m venv venv
+source venv/bin/activate
+
+# 3. Instale as dependências
+pip install -r requirements.txt
+
+# 4. Configure sua chave da API
+# Crie um arquivo `.env` na raiz com:
+GEMINI_API_KEY="SUA_CHAVE_API_AQUI"
+Gere a API KEY caso não tenha em https://aistudio.google.com/apikey
+
+# 5. Inicie o servidor Flask
+python app.py
+# O servidor será iniciado em http://127.0.0.1:5000
+
+# 6. Abra a interface
+# Navegue até `index.html` no navegador (clique duas vezes para abrir)
+# Quando solicitado, permita o uso do microfone para que o chat por voz funcione corretamente

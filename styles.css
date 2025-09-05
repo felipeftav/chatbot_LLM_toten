@@ -1,0 +1,40 @@
+/* Estilos customizados para o Assistente Virtual */
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Estilização da barra de rolagem da área de chat */
+#chat-messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+#chat-messages::-webkit-scrollbar-track {
+    background: #f1f5f9; /* Cor correspondente a 'bg-slate-100' do Tailwind */
+}
+
+#chat-messages::-webkit-scrollbar-thumb {
+    background: #cbd5e1; /* Cor correspondente a 'bg-slate-300' do Tailwind */
+    border-radius: 10px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; /* Cor correspondente a 'bg-slate-400' do Tailwind */
+}
+
+/* Animação de "pulsar" para o botão de gravação */
+.recording {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); /* Cor 'red-500' com 70% de opacidade */
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); /* Transparente */
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); /* Transparente */
+    }
+}
