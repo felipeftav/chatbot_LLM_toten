@@ -1,40 +1,77 @@
-/* Estilos customizados para o Assistente Virtual */
+/* chatbot_LLM_toten/styles.css */
 
 body {
     font-family: 'Inter', sans-serif;
 }
 
-/* Estilização da barra de rolagem da área de chat */
+/* --- NOVO: Estilos para o layout principal com avatar --- */
+#main-container {
+    display: flex;
+    align-items: center; /* Centraliza verticalmente */
+    justify-content: center; /* Centraliza horizontalmente */
+    gap: 2rem; /* Espaçamento entre o chat e o avatar */
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+}
+
+#chat-container {
+    width: 100%;
+    max-width: 48rem; /* Aumentado um pouco o max-width */
+    height: 95vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#avatar-container {
+    width: 100%;
+    max-width: 20rem; /* Largura máxima do avatar */
+    display: none; /* Escondido em telas pequenas */
+}
+
+/* --- NOVO: Media query para exibir o avatar em telas maiores --- */
+@media (min-width: 1024px) { /* 'lg' breakpoint do Tailwind */
+    #avatar-container {
+        display: block;
+    }
+}
+
+#avatar-image {
+    width: 100%;
+    height: auto;
+    border-radius: 1.5rem; /* bordas arredondadas */
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+
+/* Estilização da barra de rolagem (sem alterações) */
 #chat-messages::-webkit-scrollbar {
     width: 8px;
 }
-
 #chat-messages::-webkit-scrollbar-track {
-    background: #f1f5f9; /* Cor correspondente a 'bg-slate-100' do Tailwind */
+    background: #f1f5f9;
 }
-
 #chat-messages::-webkit-scrollbar-thumb {
-    background: #cbd5e1; /* Cor correspondente a 'bg-slate-300' do Tailwind */
+    background: #cbd5e1;
     border-radius: 10px;
 }
-
 #chat-messages::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8; /* Cor correspondente a 'bg-slate-400' do Tailwind */
+    background: #94a3b8;
 }
 
-/* Animação de "pulsar" para o botão de gravação */
+/* Animação de "pulsar" para o botão de gravação (sem alterações) */
 .recording {
     animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); /* Cor 'red-500' com 70% de opacidade */
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
     }
     70% {
-        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); /* Transparente */
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); /* Transparente */
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
     }
 }
