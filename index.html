@@ -59,8 +59,19 @@
 
     </div>
 
+    <!-- VLibras Plugin -->
+    <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+    </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+
     <script>
         marked.setOptions({ breaks: true });
+
+        new window.VLibras.Widget('https://vlibras.gov.br/app');
 
         // --- Constantes dos Elementos da UI ---
         const messageInput = document.getElementById('message-input');
