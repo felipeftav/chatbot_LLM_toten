@@ -18,9 +18,20 @@ if not GEMINI_API_KEY:
 
 genai.configure(api_key=GEMINI_API_KEY)
 
+
+SYSTEM_INSTRUCTION = """
+Você é LIA, a assistente virtual oficial do evento Metaday.
+Sua missão é ajudar os participantes com informações sobre o evento de forma amigável, clara e entusiasmada.
+- Seja sempre prestativa e positiva.
+- Responda de forma concisa e direta.
+- Seu foco principal são as informações sobre o Metaday. Se não souber uma resposta, diga que vai procurar a informação com a organização.
+- Não invente informações.
+"""
+
 # --- ATUALIZAÇÃO DO MODELO ---
 model = genai.GenerativeModel(
     model_name="gemini-2.5-flash",
+    system_instruction=SYSTEM_INSTRUCTION,
     generation_config={
         "temperature": 0.9, "top_p": 1, "top_k": 1, "max_output_tokens": 2048
     },
@@ -33,6 +44,13 @@ model = genai.GenerativeModel(
 )
 convo = model.start_chat(history=[])
 
+# --- ✨ DICIONÁRIO DE PERGUNTAS E RESPOSTAS PRÉ-PROGRAMADAS ---
+EVENT_INFO = {
+    "Qual a programação?": "A programação do evento é a seguinte: Abertura às 9h, palestra sobre IA às 10h, e workshop de desenvolvimento às 14h. O encerramento será às 18h.",
+    "Onde é o evento?": "O evento será realizado no Centro de Convenções da cidade, localizado na Avenida Principal, número 123.",
+    "Como me inscrevo?": "As inscrições podem ser feitas diretamente no site oficial do evento. Procure pelo link na nossa página principal ou fale com um de nossos organizadores.",
+    "Qual o valor?": "A entrada para o evento é gratuita, basta se inscrever online!",
+}
 
 # --- Lógica para o Text-to-Speech do Gemini ---
 TTS_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key={GEMINI_API_KEY}"
@@ -72,30 +90,47 @@ CORS(app)
 def chat():
     try:
         bot_reply_text = ""
+        tts_is_enabled = False # Default para False
         
         if 'audio_file' in request.files:
             audio_file = request.files['audio_file']
             audio_parts = [{"mime_type": audio_file.mimetype, "data": audio_file.read()}]
-            prompt = "Você é um assistente virtual. Ouça este áudio e responda de forma concisa e amigável."
+            prompt = "Responda ao que foi dito neste áudio."
             response = convo.send_message([prompt, audio_parts[0]])
             bot_reply_text = response.text
+            tts_is_enabled = True # Assumimos que o usuário quer resposta em áudio se enviou áudio
 
         elif request.is_json:
-            user_message = request.json.get('message')
-            user_message = f'Você é um assistente virtual. Responda seguinte texto de forma concisa e amigável: {user_message}'
-            if not user_message:
-                return jsonify({"error": "Nenhuma mensagem de texto fornecida."}), 400
+            data = request.json
+            tts_is_enabled = data.get('tts_enabled', False) # Pega o estado do TTS da requisição
             
-            convo.send_message(user_message)
-            bot_reply_text = convo.last.text
+            # --- ✨ LÓGICA PARA PERGUNTAS PRÉ-PROGRAMADAS ---
+            if 'preset_question' in data:
+                question = data.get('preset_question')
+                bot_reply_text = EVENT_INFO.get(question, "Desculpe, não tenho uma resposta para essa pergunta pré-definida.")
+            
+            # --- Lógica original para mensagem de texto ---
+            elif 'message' in data:
+                user_message = data.get('message')
+                if not user_message:
+                    return jsonify({"error": "Nenhuma mensagem de texto fornecida."}), 400
+                
+                convo.send_message(user_message)
+                bot_reply_text = convo.last.text
+            else:
+                return jsonify({"error": "Nenhuma mensagem de texto ou pergunta pré-definida fornecida."}), 400
         else:
             return jsonify({"error": "Formato de requisição inválido."}), 400
 
-        audio_base64 = get_tts_audio_data(bot_reply_text)
+        audio_base64 = None # Inicia como None
+        if tts_is_enabled and bot_reply_text:
+            audio_base64 = get_tts_audio_data(bot_reply_text)
 
+        # ✨ CORREÇÃO: Sempre retorna a lista de perguntas pré-definidas
         return jsonify({
             "reply": bot_reply_text,
-            "audioData": audio_base64
+            "audioData": audio_base64,
+            "presetQuestions": list(EVENT_INFO.keys())
         })
 
     except Exception as e:
@@ -129,10 +164,10 @@ def summarize():
             role = "Usuário" if message.role == "user" else "Assistente"
             text = message.parts[0].text
             if text:
-                 formatted_history += f"{role}: {text}\n"
+                formatted_history += f"{role}: {text}\n"
 
         if not formatted_history.strip():
-             return jsonify({"summary": "O histórico de conversa ainda não contém texto."})
+            return jsonify({"summary": "O histórico de conversa ainda não contém texto."})
 
         prompt = f"Resuma a seguinte conversa em português, em um único parágrafo curto e objetivo:\n\n---\n{formatted_history}\n---"
         
@@ -143,6 +178,18 @@ def summarize():
         print(f"Ocorreu um erro no endpoint /summarize: {e}")
         traceback.print_exc()
         return jsonify({"error": "Não foi possível resumir a conversa."}), 500
+    
+# --- ✨ NOVA ROTA: REINICIAR CONVERSA ---
+@app.route('/restart', methods=['POST'])
+def restart():
+    try:
+        # Limpa o histórico da conversa no objeto 'convo'
+        convo.history.clear()
+        return jsonify({"status": "success", "message": "Conversa reiniciada."})
+    except Exception as e:
+        print(f"Ocorreu um erro no endpoint /restart: {e}")
+        traceback.print_exc()
+        return jsonify({"error": "Não foi possível reiniciar a conversa."}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

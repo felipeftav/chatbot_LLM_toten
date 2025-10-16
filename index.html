@@ -12,17 +12,25 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
-<body class="bg-slate-100 flex items-center justify-center h-screen">
+<!-- <body class="bg-slate-100 flex items-center justify-center h-screen"> -->
+<body class="bg-amber-400 flex items-center justify-center h-screen"></body>
 
     <div id="main-container">
         
         <div id="chat-container" class="bg-white shadow-2xl rounded-2xl overflow-hidden">
-            <header class="bg-slate-800 text-white p-6 shadow-md z-10 flex items-center justify-center relative">
-                <button id="summarize-button" title="Resumir Conversa" class="absolute left-6 top-1/2 -translate-y-1/2 text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-50">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v14a2 2 0 0 0 2 2h4Z"/><path d="M10 17v-1a2 2 0 1 1 4 0v1"/><path d="M10 11v-1a2 2 0 1 1 4 0v1"/><path d="M10 5v-1a2 2 0 1 1 4 0v1"/></svg>
-                </button>
+            <header class="bg-zinc-900 text-white p-6 shadow-md z-10 flex items-center justify-center relative">
+                <div class="absolute left-6 top-1/2 -translate-y-1/2 flex space-x-2">
+                    <button id="restart-button" title="Reiniciar Conversa" class="text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                    </button>
+
+                    <button id="summarize-button" title="Resumir Conversa" class="text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-50">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v14a2 2 0 0 0 2 2h4Z"/><path d="M10 17v-1a2 2 0 1 1 4 0v1"/><path d="M10 11v-1a2 2 0 1 1 4 0v1"/><path d="M10 5v-1a2 2 0 1 1 4 0v1"/></svg>
+                    </button>
+                    
+                </div>
                 <div class="text-center">
-                    <h1 class="text-3xl font-bold">Assistente Virtual</h1>
+                    <h1 class="text-3xl font-bold">LIA - Assistente de IA no Metaday</h1>
                     <p class="text-slate-300 text-lg mt-1">Como posso te ajudar hoje?</p>
                 </div>
                 <button id="toggle-tts-button" class="absolute right-6 top-1/2 -translate-y-1/2 text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400"></button>
@@ -30,11 +38,24 @@
 
             <main id="chat-messages" class="flex-1 p-8 overflow-y-auto">
                 <div class="flex justify-start mb-6">
-                    <div class="bg-indigo-500 text-white p-4 rounded-2xl rounded-bl-none max-w-lg">
-                        <p class="text-lg">Olá! Digite uma mensagem, use o microfone para falar, ou clique na lâmpada para uma sugestão! ✨</p>
+                    <div class="bg-zinc-900 text-white p-4 rounded-2xl rounded-bl-none max-w-lg">
+                        Bem-vindo ao Metaday! ✨<br>
+  Sou                   a LIA e estou aqui para tornar seu dia incrível! O que você gostaria de saber primeiro?
                     </div>
                 </div>
             </main>
+
+            <!-- ATUALIZADO: Container dos botões agora está fixo aqui -->
+            <div id="preset-buttons-container" class="p-4 bg-slate-50 border-t border-slate-200">
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Qual a programação?</button>
+                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Onde é o evento?</button>
+                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Como me inscrevo?</button>
+                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Qual o valor?</button>
+                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Como me inscrevo?</button>
+                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Qual o valor?</button>
+                </div>
+            </div>
 
             <footer class="p-6 bg-white border-t border-slate-200">
                 <div class="flex items-center space-x-2 sm:space-x-4">
@@ -69,6 +90,8 @@
     <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
 
     <script>
+        
+
         marked.setOptions({ breaks: true });
 
         new window.VLibras.Widget('https://vlibras.gov.br/app');
@@ -82,8 +105,24 @@
         const sendTextButton = document.getElementById('send-text-button');
         const ttsButton = document.getElementById('toggle-tts-button');
         const avatarImage = document.getElementById('avatar-image');
+        const restartButton = document.getElementById('restart-button'); // <-- ADICIONE ESTA LINHA
+        // NOVO: constante para o container dos botões
+        const presetButtonsContainer = document.getElementById('preset-buttons-container');
         
         const backendUrl = 'http://127.0.0.1:5000/chat';
+
+        // Adicione este trecho para habilitar o envio com a tecla Enter
+        messageInput.addEventListener('keydown', function(event) {
+            // Verifica se a tecla pressionada foi 'Enter' e se a tecla Shift NÃO foi pressionada
+            if (event.key === 'Enter' && !event.shiftKey) {
+                // Previne o comportamento padrão do Enter (que seria criar uma nova linha no input)
+                event.preventDefault();
+
+                // Simula um clique no botão de envio para reutilizar toda a lógica já existente
+                sendTextButton.click();
+            }
+        });
+
 
         // --- LÓGICA DE ANIMAÇÃO DO AVATAR ---
         let mouthAnimationInterval;
@@ -143,9 +182,17 @@
             }
         });
 
-        // --- LÓGICA DE SUBMISSÃO (Texto e Áudio) ---
+        // --- LÓGICA DE SUBMISSÃO (Texto, Áudio e Botões Pré-programados) ---
         document.getElementById('chat-form').addEventListener('submit', handleTextSubmit);
         sendTextButton.addEventListener('click', handleTextSubmit);
+        
+        // NOVO: Event listener para os botões pré-programados
+        presetButtonsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('preset-button')) {
+                const question = e.target.textContent;
+                handlePresetClick(question);
+            }
+        });
 
         async function handleTextSubmit(e) {
             e.preventDefault();
@@ -153,13 +200,23 @@
             if (!message) return;
             appendMessage('user', message);
             messageInput.value = '';
+            // Esconde os botões após enviar uma mensagem de texto
+            if(presetButtonsContainer) presetButtonsContainer.style.display = 'none';
             await fetchBotReply({ message: message });
+        }
+
+        // NOVO: Função para lidar com o clique nos botões
+        async function handlePresetClick(question) {
+            appendMessage('user', question);
+            if(presetButtonsContainer) presetButtonsContainer.style.display = 'none';
+            await fetchBotReply({ message: question, isPreset: true });
         }
 
         async function sendAudioToServer(audioBlob) {
             const formData = new FormData();
             formData.append('audio_file', audioBlob, 'user_audio.webm');
             appendMessage('user', '<i>Mensagem de voz enviada...</i>');
+            if(presetButtonsContainer) presetButtonsContainer.style.display = 'none';
             await fetchBotReply({ body: formData, isAudio: true });
         }
 
@@ -167,9 +224,20 @@
             setUiDisabled(true);
             showTypingIndicator();
             try {
-                const requestOptions = payload.isAudio 
-                    ? { method: 'POST', body: payload.body }
-                    : { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ message: payload.message }) };
+                let requestOptions;
+                if (payload.isAudio) {
+                    requestOptions = { method: 'POST', body: payload.body };
+                } else {
+                    // ATUALIZADO: Adiciona o estado do TTS ao corpo da requisição
+                    const body = payload.isPreset 
+                        ? { preset_question: payload.message, tts_enabled: isTtsEnabled } 
+                        : { message: payload.message, tts_enabled: isTtsEnabled };
+                    requestOptions = { 
+                        method: 'POST', 
+                        headers: {'Content-Type': 'application/json'}, 
+                        body: JSON.stringify(body) 
+                    };
+                }
                 
                 const response = await fetch(backendUrl, requestOptions);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -184,6 +252,12 @@
             } finally {
                 setUiDisabled(false);
                 messageInput.focus();
+                // CORREÇÃO: Reexibe os botões após qualquer resposta
+                if (presetButtonsContainer) {
+                    // Usar 'block' ou 'flex' dependendo do seu layout. 
+                    // 'flex' é usado no container pai, então pode ser mais consistente.
+                    presetButtonsContainer.style.display = 'block'; 
+                }
             }
         }
         
@@ -216,14 +290,53 @@
             } finally { setUiDisabled(false); if (!messageInput.value) { messageInput.placeholder = originalPlaceholder; } }
         });
 
+        // --- ✨ LÓGICA: REINICIAR CONVERSA ---
+        restartButton.addEventListener('click', async () => {
+            // Confirmação opcional para evitar cliques acidentais
+            // if (!confirm("Tem certeza de que deseja reiniciar a conversa? Todo o histórico será perdido.")) {
+            //     return;
+            // }
+
+            try {
+                const response = await fetch(`${backendUrl.replace('/chat', '/restart')}`, { method: 'POST' });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                // Limpa a tela de mensagens
+                chatMessages.innerHTML = '';
+                
+                // Adiciona a mensagem inicial novamente
+                appendMessage('bot', 'Olá! Digite uma mensagem, use o microfone para falar, ou clique em uma das opções abaixo! ✨');
+                
+                // Mostra os botões de perguntas pré-definidas
+                if (presetButtonsContainer) {
+                    presetButtonsContainer.style.display = 'block';
+                }
+                
+                // Limpa o campo de input
+                messageInput.value = '';
+
+                // Para qualquer áudio que esteja tocando
+                if (currentAudio) {
+                    currentAudio.pause();
+                    stopTalkingAnimation();
+                }
+
+                console.log("Conversa reiniciada com sucesso.");
+
+            } catch (error) {
+                console.error('Erro ao reiniciar a conversa:', error);
+                appendSystemMessage('<strong>Erro:</strong> Não foi possível conectar ao servidor para reiniciar a conversa.');
+            }
+        });
+
         // --- FUNÇÕES AUXILIARES DA UI ---
         function setUiDisabled(isDisabled, recording = false) { messageInput.disabled = isDisabled; sendTextButton.disabled = isDisabled; suggestTopicButton.disabled = isDisabled; summarizeButton.disabled = isDisabled; micButton.disabled = isDisabled && !recording; }
         function handleFetchError(error) { console.error('Erro de comunicação com o backend:', error); removeTypingIndicator(); appendMessage('bot', 'Desculpe, ocorreu um erro de conexão.'); }
         function appendMessage(sender, message) {
             const wrapper = document.createElement('div'); wrapper.classList.add('flex', 'mb-6');
             const bubble = document.createElement('div'); bubble.classList.add('p-4', 'rounded-2xl', 'max-w-lg', 'text-lg');
-            if (sender === 'bot') { wrapper.classList.add('justify-start'); bubble.classList.add('bg-indigo-500', 'text-white', 'rounded-bl-none'); bubble.innerHTML = marked.parse(message); } 
-            else { wrapper.classList.add('justify-end'); bubble.classList.add('bg-slate-200', 'text-slate-800', 'rounded-br-none'); bubble.textContent = message; }
+            if (sender === 'bot') { wrapper.classList.add('justify-start'); bubble.classList.add('bg-zinc-900', 'text-white', 'rounded-bl-none'); bubble.innerHTML = marked.parse(message); } 
+            else { wrapper.classList.add('justify-end'); bubble.classList.add('bg-slate-200', 'text-slate-800', 'rounded-br-none'); bubble.innerHTML = message; }
             wrapper.appendChild(bubble); chatMessages.appendChild(wrapper);
             if (typeof MathJax !== "undefined" && sender === 'bot') { MathJax.typesetPromise([wrapper]).catch((err) => console.log('Erro MathJax:', err)); }
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -235,11 +348,11 @@
             if (typeof MathJax !== "undefined") { MathJax.typesetPromise([wrapper]).catch((err) => console.log('Erro MathJax:', err)); }
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
-        const showTypingIndicator=()=>{const t=document.createElement('div');t.id='typing-indicator';t.classList.add('flex','justify-start','mb-6');t.innerHTML=`<div class="bg-indigo-500 text-white p-4 rounded-2xl rounded-bl-none"><div class="flex items-center space-x-1"><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.2s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.4s"></span></div></div>`;chatMessages.appendChild(t);chatMessages.scrollTop=chatMessages.scrollHeight};
+        const showTypingIndicator=()=>{const t=document.createElement('div');t.id='typing-indicator';t.classList.add('flex','justify-start','mb-6');t.innerHTML=`<div class="bg-zinc-900 text-white p-4 rounded-2xl rounded-bl-none"><div class="flex items-center space-x-1"><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.2s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.4s"></span></div></div>`;chatMessages.appendChild(t);chatMessages.scrollTop=chatMessages.scrollHeight};
         const removeTypingIndicator=()=>{const t=document.getElementById('typing-indicator');if(t){t.remove()}};
         
         // --- Lógica de TTS ---
-        let isTtsEnabled=true;let currentAudio=null;const iconSoundOn=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;const iconSoundOff=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>`;
+        let isTtsEnabled=false;let currentAudio=null;const iconSoundOn=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;const iconSoundOff=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>`;
         function base64ToArrayBuffer(b){const s=window.atob(b);const l=s.length;const B=new Uint8Array(l);for(let i=0;i<l;i++){B[i]=s.charCodeAt(i)}return B.buffer}
         function pcmToWavBlob(d){const r=24000;const p=base64ToArrayBuffer(d);const D=new Int16Array(p);const h=new ArrayBuffer(44);const v=new DataView(h);v.setUint32(0,1380533830,false);v.setUint32(4,36+D.byteLength,true);v.setUint32(8,1463899717,false);v.setUint32(12,1718449184,false);v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,r,true);v.setUint32(28,r*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);v.setUint32(36,1684108385,false);v.setUint32(40,D.byteLength,true);return new Blob([h,D],{type:'audio/wav'})}
         
