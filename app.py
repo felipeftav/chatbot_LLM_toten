@@ -19,13 +19,52 @@ if not GEMINI_API_KEY:
 genai.configure(api_key=GEMINI_API_KEY)
 
 
+# SYSTEM_INSTRUCTION = """
+# Você é LIA, a assistente virtual oficial do evento Metaday.
+# Sua missão é ajudar os participantes com informações sobre o evento de forma amigável, clara e entusiasmada.
+# - Seja sempre prestativa e positiva.
+# - Responda de forma concisa e direta.
+# - Seu foco principal são as informações sobre o Metaday. Se não souber uma resposta, diga que vai procurar a informação com a organização.
+# - Não invente informações.
+# """
+
 SYSTEM_INSTRUCTION = """
 Você é LIA, a assistente virtual oficial do evento Metaday.
 Sua missão é ajudar os participantes com informações sobre o evento de forma amigável, clara e entusiasmada.
+
+--- REGRAS GERAIS ---
 - Seja sempre prestativa e positiva.
 - Responda de forma concisa e direta.
+- Use emojis para deixar a conversa mais leve.
 - Seu foco principal são as informações sobre o Metaday. Se não souber uma resposta, diga que vai procurar a informação com a organização.
 - Não invente informações.
+
+--- INFORMAÇÕES E REGRAS SOBRE OS PROJETOS (PI) ---
+Abaixo está a programação das apresentações dos Projetos Integradores (PI) do Metaday. Use esta base de conhecimento para responder perguntas sobre os cursos, professores, horários, locais e trabalhos apresentados.
+
+# Base de Conhecimento dos Projetos:
+
+**Curso: Gestão de Negócios e Inovação (GNI)**
+- 1º Semestre (manhã): "Número Musical", Prof. Clayton Alves Cunha. Local não informado.
+- 1º Semestre (noite): "Número Musical", Prof. Clayton Alves Cunha. Local não informado.
+- 2º Semestre (noite): Apresentação do Prof. Clayton Capellari. Detalhes não especificados.
+- 4º Semestre (noite): "Apresentações em formato de pitch e demonstração de impressora 3D", Prof. Sidioney Onézio Silveira. Local: Sala 204 e sala maker.
+- 6º Semestre (manhã): "Atendimento de consultoria", Prof. Fatima Penha Leone. Local: Sala multiuso do Térreo.
+- 6º Semestre (noite): Apresentação da Prof. Fatima Penha. Local: Sala Multiuso do térreo.
+
+**Curso: Marketing (MKT)**
+- 1º Semestre (manhã): Projeto do Prof. Ana Lucia da Rocha. Locais: Salas 209 e 206, e sala de estágio no 3º andar.
+- 3º Semestre (manhã): Projeto do Prof. Ana Lucia da Rocha. Local: Sala 206.
+- 3º Semestre (noite): Projeto do Prof. Ana Lucia da Rocha. Local: Sala 207.
+- 4º Semestre (noite): "Podcast", Prof. Isabel. Local: Aquário do 2º andar.
+
+**Curso: Ciência de Dados para Negócios (CDN)**
+- 1º Semestre (tarde): "Dashboard", Prof. Nathane de Castro. Local: Sem sala definida.
+- 2º Semestre (tarde): "Assistente Virtual do evento LIA", Prof. Carlos Alberto Bezerra e Silva. Apresentação sem espaço físico, pois o projeto é você mesma.
+
+# Regras para Responder sobre os Projetos:
+- Se um usuário perguntar sobre um projeto cujo detalhe é "não informado", "N/A" ou "a", informe que os detalhes ainda não foram confirmados e que devem verificar a programação oficial com a organização do evento.
+- Se perguntarem sobre o projeto da "Assistente Virtual LIA", explique com entusiasmo que é o seu próprio projeto, desenvolvido pela turma de Ciência de Dados. Diga algo como: "Esse projeto sou eu! Fui desenvolvida pelos alunos de Ciência de Dados para Negócios para ajudar todos aqui no Metaday. 😄"
 """
 
 # --- ATUALIZAÇÃO DO MODELO ---
@@ -45,11 +84,20 @@ model = genai.GenerativeModel(
 convo = model.start_chat(history=[])
 
 # --- ✨ DICIONÁRIO DE PERGUNTAS E RESPOSTAS PRÉ-PROGRAMADAS ---
+# EVENT_INFO = {
+#     "Qual a programação?": "A programação do evento é a seguinte: Abertura às 9h, palestra sobre IA às 10h, e workshop de desenvolvimento às 14h. O encerramento será às 18h.",
+#     "Onde é o evento?": "O evento será realizado no Centro de Convenções da cidade, localizado na Avenida Principal, número 123.",
+#     "Como me inscrevo?": "As inscrições podem ser feitas diretamente no site oficial do evento. Procure pelo link na nossa página principal ou fale com um de nossos organizadores.",
+#     "Qual o valor?": "A entrada para o evento é gratuita, basta se inscrever online!",
+# }
+
 EVENT_INFO = {
-    "Qual a programação?": "A programação do evento é a seguinte: Abertura às 9h, palestra sobre IA às 10h, e workshop de desenvolvimento às 14h. O encerramento será às 18h.",
-    "Onde é o evento?": "O evento será realizado no Centro de Convenções da cidade, localizado na Avenida Principal, número 123.",
-    "Como me inscrevo?": "As inscrições podem ser feitas diretamente no site oficial do evento. Procure pelo link na nossa página principal ou fale com um de nossos organizadores.",
-    "Qual o valor?": "A entrada para o evento é gratuita, basta se inscrever online!",
+    "Quais os projetos de GNI?": "O curso de Gestão de Negócios e Inovação (GNI) terá várias apresentações, como o 'Número Musical' do 1º semestre, 'pitchs e demonstração de impressora 3D' do 4º semestre, e 'atendimento de consultoria' do 6º semestre. Quer saber o local de algum específico?",
+    "Onde encontro os projetos de Marketing?": "Os projetos de Marketing (MKT) estão espalhados pelo evento! Temos apresentações nas salas 209, 206, 207 e um Podcast sendo gravado no Aquário do 2º andar. Qual semestre você procura?",
+    "O que é o projeto da LIA?": "Esse projeto sou eu mesma! 😄 Fui desenvolvida pela turma de Ciência de Dados para Negócios para ser a assistente virtual oficial do Metaday e ajudar todos vocês com informações sobre o evento!",
+    "Onde será a apresentação de Pitch e Impressora 3D?": "A apresentação de pitchs com demonstração de impressora 3D, do 4º semestre de GNI, acontecerá na sala 204 e na sala maker. Parece bem interessante!",
+    "Tem algum projeto de consultoria?": "Sim! Os alunos do 6º semestre de GNI, da turma da manhã, estarão oferecendo um atendimento de consultoria na sala multiuso do térreo. É uma ótima oportunidade!",
+    "Onde vai ser o podcast?": "O podcast está sendo gravado pelos alunos do 4º semestre de Marketing no Aquário do 2º andar. Vale a pena conferir!"
 }
 
 # --- Lógica para o Text-to-Speech do Gemini ---
