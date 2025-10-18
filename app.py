@@ -23,8 +23,22 @@ API_KEYS = [key.strip() for key in os.getenv("GEMINI_API_KEYS", "").split(",") i
 if not API_KEYS:
     raise ValueError("A variável GEMINI_API_KEYS não foi configurada no arquivo .env.")
 
-# Usa a primeira chave para configurar o Gemini
-genai.configure(api_key=API_KEYS[0])
+# Testa todas as chaves e configura a primeira válida
+def configure_genai_with_available_key():
+    for key in API_KEYS:
+        try:
+            genai.configure(api_key=key)
+            # Teste rápido para ver se a chave funciona
+            test_model = genai.GenerativeModel("gemini-2.0-flash")
+            test_model.generate_content("teste")
+            print(f"✅ Chave válida configurada: {key[:8]}...")
+            return True
+        except Exception as e:
+            print(f"❌ Chave {key[:8]} inválida ou com limite: {e}")
+    raise RuntimeError("🚫 Nenhuma chave Gemini válida disponível.")
+
+# Chama a função antes de criar o modelo LIA
+configure_genai_with_available_key()
 
 # ============================================================
 # 🤖 CONFIGURAÇÃO DO MODELO LIA (Assistente Virtual)
@@ -85,27 +99,27 @@ convo = model.start_chat(history=[])
 
 EVENT_INFO = {
     "Quais os projetos de GNI?": {
-        "text": "O curso de GNI terá várias apresentações, como o 'Número Musical', 'Pitchs com impressora 3D' e 'Consultoria'. Quer saber o local de algum específico?",
+        "text": "O curso de Gestão de Negócios e Inovação (GNI) terá várias apresentações, como o 'Número Musical' do 1º semestre, 'pitchs e demonstração de impressora 3D' do 4º semestre, e 'atendimento de consultoria' do 6º semestre. Quer saber o local de algum específico?",
         "audio_path": "respostas_pre_gravadas/projetos_gni.mp3"
     },
     "Onde encontro os projetos de Marketing?": {
-        "text": "Os projetos de Marketing estão nas salas 209, 206 e 207, e há um Podcast no Aquário do 2º andar. Quer saber de qual semestre?",
+        "text": "Os projetos de Marketing (MKT) estão espalhados pelo evento! Temos apresentações nas salas 209, 206, 207 e um Podcast sendo gravado no Aquário do 2º andar. Qual semestre você procura?",
         "audio_path": "respostas_pre_gravadas/projetos_mkt.mp3"
     },
     "O que é o projeto da LIA?": {
-        "text": "Esse projeto sou eu! 😄 Fui desenvolvida pelos alunos de Ciência de Dados para Negócios para ajudar todos aqui no Metaday!",
+        "text": "Esse projeto sou eu mesma! Fui desenvolvida pela turma de Ciência de Dados para Negócios para ser a assistente virtual oficial do Metaday e ajudar todos vocês com informações sobre o evento!",
         "audio_path": "respostas_pre_gravadas/o_que_e_lia.mp3"
     },
     "Onde será a apresentação de Pitch e Impressora 3D?": {
-        "text": "Acontecerá na sala 204 e na sala Maker, com o Prof. Sidioney Silveira.",
+        "text": "A apresentação de pitchs com demonstração de impressora 3D, do 4º semestre de GNI, acontecerá na sala 204 e na sala maker. Parece bem interessante!",
         "audio_path": "respostas_pre_gravadas/pitch_impressora.mp3"
     },
     "Tem algum projeto de consultoria?": {
-        "text": "Sim! Os alunos do 6º semestre de GNI estão oferecendo atendimento de consultoria na sala multiuso do térreo.",
+        "text": "Sim! Os alunos do 6º semestre de GNI, da turma da manhã, estarão oferecendo um atendimento de consultoria na sala multiuso do térreo. É uma ótima oportunidade!",
         "audio_path": "respostas_pre_gravadas/projeto_consultoria.mp3"
     },
     "Onde vai ser o podcast?": {
-        "text": "O Podcast está sendo gravado pelos alunos de Marketing no Aquário do 2º andar.",
+        "text": "O podcast está sendo gravado pelos alunos do 4º semestre de Marketing no Aquário do 2º andar. Vale a pena conferir!",
         "audio_path": "respostas_pre_gravadas/onde_e_podcast.mp3"
     }
 }
