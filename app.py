@@ -103,32 +103,52 @@ EVENT_INFO = {
 # --- Lógica para o Text-to-Speech do Gemini ---
 TTS_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key={GEMINI_API_KEY}"
 
-def get_tts_audio_data(text_to_speak):
-    """Chama a API de TTS do Gemini para converter texto em áudio."""
-    payload = {
-        "contents": [{"parts": [{"text": f"Fale de forma natural e clara, como uma assistente prestativa: {text_to_speak}"}]}],
-        "generationConfig": {
-            "responseModalities": ["AUDIO"],
-            "speechConfig": {
-                "voiceConfig": {
-                    "prebuiltVoiceConfig": {"voiceName": "Aoede"}
-                }
-            }
-        },
-        "model": "gemini-2.5-flash-preview-tts"
-    }
-    headers = {'Content-Type': 'application/json'}
+# def get_tts_audio_data(text_to_speak):
+#     """Chama a API de TTS do Gemini para converter texto em áudio."""
+#     payload = {
+#         "contents": [{"parts": [{"text": f"Fale de forma natural e clara, como uma assistente prestativa: {text_to_speak}"}]}],
+#         "generationConfig": {
+#             "responseModalities": ["AUDIO"],
+#             "speechConfig": {
+#                 "voiceConfig": {
+#                     "prebuiltVoiceConfig": {"voiceName": "Aoede"}
+#                 }
+#             }
+#         },
+#         "model": "gemini-2.5-flash-preview-tts"
+#     }
+#     headers = {'Content-Type': 'application/json'}
     
+#     try:
+#         response = requests.post(TTS_API_URL, headers=headers, data=json.dumps(payload))
+#         response.raise_for_status()
+#         result = response.json()
+#         part = result.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0]
+#         audio_data = part.get('inlineData', {}).get('data')
+#         return audio_data
+#     except Exception as e:
+#         print(f"ERRO ao chamar ou processar a API de TTS: {e}")
+#         return None
+
+from gtts import gTTS
+import base64
+import io
+
+def get_tts_audio_data(text_to_speak):
+    """Gera áudio em português (pt-BR) usando gTTS e retorna os dados em base64."""
     try:
-        response = requests.post(TTS_API_URL, headers=headers, data=json.dumps(payload))
-        response.raise_for_status()
-        result = response.json()
-        part = result.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0]
-        audio_data = part.get('inlineData', {}).get('data')
-        return audio_data
+        tts = gTTS(
+            text=f"Fale de forma natural e clara, como uma assistente prestativa: {text_to_speak}",
+            lang="pt-br"
+        )
+        buffer = io.BytesIO()
+        tts.write_to_fp(buffer)
+        audio_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+        return audio_base64
     except Exception as e:
-        print(f"ERRO ao chamar ou processar a API de TTS: {e}")
+        print(f"ERRO ao gerar TTS local: {e}")
         return None
+
 
 # --- Configuração do Flask ---
 app = Flask(__name__)

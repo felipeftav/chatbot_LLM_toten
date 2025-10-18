@@ -75,3 +75,38 @@ body {
         box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
     }
 }
+
+/* chatbot_LLM_toten/styles.css */
+
+/* ... (todo o seu CSS anterior aqui) ... */
+
+
+/* ✨ NOVO: Estilos para a tela inicial com layout lateral */
+
+/* Transforma o container principal em um flex container para criar as colunas */
+#splash-screen {
+    display: flex;
+    align-items: center; /* Centraliza o conteúdo verticalmente */
+    gap: 2rem; /* Cria um espaço entre a imagem e o formulário */
+    max-width: 56rem; /* Aumenta a largura máxima para o layout caber bem */
+    text-align: left; /* Alinha o texto do formulário à esquerda */
+}
+
+/* Define a coluna do formulário para ocupar o espaço disponível */
+#splash-content {
+    flex: 1; /* Faz esta coluna crescer */
+}
+
+/* Define a coluna do avatar com um tamanho fixo */
+#splash-avatar-container {
+    flex-basis: 250px; /* Define a largura base do avatar */
+    flex-shrink: 0; /* Impede que o avatar encolha */
+}
+
+/* Estilo da imagem do avatar dentro do novo container */
+#splash-avatar-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 1.5rem; /* Bordas arredondadas para combinar com o chat */
+}
+

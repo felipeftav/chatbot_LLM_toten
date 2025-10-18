@@ -12,22 +12,72 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
-<!-- <body class="bg-slate-100 flex items-center justify-center h-screen"> -->
-<body class="bg-amber-400 flex items-center justify-center h-screen"></body>
+<body class="bg-amber-400 flex items-center justify-center h-screen p-4">
 
-    <div id="main-container">
+    <div id="splash-screen" class="bg-white p-8 rounded-2xl shadow-2xl w-full">
+
+        <div id="splash-content">
+            <h1 class="text-4xl font-bold text-zinc-900 mb-2 text-center">Bem-vindo ao Metaday!</h1>
+            <p class="text-slate-600 text-lg mb-8 text-center">Antes de conversar com a <b>LIA (Assistente de IA)</b>, conte-nos um pouco sobre você.</p>
+            
+            <form id="start-form">
+                <div class="space-y-4">
+                    <div>
+                        <label for="name-input" class="block text-left text-lg font-bold text-slate-700 mb-2">Qual é o seu nome?</label>
+                        <input type="text" id="name-input" placeholder="Digite seu nome aqui" required class="w-full p-4 text-lg border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300">
+                    </div>
+                    <div>
+                        <label for="role-select" class="block text-left text-lg font-bold text-slate-700 mb-2">Você é:</label>
+                        <select id="role-select" class="w-full p-4 text-lg border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300">
+                            <option value="aluno">Aluno(a)</option>
+                            <option value="visitante">Visitante</option>
+                            <option value="professor">Professor(a)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="interest-area-select" class="block text-left text-lg font-bold text-slate-700 mb-2">Qual sua área de maior interesse?</label>
+                        <select id="interest-area-select" class="w-full p-4 text-lg border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300">
+                            <option value="Negócios e Inovação">Gestão de Negócios e Inovação</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Ciência de Dados">Ciência de Dados</option>
+                            <option value="Tecnologia em Geral">Tecnologia em Geral</option>
+                            <option value="Apenas explorar">Apenas explorar</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="objective-select" class="block text-left text-lg font-bold text-slate-700 mb-2">Seu principal objetivo no evento é:</label>
+                        <select id="objective-select" class="w-full p-4 text-lg border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300">
+                            <option value="conhecer os projetos">Conhecer os projetos dos alunos</option>
+                            <option value="assistir palestras">Assistir palestras / workshops</option>
+                            <option value="fazer networking">Fazer networking</option>
+                            <option value="conhecer a Fatec">Conhecer a Fatec</option>
+                            <option value="apenas explorar">Apenas explorar</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="block mx-auto bg-indigo-600 text-white rounded-full p-4 mt-8 text-xl font-bold hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-transform duration-200 active:scale-95 px-12">
+                    Iniciar Conversa
+                </button>
+            </form>
+        </div>
+
+        <div id="splash-avatar-container">
+            <img src="./assets/avatar_fechada.png" alt="Avatar da LIA">
+        </div>
+
+    </div>
+
+    <div id="main-container" style="display: none;">
         
         <div id="chat-container" class="bg-white shadow-2xl rounded-2xl overflow-hidden">
             <header class="bg-zinc-900 text-white p-6 shadow-md z-10 flex items-center justify-center relative">
                 <div class="absolute left-6 top-1/2 -translate-y-1/2 flex space-x-2">
                     <button id="restart-button" title="Reiniciar Conversa" class="text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
                     </button>
-
                     <button id="summarize-button" title="Resumir Conversa" class="text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-50">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v14a2 2 0 0 0 2 2h4Z"/><path d="M10 17v-1a2 2 0 1 1 4 0v1"/><path d="M10 11v-1a2 2 0 1 1 4 0v1"/><path d="M10 5v-1a2 2 0 1 1 4 0v1"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v14a2 2 0 0 0 2 2h4Z"/><path d="M10 17v-1a2 2 0 1 1 4 0v1"/><path d="M10 11v-1a2 2 0 1 1 4 0v1"/><path d="M10 5v-1a2 2 0 1 1 4 0v1"/></svg>
                     </button>
-                    
                 </div>
                 <div class="text-center">
                     <h1 class="text-3xl font-bold">LIA - Assistente de IA no Metaday</h1>
@@ -36,44 +86,30 @@
                 <button id="toggle-tts-button" class="absolute right-6 top-1/2 -translate-y-1/2 text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400"></button>
             </header>
 
-            <main id="chat-messages" class="flex-1 p-8 overflow-y-auto">
-                <div class="flex justify-start mb-6">
-                    <div class="bg-zinc-900 text-white p-4 rounded-2xl rounded-bl-none max-w-lg">
-                        Bem-vindo ao Metaday! ✨<br>
-  Sou                   a LIA e estou aqui para tornar seu dia incrível! O que você gostaria de saber primeiro?
-                    </div>
-                </div>
-            </main>
+            <main id="chat-messages" class="flex-1 p-8 overflow-y-auto"></main>
 
-            <!-- ATUALIZADO: Container dos botões agora está fixo aqui -->
             <div id="preset-buttons-container" class="p-4 bg-slate-50 border-t border-slate-200">
                 <div class="flex flex-wrap justify-center gap-3">
-                    <!-- <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Qual a programação?</button>
-                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Onde é o evento?</button>
-                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Como me inscrevo?</button>
-                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Qual o valor?</button>
-                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Como me inscrevo?</button>
-                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Qual o valor?</button> -->
-
                     <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Quais os projetos de GNI?</button>
-<button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Onde encontro os projetos de Marketing?</button>
-<button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">O que é o projeto da LIA?</button>
-<button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Onde será a apresentação de Pitch e Impressora 3D?</button>
-<button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Tem algum projeto de consultoria?</button>
-<button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Onde vai ser o podcast?</button>
+                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Onde encontro os projetos de Marketing?</button>
+                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">O que é o projeto da LIA?</button>
+                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Onde será a apresentação de Pitch e Impressora 3D?</button>
+                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Tem algum projeto de consultoria?</button>
+                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Onde vai ser o podcast?</button>
                 </div>
             </div>
 
             <footer class="p-6 bg-white border-t border-slate-200">
                 <div class="flex items-center space-x-2 sm:space-x-4">
                     <input type="text" id="message-input" placeholder="Digite sua mensagem aqui..." autocomplete="off" class="flex-1 p-4 text-lg border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300"/>
-                    <button id="suggest-topic-button" title="Sugerir Tópico" class="bg-amber-400 text-white rounded-full p-4 hover:bg-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400">
+                    
+                    <button id="suggest-topic-button" title="Sugerir Tópico" class="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 bg-amber-400 text-white hover:bg-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
                     </button>
-                    <button id="send-text-button" type="submit" form="chat-form" class="bg-indigo-600 text-white rounded-full p-4 hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400 disabled:cursor-not-allowed">
+                    <button id="send-text-button" type="submit" form="chat-form" class="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400 disabled:cursor-not-allowed">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg>
                     </button>
-                    <button id="mic-button" class="bg-red-500 text-white rounded-full p-4 hover:bg-red-600 focus:outline-none focus:ring-4 focus:ring-red-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400">
+                    <button id="mic-button" class="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-4 focus:ring-red-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
                     </button>
                 </div>
@@ -84,23 +120,18 @@
         <div id="avatar-container">
             <img id="avatar-image" src="./assets/avatar_fechada.png" alt="Avatar da Assistente Virtual">
         </div>
-
     </div>
 
-    <!-- VLibras Plugin -->
     <div vw class="enabled">
-    <div vw-access-button class="active"></div>
-    <div vw-plugin-wrapper>
-        <div class="vw-plugin-top-wrapper"></div>
-    </div>
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
     </div>
     <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
 
     <script>
-        
-
         marked.setOptions({ breaks: true });
-
         new window.VLibras.Widget('https://vlibras.gov.br/app');
 
         // --- Constantes dos Elementos da UI ---
@@ -112,24 +143,59 @@
         const sendTextButton = document.getElementById('send-text-button');
         const ttsButton = document.getElementById('toggle-tts-button');
         const avatarImage = document.getElementById('avatar-image');
-        const restartButton = document.getElementById('restart-button'); // <-- ADICIONE ESTA LINHA
-        // NOVO: constante para o container dos botões
+        const restartButton = document.getElementById('restart-button');
         const presetButtonsContainer = document.getElementById('preset-buttons-container');
+        
+        const splashScreen = document.getElementById('splash-screen');
+        const mainContainer = document.getElementById('main-container');
+        const startForm = document.getElementById('start-form');
+        const nameInput = document.getElementById('name-input');
         
         const backendUrl = 'http://127.0.0.1:5000/chat';
 
-        // Adicione este trecho para habilitar o envio com a tecla Enter
-        messageInput.addEventListener('keydown', function(event) {
-            // Verifica se a tecla pressionada foi 'Enter' e se a tecla Shift NÃO foi pressionada
-            if (event.key === 'Enter' && !event.shiftKey) {
-                // Previne o comportamento padrão do Enter (que seria criar uma nova linha no input)
-                event.preventDefault();
+        // LÓGICA DO TIMER DE INATIVIDADE
+        let inactivityTimer;
+        const inactivityTimeout = 60000; 
 
-                // Simula um clique no botão de envio para reutilizar toda a lógica já existente
-                sendTextButton.click();
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                console.log("Usuário inativo. Voltando para a tela inicial.");
+                window.location.reload();
+            }, inactivityTimeout);
+        }
+
+        // --- LÓGICA DA TELA INICIAL ---
+        startForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = nameInput.value.trim();
+            const role = document.getElementById('role-select').value;
+            const interestArea = document.getElementById('interest-area-select').value;
+            const objective = document.getElementById('objective-select').value;
+
+            console.log("Perfil do Usuário:", { name, role, interestArea, objective });
+
+            if (name) {
+                splashScreen.style.display = 'none';
+                mainContainer.style.display = 'flex';
+                
+                const welcomeMessage = `Olá, <strong>${name}</strong>! 👋<br>Que legal que um(a) <strong>${role}</strong> com interesse em <strong>${interestArea}</strong> veio nos visitar! Estou pronta para te ajudar a <strong>${objective}</strong>. Sobre o que quer saber primeiro?`;
+                appendMessage('bot', welcomeMessage);
+
+                resetInactivityTimer();
+                window.addEventListener('mousemove', resetInactivityTimer);
+                window.addEventListener('keydown', resetInactivityTimer);
+                window.addEventListener('click', resetInactivityTimer);
+                window.addEventListener('scroll', resetInactivityTimer, true);
             }
         });
 
+        messageInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendTextButton.click();
+            }
+        });
 
         // --- LÓGICA DE ANIMAÇÃO DO AVATAR ---
         let mouthAnimationInterval;
@@ -193,7 +259,6 @@
         document.getElementById('chat-form').addEventListener('submit', handleTextSubmit);
         sendTextButton.addEventListener('click', handleTextSubmit);
         
-        // NOVO: Event listener para os botões pré-programados
         presetButtonsContainer.addEventListener('click', (e) => {
             if (e.target.classList.contains('preset-button')) {
                 const question = e.target.textContent;
@@ -207,12 +272,10 @@
             if (!message) return;
             appendMessage('user', message);
             messageInput.value = '';
-            // Esconde os botões após enviar uma mensagem de texto
             if(presetButtonsContainer) presetButtonsContainer.style.display = 'none';
             await fetchBotReply({ message: message });
         }
 
-        // NOVO: Função para lidar com o clique nos botões
         async function handlePresetClick(question) {
             appendMessage('user', question);
             if(presetButtonsContainer) presetButtonsContainer.style.display = 'none';
@@ -235,7 +298,6 @@
                 if (payload.isAudio) {
                     requestOptions = { method: 'POST', body: payload.body };
                 } else {
-                    // ATUALIZADO: Adiciona o estado do TTS ao corpo da requisição
                     const body = payload.isPreset 
                         ? { preset_question: payload.message, tts_enabled: isTtsEnabled } 
                         : { message: payload.message, tts_enabled: isTtsEnabled };
@@ -259,10 +321,7 @@
             } finally {
                 setUiDisabled(false);
                 messageInput.focus();
-                // CORREÇÃO: Reexibe os botões após qualquer resposta
                 if (presetButtonsContainer) {
-                    // Usar 'block' ou 'flex' dependendo do seu layout. 
-                    // 'flex' é usado no container pai, então pode ser mais consistente.
                     presetButtonsContainer.style.display = 'block'; 
                 }
             }
@@ -282,6 +341,7 @@
                 appendSystemMessage('<strong>Erro:</strong> Não foi possível conectar ao servidor para resumir.');
             } finally { removeTypingIndicator(); setUiDisabled(false); }
         });
+
         suggestTopicButton.addEventListener('click', async () => {
             const originalPlaceholder = messageInput.placeholder;
             messageInput.placeholder = "Buscando uma ideia..."; setUiDisabled(true);
@@ -297,38 +357,13 @@
             } finally { setUiDisabled(false); if (!messageInput.value) { messageInput.placeholder = originalPlaceholder; } }
         });
 
-        // --- ✨ LÓGICA: REINICIAR CONVERSA ---
+        // --- LÓGICA: REINICIAR CONVERSA ---
         restartButton.addEventListener('click', async () => {
-            // Confirmação opcional para evitar cliques acidentais
-            // if (!confirm("Tem certeza de que deseja reiniciar a conversa? Todo o histórico será perdido.")) {
-            //     return;
-            // }
-
             try {
                 const response = await fetch(`${backendUrl.replace('/chat', '/restart')}`, { method: 'POST' });
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
-                // Limpa a tela de mensagens
-                chatMessages.innerHTML = '';
-                
-                // Adiciona a mensagem inicial novamente
-                appendMessage('bot', 'Olá! Digite uma mensagem, use o microfone para falar, ou clique em uma das opções abaixo! ✨');
-                
-                // Mostra os botões de perguntas pré-definidas
-                if (presetButtonsContainer) {
-                    presetButtonsContainer.style.display = 'block';
-                }
-                
-                // Limpa o campo de input
-                messageInput.value = '';
-
-                // Para qualquer áudio que esteja tocando
-                if (currentAudio) {
-                    currentAudio.pause();
-                    stopTalkingAnimation();
-                }
-
-                console.log("Conversa reiniciada com sucesso.");
+                window.location.reload();
 
             } catch (error) {
                 console.error('Erro ao reiniciar a conversa:', error);
@@ -359,25 +394,11 @@
         const removeTypingIndicator=()=>{const t=document.getElementById('typing-indicator');if(t){t.remove()}};
         
         // --- Lógica de TTS ---
-        let isTtsEnabled=false;let currentAudio=null;const iconSoundOn=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;const iconSoundOff=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>`;
+        let isTtsEnabled=false;let currentAudio=null;const iconSoundOn=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;const iconSoundOff=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>`;
         function base64ToArrayBuffer(b){const s=window.atob(b);const l=s.length;const B=new Uint8Array(l);for(let i=0;i<l;i++){B[i]=s.charCodeAt(i)}return B.buffer}
         function pcmToWavBlob(d){const r=24000;const p=base64ToArrayBuffer(d);const D=new Int16Array(p);const h=new ArrayBuffer(44);const v=new DataView(h);v.setUint32(0,1380533830,false);v.setUint32(4,36+D.byteLength,true);v.setUint32(8,1463899717,false);v.setUint32(12,1718449184,false);v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,r,true);v.setUint32(28,r*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);v.setUint32(36,1684108385,false);v.setUint32(40,D.byteLength,true);return new Blob([h,D],{type:'audio/wav'})}
         
-        const playAudioFromData=(d)=>{
-            if(currentAudio){currentAudio.pause()}
-            stopTalkingAnimation(); 
-            if(!isTtsEnabled||!d) return;
-            try{
-                const b=pcmToWavBlob(d);
-                const u=URL.createObjectURL(b);
-                currentAudio=new Audio(u);
-                currentAudio.addEventListener('play', startTalkingAnimation);
-                currentAudio.addEventListener('ended', stopTalkingAnimation);
-                currentAudio.addEventListener('pause', stopTalkingAnimation);
-                currentAudio.addEventListener('error', stopTalkingAnimation);
-                currentAudio.play();
-            }catch(e){console.error("Erro ao tocar áudio:",e)}
-        };
+        const playAudioFromData=(d)=>{if(currentAudio){currentAudio.pause()}stopTalkingAnimation();if(!isTtsEnabled||!d)return;try{const b=pcmToWavBlob(d);const u=URL.createObjectURL(b);currentAudio=new Audio(u);currentAudio.addEventListener('play',startTalkingAnimation);currentAudio.addEventListener('ended',stopTalkingAnimation);currentAudio.addEventListener('pause',stopTalkingAnimation);currentAudio.addEventListener('error',stopTalkingAnimation);currentAudio.play()}catch(e){console.error("Erro ao tocar áudio:",e)}};
         const updateTtsButtonIcon=()=>{ttsButton.innerHTML=isTtsEnabled?iconSoundOn:iconSoundOff};
         ttsButton.addEventListener('click',()=>{isTtsEnabled=!isTtsEnabled;updateTtsButtonIcon();if(!isTtsEnabled&&currentAudio){currentAudio.pause()}});
         updateTtsButtonIcon();
