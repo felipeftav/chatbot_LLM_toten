@@ -41,6 +41,40 @@ def configure_genai_with_available_key():
 # Chama a função antes de criar o modelo LIA
 configure_genai_with_available_key()
 
+
+# ============================================================
+# 🔗 CONEXÃO COM O BANCO DE DADOS
+# ============================================================
+
+# O Render irá popular esta variável com a URL Interna do seu lia-db
+DATABASE_URL = os.getenv("DATABASE_URL") 
+
+if DATABASE_URL:
+    try:
+        # Tenta conectar ao BD usando a URL
+        conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor()
+        print("✅ Conexão com o banco de dados PostgreSQL estabelecida com sucesso!")
+        
+        # Exemplo: Executar uma query de teste (opcional)
+        # cursor.execute("SELECT version();")
+        # db_version = cursor.fetchone()
+        # print(f"Versão do PostgreSQL: {db_version[0]}")
+        
+    except Exception as e:
+        print(f"❌ Erro ao conectar ao banco de dados: {e}")
+        # Uma estratégia comum é permitir que o app inicie mesmo sem o BD,
+        # mas desativar as funcionalidades que dependem dele.
+        conn = None 
+        cursor = None
+else:
+    print("⚠️ DATABASE_URL não encontrada. O aplicativo não terá acesso ao banco de dados.")
+    conn = None 
+    cursor = None
+
+
+
+
 # ============================================================
 # 🤖 CONFIGURAÇÃO DO MODELO LIA (Assistente Virtual)
 # ============================================================
@@ -187,23 +221,86 @@ def get_tts_audio_data(text_to_speak):
 app = Flask(__name__)
 CORS(app)
 
+# @app.route('/chat', methods=['POST'])
+# def chat():
+#     """Rota principal do chatbot LIA."""
+#     try:
+#         bot_reply_text = ""
+#         audio_base64 = None
+#         tts_is_enabled = False
+
+#         # Caso o usuário envie áudio
+#         if 'audio_file' in request.files:
+#             audio_file = request.files['audio_file']
+#             audio_parts = [{"mime_type": audio_file.mimetype, "data": audio_file.read()}]
+#             response = convo.send_message(["Responda ao que foi dito neste áudio.", audio_parts[0]])
+#             bot_reply_text = response.text
+#             tts_is_enabled = True
+
+#         # Caso o usuário envie JSON
+#         elif request.is_json:
+#             data = request.json
+#             tts_is_enabled = data.get('tts_enabled', False)
+
+#             # Pergunta pré-programada
+#             if 'preset_question' in data:
+#                 question = data['preset_question']
+#                 info = EVENT_INFO.get(question)
+#                 if info:
+#                     bot_reply_text = info["text"]
+#                     if tts_is_enabled:
+#                         try:
+#                             with open(info["audio_path"], "rb") as f:
+#                                 audio_base64 = base64.b64encode(f.read()).decode('utf-8')
+#                         except FileNotFoundError:
+#                             audio_base64 = get_tts_audio_data(bot_reply_text)
+#                 else:
+#                     bot_reply_text = "Desculpe, não tenho uma resposta para essa pergunta."
+
+#             # Mensagem normal
+#             elif 'message' in data:
+#                 user_message = data['message']
+#                 convo.send_message(user_message)
+#                 bot_reply_text = convo.last.text
+
+#         # Gera áudio se o TTS estiver ativo
+#         if audio_base64 is None and tts_is_enabled and bot_reply_text:
+#             audio_base64 = get_tts_audio_data(bot_reply_text)
+
+#         return jsonify({
+#             "reply": bot_reply_text,
+#             "audioData": audio_base64,
+#             "presetQuestions": list(EVENT_INFO.keys())
+#         })
+
+#     except Exception as e:
+#         print(f"Erro no /chat: {e}")
+#         traceback.print_exc()
+#         return jsonify({"error": "Erro interno no servidor."}), 500
+
 @app.route('/chat', methods=['POST'])
 def chat():
-    """Rota principal do chatbot LIA."""
-    try:
-        bot_reply_text = ""
-        audio_base64 = None
-        tts_is_enabled = False
+    """Rota principal do chatbot LIA, agora com log no BD."""
+    bot_reply_text = ""
+    audio_base64 = None
+    tts_is_enabled = False
+    user_message_to_log = None # Variável para capturar a mensagem do usuário
 
+    try:
         # Caso o usuário envie áudio
         if 'audio_file' in request.files:
             audio_file = request.files['audio_file']
             audio_parts = [{"mime_type": audio_file.mimetype, "data": audio_file.read()}]
+            
+            # Não logamos o áudio, mas sim a transcrição ou a intenção (a resposta do LLM)
             response = convo.send_message(["Responda ao que foi dito neste áudio.", audio_parts[0]])
+            
+            # O texto da resposta do bot é o que será logado
+            user_message_to_log = "[ÁUDIO ENVIADO]" # Marca para o log
             bot_reply_text = response.text
-            tts_is_enabled = True
+            tts_is_enabled = True # Assume TTS ativado para áudio
 
-        # Caso o usuário envie JSON
+        # Caso o usuário envie JSON (Texto ou Preset)
         elif request.is_json:
             data = request.json
             tts_is_enabled = data.get('tts_enabled', False)
@@ -211,25 +308,37 @@ def chat():
             # Pergunta pré-programada
             if 'preset_question' in data:
                 question = data['preset_question']
+                user_message_to_log = f"[PRESET]: {question}" # Loga como preset
                 info = EVENT_INFO.get(question)
+                
                 if info:
                     bot_reply_text = info["text"]
                     if tts_is_enabled:
                         try:
+                            # Tenta ler o áudio pré-gravado
                             with open(info["audio_path"], "rb") as f:
                                 audio_base64 = base64.b64encode(f.read()).decode('utf-8')
                         except FileNotFoundError:
+                            # Se não encontrar o arquivo, gera o áudio na hora
                             audio_base64 = get_tts_audio_data(bot_reply_text)
                 else:
-                    bot_reply_text = "Desculpe, não tenho uma resposta para essa pergunta."
+                    # Se o preset não existir no dict, envia ao LLM como fallback
+                    convo.send_message(question)
+                    bot_reply_text = convo.last.text
 
-            # Mensagem normal
+            # Mensagem normal de texto
             elif 'message' in data:
                 user_message = data['message']
+                user_message_to_log = user_message # Loga a mensagem do usuário
                 convo.send_message(user_message)
                 bot_reply_text = convo.last.text
 
-        # Gera áudio se o TTS estiver ativo
+        # Lógica de Log (Salva a interação após a resposta ser gerada)
+        if user_message_to_log:
+            log_message('user', user_message_to_log)
+            log_message('bot', bot_reply_text)
+
+        # Gera áudio se o TTS estiver ativo e ainda não tiver sido gerado
         if audio_base64 is None and tts_is_enabled and bot_reply_text:
             audio_base64 = get_tts_audio_data(bot_reply_text)
 
@@ -243,6 +352,7 @@ def chat():
         print(f"Erro no /chat: {e}")
         traceback.print_exc()
         return jsonify({"error": "Erro interno no servidor."}), 500
+
 
 @app.route('/suggest-topic', methods=['GET'])
 def suggest_topic():
