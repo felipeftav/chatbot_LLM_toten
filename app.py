@@ -72,6 +72,34 @@ else:
     conn = None 
     cursor = None
 
+def log_message(sender, message_text):
+    """Insere uma mensagem no banco de dados."""
+    if not conn or not cursor:
+        print("⚠️ Banco de dados não disponível. Mensagem não foi salva.")
+        return
+    
+    try:
+        # Cria a tabela se não existir
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS chat_log (
+                id SERIAL PRIMARY KEY,
+                sender VARCHAR(10) NOT NULL,
+                message TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+        conn.commit()
+        
+        # Insere a mensagem
+        cursor.execute(
+            "INSERT INTO chat_log (sender, message) VALUES (%s, %s);",
+            (sender, message_text)
+        )
+        conn.commit()
+        print(f"💾 Mensagem de {sender} salva no BD!")
+    except Exception as e:
+        print(f"❌ Erro ao salvar mensagem: {e}")
+        conn.rollback()
 
 
 
