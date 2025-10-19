@@ -73,16 +73,17 @@ else:
     conn = None 
     cursor = None
 
-def log_message(sender, message_text, profile_data={}): # <-- MUDANÇA 1: Adiciona o argumento
-    """Insere uma mensagem no banco de dados, incluindo dados do perfil."""
+import pytz
+from datetime import datetime
+
+def log_message(sender, message_text, profile_data={}):
+    """Insere uma mensagem no banco de dados, incluindo dados do perfil e um timestamp de SP como string."""
     if not conn or not cursor:
         print("⚠️ Banco de dados não disponível. Mensagem não foi salva.")
         return
-    
-    # A linha "profile_data = USER_PROFILE.copy()" foi removida.
-    
+
     try:
-        # A criação da tabela permanece a mesma
+        # Criação da tabela com nova coluna 'created_at_sp_str'
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS chat_log (
                 id SERIAL PRIMARY KEY,
@@ -92,30 +93,48 @@ def log_message(sender, message_text, profile_data={}): # <-- MUDANÇA 1: Adicio
                 role VARCHAR(50),
                 interest_area VARCHAR(100),
                 objective VARCHAR(100),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP WITH TIME ZONE,
+                created_at_sp_str VARCHAR(25)  -- nova coluna como string
             );
         """)
-        conn.commit()
-        
+
+        # Cria o timestamp em SP
+        sp_tz = pytz.timezone("America/Sao_Paulo")
+        timestamp_sp = datetime.now(sp_tz)
+
+        # Formata como string
+        timestamp_sp_str = timestamp_sp.strftime("%Y-%m-%d %H:%M:%S")
+
+        # Inserção no banco
         cursor.execute(
             """
-            INSERT INTO chat_log (sender, message, user_name, role, interest_area, objective) 
-            VALUES (%s, %s, %s, %s, %s, %s);
+            INSERT INTO chat_log 
+                (sender, message, user_name, role, interest_area, objective, created_at, created_at_sp_str) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
             """,
             (
-                sender, 
-                message_text, 
-                profile_data.get('name'),         # <-- MUDANÇA 2: Chave 'name'
-                profile_data.get('role'),         # (sem mudança)
-                profile_data.get('interestArea'), # <-- MUDANÇA 3: Chave 'interestArea'
-                profile_data.get('objective')     # (sem mudança)
+                sender,
+                message_text,
+                profile_data.get('name'),
+                profile_data.get('role'),
+                profile_data.get('interestArea'),
+                profile_data.get('objective'),
+                timestamp_sp,        # mantém UTC para histórico
+                timestamp_sp_str     # salva SP exato como string
             )
         )
+
         conn.commit()
-        print(f"💾 Mensagem de {sender} salva no BD!")
+        print(f"💾 Mensagem de {sender} salva no BD com timestamp SP como string!")
+
     except Exception as e:
         print(f"❌ Erro ao salvar mensagem: {e}")
         conn.rollback()
+
+
+
+# Exemplo de como chamar a função
+# log_message("User", "Testando o timestamp forçado.", {"name": "Usuario Teste"})
 
 
 

@@ -7,3 +7,4 @@ google-cloud-texttospeech
 gTTS
 gunicorn
 psycopg2-binary
+pytz
