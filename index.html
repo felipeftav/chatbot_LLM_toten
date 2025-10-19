@@ -151,7 +151,11 @@
         const startForm = document.getElementById('start-form');
         const nameInput = document.getElementById('name-input');
         
-        const backendUrl = 'http://127.0.0.1:5000/chat';
+        // Antes
+        // const backendUrl = 'http://127.0.0.1:5000/chat';
+
+        // Depois
+        const backendUrl = `${window.location.origin}/chat`;    
 
         // LÓGICA DO TIMER DE INATIVIDADE
         let inactivityTimer;
