@@ -237,9 +237,9 @@ EVENT_INFO = {
 # ============================================================
 
 def get_gemini_tts_audio_data(text_to_speak):
-    """Gera áudio com a API de TTS do Gemini usando múltiplas chaves (fallback automático)."""
+    """Gera áudio com a API Gemini usando múltiplas chaves, sem matar o worker."""
     payload = {
-        "contents": [{"parts": [{"text": f"Fale de forma natural e clara, como uma assistente prestativa: {text_to_speak}"}]}],
+        "contents": [{"parts": [{"text": f"Fale de forma natural e clara: {text_to_speak}"}]}],
         "generationConfig": {
             "responseModalities": ["AUDIO"],
             "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": "Aoede"}}}
@@ -250,7 +250,6 @@ def get_gemini_tts_audio_data(text_to_speak):
 
     for key in API_KEYS:
         try:
-            print(f"Tentando gerar áudio com a chave {key[:8]}...")
             url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key={key}"
             response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=30)
             response.raise_for_status()
@@ -262,10 +261,17 @@ def get_gemini_tts_audio_data(text_to_speak):
             if audio_data:
                 print("✅ Áudio gerado com sucesso via Gemini!")
                 return audio_data
+
+        except requests.exceptions.HTTPError as http_err:
+            if response.status_code == 429:
+                print(f"⚠️ Limite da chave {key[:8]} atingido. Tentando próxima chave...")
+            else:
+                print(f"⚠️ Erro HTTP com chave {key[:8]}: {http_err}")
         except Exception as e:
-            print(f"⚠️ Erro com a chave {key[:8]}: {e}")
-    
-    raise RuntimeError("🚫 Todas as chaves de API falharam.")
+            print(f"⚠️ Outro erro com chave {key[:8]}: {e}")
+
+    print("⚠️ Todas as chaves Gemini falharam, usando fallback gTTS.")
+    return get_gtts_audio_data(text_to_speak)
 
 def get_gtts_audio_data(text_to_speak):
     """Fallback local usando gTTS (voz menos natural, mas garantida)."""
@@ -437,15 +443,31 @@ def chat():
 
     try:
         # Caso o usuário envie áudio
+        # if 'audio_file' in request.files:
+        #     # (Opcional) Para suportar perfil com áudio, você teria que enviá-lo como campos do form.
+        #     # profile = request.form.to_dict()
+        #     audio_file = request.files['audio_file']
+        #     audio_parts = [{"mime_type": audio_file.mimetype, "data": audio_file.read()}]
+        #     response = convo.send_message(["Responda ao que foi dito neste áudio.", audio_parts[0]])
+        #     user_message_to_log = "[ÁUDIO ENVIADO]"
+        #     bot_reply_text = response.text
+        #     tts_is_enabled = True
         if 'audio_file' in request.files:
-            # (Opcional) Para suportar perfil com áudio, você teria que enviá-lo como campos do form.
-            # profile = request.form.to_dict()
             audio_file = request.files['audio_file']
+
+            # Lê o perfil enviado como JSON no FormData (se existir)
+            profile_str = request.form.get('profile', '{}')
+            try:
+                profile = json.loads(profile_str)
+            except json.JSONDecodeError:
+                profile = {}
+
             audio_parts = [{"mime_type": audio_file.mimetype, "data": audio_file.read()}]
             response = convo.send_message(["Responda ao que foi dito neste áudio.", audio_parts[0]])
             user_message_to_log = "[ÁUDIO ENVIADO]"
             bot_reply_text = response.text
             tts_is_enabled = True
+
 
         # Caso o usuário envie JSON (Texto ou Preset)
         elif request.is_json:
