@@ -6,9 +6,4 @@ requests
 google-cloud-texttospeech
 gTTS
 gunicorn
-
-# Adicione esta linha:
-psycopg2-binary # Driver PostgreSQL para Python
-# OU
-psycopg # Driver mais moderno (pode precisar de build tools)
-# Para o Render, psycopg2-binary costuma ser mais simples
+psycopg2-binary
