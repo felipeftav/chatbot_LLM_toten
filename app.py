@@ -5,12 +5,10 @@ import base64
 import io
 import traceback
 from gtts import gTTS
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template, make_response, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 import google.generativeai as genai
-
-from flask import Flask, request, jsonify, render_template
 
 
 # ============================================================
@@ -284,24 +282,18 @@ def restart():
 # 🚀 EXECUÇÃO
 # ============================================================
 
-from flask import send_from_directory
-
-from flask import make_response, send_from_directory
-
+# ROTA CORRIGIDA PARA ATIVOS (ASSETS)
+# REMOVENDO A MANIPULAÇÃO AGRESSIVA DE CACHE HTTP
 @app.route("/assets/<path:filename>")
 def assets(filename):
-    response = make_response(send_from_directory("assets", filename))
-    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
-    return response
+    # A remoção do cabeçalho de Cache-Control agressivo aqui
+    # permite que o "cache busting" do JavaScript funcione corretamente.
+    return send_from_directory("assets", filename)
 
 # Serve o index.html da raiz
 @app.route('/')
 def serve_index():
     return send_from_directory('.', 'index.html')
-
-# @app.route("/assets/<path:filename>")
-# def assets(filename):
-#     return send_from_directory("assets", filename)
 
 # Serve qualquer outro arquivo estático da raiz (CSS, JS, imagens, etc)
 @app.route('/<path:filename>')
