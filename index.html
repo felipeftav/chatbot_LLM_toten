@@ -2,7 +2,8 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Assistente Virtual</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -118,10 +119,10 @@
         </div>
     </div>
 
-    <div id="main-container" style="display: none;">
+    <div id="main-container" class="w-full h-full p-2 sm:p-4" style="display: none;">
         
-        <div id="chat-container" class="bg-white rounded-2xl overflow-hidden">
-            <header class="bg-slate-800 text-white p-4 sm:p-6 shadow-md z-10 flex items-center justify-center relative"> <div class="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 flex space-x-1 sm:space-x-2"> <button id="restart-button" title="Reiniciar Conversa" class="text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400">
+        <div id="chat-container" class="bg-white rounded-2xl overflow-hidden w-full h-full flex flex-col">
+            <!-- <header class="bg-slate-800 text-white p-4 sm:p-6 shadow-md z-10 flex items-center justify-center relative"> <div class="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 flex space-x-1 sm:space-x-2"> <button id="restart-button" title="Reiniciar Conversa" class="text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
                     </button>
                     <button id="summarize-button" title="Resumir Conversa" class="text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-50">
@@ -132,6 +133,24 @@
                     <h1 class="text-xl sm:text-2xl font-bold">LIA - Assistente de IA</h1>
                     <p class="text-slate-300 text-sm sm:text-md mt-1">Como posso te ajudar?</p>
                 </div>
+                <button id="toggle-tts-button" class="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400"></button>
+            </header> -->
+
+            <header class="bg-slate-800 text-white p-4 sm:p-6 shadow-md z-10 flex items-center justify-center relative">
+                <div class="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 flex space-x-1 sm:space-x-2">
+                    <button id="restart-button" title="Reiniciar Conversa" class="text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                    </button>
+                    <button id="summarize-button" title="Resumir Conversa" class="text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-50">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v14a2 2 0 0 0 2 2h4Z"/><path d="M10 17v-1a2 2 0 1 1 4 0v1"/><path d="M10 11v-1a2 2 0 1 1 4 0v1"/><path d="M10 5v-1a2 2 0 1 1 4 0v1"/></svg>
+                    </button>
+                </div>
+
+                <div class="text-center px-16 sm:px-20">
+                    <h1 class="text-xl sm:text-2xl font-bold">LIA - Assistente de IA</h1>
+                    <p class="text-slate-300 text-sm sm:text-md mt-1">Como posso te ajudar?</p>
+                </div>
+                
                 <button id="toggle-tts-button" class="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400"></button>
             </header>
 
@@ -146,7 +165,7 @@
                 </div>
             </div>
 
-            <footer class="p-4 sm:p-6 bg-white border-t border-slate-200"> <div class="flex items-center space-x-2 sm:space-x-4 flex-wrap gap-2">
+            <!-- <footer class="p-4 sm:p-6 bg-white border-t border-slate-200"> <div class="flex items-center space-x-2 sm:space-x-4 flex-wrap gap-2">
                     <input type="text" id="message-input" placeholder="Digite sua mensagem aqui..." autocomplete="off" class="flex-1 p-4 text-lg border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-violet-300 transition duration-300 min-w-[150px]"/> <button id="suggest-topic-button" title="Sugerir Tópico" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center flex-shrink-0 bg-yellow-500 text-white hover:bg-yellow-600 focus:outline-none focus:ring-4 focus:ring-yellow-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400">
                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
                     </button>
@@ -156,6 +175,26 @@
                     <button id="mic-button" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center flex-shrink-0 bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400">
                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
                     </button>
+                </div>
+                <form id="chat-form" class="hidden"></form>
+            </footer> -->
+
+            <footer class="p-4 bg-white border-t border-slate-200">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                    
+                    <input type="text" id="message-input" placeholder="Digite sua mensagem aqui..." autocomplete="off" class="w-full p-4 text-lg border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-violet-300 transition duration-300 sm:flex-1"/>
+                    
+                    <div class="flex items-center justify-center gap-2 sm:gap-3">
+                        <button id="suggest-topic-button" title="Sugerir Tópico" class="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 bg-yellow-500 text-white hover:bg-yellow-600 focus:outline-none focus:ring-4 focus:ring-yellow-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+                        </button>
+                        <button id="send-text-button" type="submit" form="chat-form" class="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 bg-violet-600 text-white hover:bg-violet-700 focus:outline-none focus:ring-4 focus:ring-violet-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400 disabled:cursor-not-allowed">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg>
+                        </button>
+                        <button id="mic-button" class="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                        </button>
+                    </div>
                 </div>
                 <form id="chat-form" class="hidden"></form>
             </footer>

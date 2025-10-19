@@ -9,6 +9,7 @@ body {
 
 
 /* --- LAYOUT PRINCIPAL --- */
+/* Estas regras são um fallback. O layout principal é controlado majoritariamente pelo TailwindCSS no HTML. */
 #main-container {
     display: flex;
     align-items: center;
@@ -16,13 +17,13 @@ body {
     gap: 2rem;
     width: 100%;
     height: 100%;
-    padding: 1rem;
+    /* O padding agora é controlado pelo Tailwind para responsividade. Ex: p-2 sm:p-4 */
 }
 
 #chat-container {
     width: 100%;
     max-width: 48rem;
-    height: 95vh; /* Mantido para consistência */
+    height: 95vh;
     display: flex;
     flex-direction: column;
     box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
@@ -79,12 +80,8 @@ body {
     }
 }
 
-
-/* --- TELA INICIAL (SPLASH SCREEN) --- */
-/* ✨ REMOVIDO: As regras de layout da tela inicial foram movidas para as classes do TailwindCSS no HTML para melhor responsividade e manutenção. */
-
-
 /* --- BOLHAS DE MENSAGEM --- */
+/* Estas classes foram substituídas por Tailwind no HTML, mas podem ser mantidas como fallback ou para referência. */
 .bot-bubble {
     background-color: #045c5c; 
     color: white;
@@ -106,36 +103,66 @@ body {
 }
 
 /* --- TRATAMENTO RESPONSIVO PARA BOTÕES PREDEFINIDOS --- */
-/* Em telas menores (como celulares) */
 @media (max-width: 767px) {
     #preset-buttons-container .flex {
-        /* Impede que os botões quebrem para a próxima linha */
         flex-wrap: nowrap;
-        
-        /* Habilita a rolagem horizontal quando os itens ultrapassam a largura */
         overflow-x: auto;
-
-        /* Alinha os botões no início do contêiner */
         justify-content: flex-start;
-
-        /* Adiciona um pouco de preenchimento para que os botões não fiquem colados nas bordas */
         padding-left: 1rem;
         padding-right: 1rem;
-        padding-bottom: 1rem; /* Espaço para a barra de rolagem não sobrepor o conteúdo */
-
-        /* Remove a barra de rolagem visualmente, mas mantém a funcionalidade */
-        scrollbar-width: none; /* Para Firefox */
-        -ms-overflow-style: none;  /* Para Internet Explorer e Edge */
+        padding-bottom: 1rem;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
 
-    /* Remove a barra de rolagem visualmente para navegadores WebKit (Chrome, Safari) */
     #preset-buttons-container .flex::-webkit-scrollbar {
         display: none;
     }
 
-    /* Garante que o texto dentro dos botões não quebre em duas linhas */
     .preset-button {
         white-space: nowrap;
-        flex-shrink: 0; /* Impede que os botões encolham */
+        flex-shrink: 0;
+    }
+}
+
+
+/* --- AJUSTES DE ÁREA SEGURA E RESPONSIVIDADE FINA --- */
+
+/* Garante que o container principal respeite as barras do sistema (notch, etc.) */
+#main-container {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Refinamentos para telas muito pequenas (abaixo de 380px) */
+@media (max-width: 379px) {
+    /* Diminui o rodapé */
+    #chat-container footer {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-top: 0.75rem;
+    }
+
+    /* Diminui um pouco os botões de ação */
+    #suggest-topic-button,
+    #send-text-button,
+    #mic-button {
+        width: 2.75rem;  /* 44px */
+        height: 2.75rem; /* 44px */
+    }
+
+    /* Ajusta o tamanho do ícone dentro dos botões */
+    #suggest-topic-button svg,
+    #send-text-button svg,
+    #mic-button svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    /* Diminui um pouco o input */
+    #message-input {
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
     }
 }
