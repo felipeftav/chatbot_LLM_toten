@@ -307,7 +307,7 @@ def get_gtts_audio_data(text_to_speak):
     """Fallback local usando gTTS (voz menos natural, mas garantida)."""
     try:
         print("Usando gTTS como alternativa...")
-        tts = gTTS(text=f"Fale de forma natural e clara: {text_to_speak}", lang="pt-br")
+        tts = gTTS(text=f"{text_to_speak}", lang="pt-br")
         buffer = io.BytesIO()
         tts.write_to_fp(buffer)
         return base64.b64encode(buffer.getvalue()).decode("utf-8")
