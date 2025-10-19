@@ -210,7 +210,8 @@
             stopTalkingAnimation(); 
             let isMouthOpen = false;
             mouthAnimationInterval = setInterval(() => {
-                avatarImage.src = isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta;
+                // avatarImage.src = isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta;
+                avatarImage.src = (isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta) + "?ts=" + new Date().getTime();
                 isMouthOpen = !isMouthOpen;
             }, 250);
         }
