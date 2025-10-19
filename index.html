@@ -973,9 +973,22 @@
             await fetchBotReply({ message: question, isPreset: true });
         }
 
+        // async function sendAudioToServer(audioBlob) {
+        //     const formData = new FormData();
+        //     formData.append('audio_file', audioBlob, 'user_audio.webm');
+        //     appendMessage('user', '<i>Mensagem de voz enviada...</i>');
+        //     if(presetButtonsContainer) presetButtonsContainer.style.display = 'none';
+        //     await fetchBotReply({ body: formData, isAudio: true });
+        // }
+
         async function sendAudioToServer(audioBlob) {
             const formData = new FormData();
             formData.append('audio_file', audioBlob, 'user_audio.webm');
+            
+            // --- LINHA ADICIONADA ---
+            // Anexa o perfil do usuário como uma string JSON.
+            formData.append("profile", JSON.stringify(userProfile));
+
             appendMessage('user', '<i>Mensagem de voz enviada...</i>');
             if(presetButtonsContainer) presetButtonsContainer.style.display = 'none';
             await fetchBotReply({ body: formData, isAudio: true });
@@ -1064,14 +1077,14 @@
             }
         });
 
-        const formData = new FormData();
-        formData.append("audio_file", audioBlob);
-        formData.append("profile", JSON.stringify({
-            name: "Felipe",
-            role: "Estudante",
-            interestArea: "CDN",
-            objective: "Testar chat"
-        }));
+        // const formData = new FormData();
+        // formData.append("audio_file", audioBlob);
+        // formData.append("profile", JSON.stringify({
+        //     name: "Felipe",
+        //     role: "Estudante",
+        //     interestArea: "CDN",
+        //     objective: "Testar chat"
+        // }));
 
 
         // --- FUNÇÕES AUXILIARES DA UI ---
