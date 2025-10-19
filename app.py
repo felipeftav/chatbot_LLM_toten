@@ -73,17 +73,16 @@ else:
     conn = None 
     cursor = None
 
-def log_message(sender, message_text):
+def log_message(sender, message_text, profile_data={}): # <-- MUDANÇA 1: Adiciona o argumento
     """Insere uma mensagem no banco de dados, incluindo dados do perfil."""
     if not conn or not cursor:
         print("⚠️ Banco de dados não disponível. Mensagem não foi salva.")
         return
     
-    # Obtém dados do perfil (vazio se o formulário não foi enviado)
-    profile_data = USER_PROFILE.copy()
+    # A linha "profile_data = USER_PROFILE.copy()" foi removida.
     
     try:
-        # ATUALIZADO: Cria a tabela com todas as novas colunas (user_name, role, etc.)
+        # A criação da tabela permanece a mesma
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS chat_log (
                 id SERIAL PRIMARY KEY,
@@ -98,7 +97,6 @@ def log_message(sender, message_text):
         """)
         conn.commit()
         
-        # ATUALIZADO: Insere a mensagem, passando os valores do perfil
         cursor.execute(
             """
             INSERT INTO chat_log (sender, message, user_name, role, interest_area, objective) 
@@ -107,10 +105,10 @@ def log_message(sender, message_text):
             (
                 sender, 
                 message_text, 
-                profile_data.get('user_name'),
-                profile_data.get('role'),
-                profile_data.get('interest_area'),
-                profile_data.get('objective')
+                profile_data.get('name'),         # <-- MUDANÇA 2: Chave 'name'
+                profile_data.get('role'),         # (sem mudança)
+                profile_data.get('interestArea'), # <-- MUDANÇA 3: Chave 'interestArea'
+                profile_data.get('objective')     # (sem mudança)
             )
         )
         conn.commit()
@@ -324,65 +322,140 @@ CORS(app)
 #         traceback.print_exc()
 #         return jsonify({"error": "Erro interno no servidor."}), 500
 
+# @app.route('/chat', methods=['POST'])
+# def chat():
+#     """Rota principal do chatbot LIA, agora com log no BD."""
+#     bot_reply_text = ""
+#     audio_base64 = None
+#     tts_is_enabled = False
+#     user_message_to_log = None # Variável para capturar a mensagem do usuário
+
+#     try:
+#         # Caso o usuário envie áudio
+#         if 'audio_file' in request.files:
+#             audio_file = request.files['audio_file']
+#             audio_parts = [{"mime_type": audio_file.mimetype, "data": audio_file.read()}]
+            
+#             # Não logamos o áudio, mas sim a transcrição ou a intenção (a resposta do LLM)
+#             response = convo.send_message(["Responda ao que foi dito neste áudio.", audio_parts[0]])
+            
+#             # O texto da resposta do bot é o que será logado
+#             user_message_to_log = "[ÁUDIO ENVIADO]" # Marca para o log
+#             bot_reply_text = response.text
+#             tts_is_enabled = True # Assume TTS ativado para áudio
+
+#         # Caso o usuário envie JSON (Texto ou Preset)
+#         elif request.is_json:
+#             data = request.json
+#             tts_is_enabled = data.get('tts_enabled', False)
+
+#             # Pergunta pré-programada
+#             if 'preset_question' in data:
+#                 question = data['preset_question']
+#                 user_message_to_log = f"[PRESET]: {question}" # Loga como preset
+#                 info = EVENT_INFO.get(question)
+                
+#                 if info:
+#                     bot_reply_text = info["text"]
+#                     if tts_is_enabled:
+#                         try:
+#                             # Tenta ler o áudio pré-gravado
+#                             with open(info["audio_path"], "rb") as f:
+#                                 audio_base64 = base64.b64encode(f.read()).decode('utf-8')
+#                         except FileNotFoundError:
+#                             # Se não encontrar o arquivo, gera o áudio na hora
+#                             audio_base64 = get_tts_audio_data(bot_reply_text)
+#                 else:
+#                     # Se o preset não existir no dict, envia ao LLM como fallback
+#                     convo.send_message(question)
+#                     bot_reply_text = convo.last.text
+
+#             # Mensagem normal de texto
+#             elif 'message' in data:
+#                 user_message = data['message']
+#                 user_message_to_log = user_message # Loga a mensagem do usuário
+#                 convo.send_message(user_message)
+#                 bot_reply_text = convo.last.text
+
+#         # Lógica de Log (Salva a interação após a resposta ser gerada)
+#         if user_message_to_log:
+#             log_message('user', user_message_to_log)
+#             log_message('bot', bot_reply_text)
+
+#         # Gera áudio se o TTS estiver ativo e ainda não tiver sido gerado
+#         if audio_base64 is None and tts_is_enabled and bot_reply_text:
+#             audio_base64 = get_tts_audio_data(bot_reply_text)
+
+#         return jsonify({
+#             "reply": bot_reply_text,
+#             "audioData": audio_base64,
+#             "presetQuestions": list(EVENT_INFO.keys())
+#         })
+
+#     except Exception as e:
+#         print(f"Erro no /chat: {e}")
+#         traceback.print_exc()
+#         return jsonify({"error": "Erro interno no servidor."}), 500
+
 @app.route('/chat', methods=['POST'])
 def chat():
     """Rota principal do chatbot LIA, agora com log no BD."""
     bot_reply_text = ""
     audio_base64 = None
     tts_is_enabled = False
-    user_message_to_log = None # Variável para capturar a mensagem do usuário
+    user_message_to_log = None
+    profile = {}  # <-- MUDANÇA 1: Variável local para o perfil
 
     try:
         # Caso o usuário envie áudio
         if 'audio_file' in request.files:
+            # (Opcional) Para suportar perfil com áudio, você teria que enviá-lo como campos do form.
+            # profile = request.form.to_dict()
             audio_file = request.files['audio_file']
             audio_parts = [{"mime_type": audio_file.mimetype, "data": audio_file.read()}]
-            
-            # Não logamos o áudio, mas sim a transcrição ou a intenção (a resposta do LLM)
             response = convo.send_message(["Responda ao que foi dito neste áudio.", audio_parts[0]])
-            
-            # O texto da resposta do bot é o que será logado
-            user_message_to_log = "[ÁUDIO ENVIADO]" # Marca para o log
+            user_message_to_log = "[ÁUDIO ENVIADO]"
             bot_reply_text = response.text
-            tts_is_enabled = True # Assume TTS ativado para áudio
+            tts_is_enabled = True
 
         # Caso o usuário envie JSON (Texto ou Preset)
         elif request.is_json:
             data = request.json
             tts_is_enabled = data.get('tts_enabled', False)
 
+            # <-- MUDANÇA 2: Extrai o perfil da requisição JSON
+            profile = data.get('profile', {})
+
             # Pergunta pré-programada
             if 'preset_question' in data:
                 question = data['preset_question']
-                user_message_to_log = f"[PRESET]: {question}" # Loga como preset
+                user_message_to_log = f"[PRESET]: {question}"
                 info = EVENT_INFO.get(question)
                 
                 if info:
                     bot_reply_text = info["text"]
                     if tts_is_enabled:
                         try:
-                            # Tenta ler o áudio pré-gravado
                             with open(info["audio_path"], "rb") as f:
                                 audio_base64 = base64.b64encode(f.read()).decode('utf-8')
                         except FileNotFoundError:
-                            # Se não encontrar o arquivo, gera o áudio na hora
                             audio_base64 = get_tts_audio_data(bot_reply_text)
                 else:
-                    # Se o preset não existir no dict, envia ao LLM como fallback
                     convo.send_message(question)
                     bot_reply_text = convo.last.text
 
             # Mensagem normal de texto
             elif 'message' in data:
                 user_message = data['message']
-                user_message_to_log = user_message # Loga a mensagem do usuário
+                user_message_to_log = user_message
                 convo.send_message(user_message)
                 bot_reply_text = convo.last.text
 
         # Lógica de Log (Salva a interação após a resposta ser gerada)
         if user_message_to_log:
-            log_message('user', user_message_to_log)
-            log_message('bot', bot_reply_text)
+            # <-- MUDANÇA 3: Passa a variável 'profile' para a função de log
+            log_message('user', user_message_to_log, profile)
+            log_message('bot', bot_reply_text, profile)
 
         # Gera áudio se o TTS estiver ativo e ainda não tiver sido gerado
         if audio_base64 is None and tts_is_enabled and bot_reply_text:
@@ -466,32 +539,32 @@ def restart():
 # ⚙️ ROTAS FLASK PARA O LOG DE PERFIL
 # ============================================================
 
-# Variáveis globais para armazenar o perfil do usuário na sessão (temporário)
-USER_PROFILE = {}
+# # Variáveis globais para armazenar o perfil do usuário na sessão (temporário)
+# USER_PROFILE = {}
 
-@app.route('/save-form', methods=['POST'])
-def handle_save_form(): # <-- RENOMEIE A FUNÇÃO AQUI
-    """Recebe e salva os dados do formulário inicial do usuário."""
-    global USER_PROFILE
-    try:
-        data = request.json
+# @app.route('/save-form', methods=['POST'])
+# def handle_save_form(): # <-- RENOMEIE A FUNÇÃO AQUI
+#     """Recebe e salva os dados do formulário inicial do usuário."""
+#     global USER_PROFILE
+#     try:
+#         data = request.json
         
-        # Armazena o perfil para que possa ser usado em logs futuros
-        USER_PROFILE = {
-            'user_name': data.get('name', 'Convidado'),
-            'role': data.get('role'),
-            'interest_area': data.get('interestArea'),
-            'objective': data.get('objective')
-        }
+#         # Armazena o perfil para que possa ser usado em logs futuros
+#         USER_PROFILE = {
+#             'user_name': data.get('name', 'Convidado'),
+#             'role': data.get('role'),
+#             'interest_area': data.get('interestArea'),
+#             'objective': data.get('objective')
+#         }
         
-        # Opcional: Logar a criação do perfil em uma tabela separada (melhor prática)
-        # Por enquanto, vamos apenas garantir que o chat_log consiga usar.
-        print(f"👤 Perfil do usuário salvo temporariamente: {USER_PROFILE['user_name']}")
+#         # Opcional: Logar a criação do perfil em uma tabela separada (melhor prática)
+#         # Por enquanto, vamos apenas garantir que o chat_log consiga usar.
+#         print(f"👤 Perfil do usuário salvo temporariamente: {USER_PROFILE['user_name']}")
         
-        return jsonify({"status": "success", "message": "Perfil capturado."})
-    except Exception as e:
-        print(f"❌ Erro ao salvar dados do formulário: {e}")
-        return jsonify({"error": "Erro ao processar o formulário."}), 500
+#         return jsonify({"status": "success", "message": "Perfil capturado."})
+#     except Exception as e:
+#         print(f"❌ Erro ao salvar dados do formulário: {e}")
+#         return jsonify({"error": "Erro ao processar o formulário."}), 500
 
 # ============================================================
 # 🚀 EXECUÇÃO
