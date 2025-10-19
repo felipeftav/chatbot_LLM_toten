@@ -291,6 +291,10 @@ from flask import send_from_directory
 def serve_index():
     return send_from_directory('.', 'index.html')
 
+@app.route("/assets/<path:filename>")
+def assets(filename):
+    return send_from_directory("assets", filename)
+
 # Serve qualquer outro arquivo estático da raiz (CSS, JS, imagens, etc)
 @app.route('/<path:filename>')
 def serve_static_files(filename):
