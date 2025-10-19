@@ -10,6 +10,9 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import google.generativeai as genai
 
+from flask import Flask, request, jsonify, render_template
+
+
 # ============================================================
 # 🔧 CONFIGURAÇÕES INICIAIS
 # ============================================================
@@ -280,6 +283,11 @@ def restart():
 # ============================================================
 # 🚀 EXECUÇÃO
 # ============================================================
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
