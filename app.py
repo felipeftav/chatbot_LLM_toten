@@ -9,6 +9,7 @@ from flask import Flask, request, jsonify, render_template, make_response, send_
 from flask_cors import CORS
 from dotenv import load_dotenv
 import google.generativeai as genai
+import psycopg2
 
 
 # ============================================================
