@@ -471,8 +471,14 @@ def get_tts_audio_data(text_to_speak):
 # ============================================================
 
 app = Flask(__name__)
-CORS(app)
+# CORS(app)
 
+CORS(
+    app,
+    origins=["https://chatbot-llm-toten.onrender.com"],
+    methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"]
+)
 
 @app.route('/chat', methods=['POST'])
 def chat():
