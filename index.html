@@ -120,7 +120,6 @@
     <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
 
     <script>
-        // SEU JAVASCRIPT PERMANECE IDÊNTICO - NENHUMA ALTERAÇÃO NECESSÁRIA AQUI
         marked.setOptions({ breaks: true });
         new window.VLibras.Widget('https://vlibras.gov.br/app');
 
@@ -135,12 +134,20 @@
         const avatarImage = document.getElementById('avatar-image');
         const restartButton = document.getElementById('restart-button');
         const presetButtonsContainer = document.getElementById('preset-buttons-container');
+        
         const splashScreen = document.getElementById('splash-screen');
         const mainContainer = document.getElementById('main-container');
         const startForm = document.getElementById('start-form');
         const nameInput = document.getElementById('name-input');
+        
+        // Configuração da URL do Backend (correta para ambiente local e Render)
         const backendUrl = `${window.location.origin}/chat`;    
+
+        // --- CORREÇÃO 1: Armazenar o perfil do usuário no frontend ---
+        // Esta variável guardará os dados do formulário após o login.
         let userProfile = {};
+
+        // LÓGICA DO TIMER DE INATIVIDADE
         let inactivityTimer;
         const inactivityTimeout = 60000; 
 
@@ -152,18 +159,34 @@
             }, inactivityTimeout);
         }
 
+        // --- LÓGICA DA TELA INICIAL (AGORA SALVA O PERFIL LOCALMENTE) ---
         startForm.addEventListener('submit', (e) => {
             e.preventDefault();
+            
             const name = nameInput.value.trim();
             const role = document.getElementById('role-select').value;
             const interestArea = document.getElementById('interest-area-select').value;
             const objective = document.getElementById('objective-select').value;
+
             if (name) {
-                userProfile = { name, role, interestArea, objective };
+                // Preenche a variável userProfile com os dados do formulário
+                userProfile = {
+                    name,
+                    role,
+                    interestArea,
+                    objective,
+                };
+
+                // A chamada fetch para "/save-form" foi removida, pois não é mais necessária.
+                // Os dados do perfil serão enviados com cada mensagem.
+
+                // Lógica de transição de tela
                 splashScreen.style.display = 'none';
                 mainContainer.style.display = 'flex';
+                
                 const welcomeMessage = `Olá, <strong>${name}</strong>! 👋<br>Que legal que um(a) <strong>${role}</strong> com interesse em <strong>${interestArea}</strong> veio nos visitar! Estou pronta para te ajudar a <strong>${objective}</strong>. Sobre o que quer saber primeiro?`;
                 appendMessage('bot', welcomeMessage);
+
                 resetInactivityTimer();
                 window.addEventListener('mousemove', resetInactivityTimer);
                 window.addEventListener('keydown', resetInactivityTimer);
@@ -179,17 +202,28 @@
             }
         });
 
+        // --- LÓGICA DE ANIMAÇÃO DO AVATAR ---
         let mouthAnimationInterval;
         const avatar_boca_fechada = './assets/avatar_fechada.png';
         const avatar_boca_aberta = './assets/avatar_aberta.png';
+
         function startTalkingAnimation() {
             stopTalkingAnimation(); 
             let isMouthOpen = false;
-            mouthAnimationInterval = setInterval(() => {
-                avatarImage.src = isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta;
+            
+            const updateAvatar = () => {
+                const nextSrc = isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta;
+                const uniqueSrc = nextSrc + "?ts=" + new Date().getTime();
+                const newImage = new Image();
+                newImage.onload = () => {
+                    avatarImage.src = uniqueSrc;
+                };
+                newImage.src = uniqueSrc;
                 isMouthOpen = !isMouthOpen;
-            }, 250);
+            };
+            mouthAnimationInterval = setInterval(updateAvatar, 250);
         }
+
         function stopTalkingAnimation() {
             if (mouthAnimationInterval) {
                 clearInterval(mouthAnimationInterval);
@@ -198,6 +232,7 @@
             avatarImage.src = avatar_boca_fechada;
         }
 
+        // --- LÓGICA DE GRAVAÇÃO DE VOZ ---
         let mediaRecorder;
         let audioChunks = [];
         let isRecording = false;
@@ -212,14 +247,14 @@
                     isRecording = true;
                     audioChunks = [];
                     micButton.classList.add('recording', 'bg-red-700');
-                    micButton.classList.remove('bg-red-600');
+                    micButton.classList.remove('bg-red-500');
                     messageInput.placeholder = "Gravando... Clique para parar.";
                     setUiDisabled(true, true);
                     mediaRecorder.addEventListener("dataavailable", event => { audioChunks.push(event.data); });
                     mediaRecorder.addEventListener("stop", () => {
                         isRecording = false;
                         micButton.classList.remove('recording', 'bg-red-700');
-                        micButton.classList.add('bg-red-600');
+                        micButton.classList.add('bg-red-500');
                         messageInput.placeholder = "Digite sua mensagem aqui...";
                         setUiDisabled(false);
                         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
@@ -233,8 +268,10 @@
             }
         });
 
+        // --- LÓGICA DE SUBMISSÃO (Texto, Áudio e Botões Pré-programados) ---
         document.getElementById('chat-form').addEventListener('submit', handleTextSubmit);
         sendTextButton.addEventListener('click', handleTextSubmit);
+        
         presetButtonsContainer.addEventListener('click', (e) => {
             if (e.target.classList.contains('preset-button')) {
                 const question = e.target.textContent;
@@ -258,10 +295,22 @@
             await fetchBotReply({ message: question, isPreset: true });
         }
 
+        // async function sendAudioToServer(audioBlob) {
+        //     const formData = new FormData();
+        //     formData.append('audio_file', audioBlob, 'user_audio.webm');
+        //     appendMessage('user', '<i>Mensagem de voz enviada...</i>');
+        //     if(presetButtonsContainer) presetButtonsContainer.style.display = 'none';
+        //     await fetchBotReply({ body: formData, isAudio: true });
+        // }
+
         async function sendAudioToServer(audioBlob) {
             const formData = new FormData();
             formData.append('audio_file', audioBlob, 'user_audio.webm');
+            
+            // --- LINHA ADICIONADA ---
+            // Anexa o perfil do usuário como uma string JSON.
             formData.append("profile", JSON.stringify(userProfile));
+
             appendMessage('user', '<i>Mensagem de voz enviada...</i>');
             if(presetButtonsContainer) presetButtonsContainer.style.display = 'none';
             await fetchBotReply({ body: formData, isAudio: true });
@@ -278,19 +327,26 @@
                     const body = payload.isPreset 
                         ? { preset_question: payload.message, tts_enabled: isTtsEnabled } 
                         : { message: payload.message, tts_enabled: isTtsEnabled };
+
+                    // --- CORREÇÃO 2: Enviar o perfil junto com cada requisição ---
+                    // Adicionamos o objeto 'userProfile' ao corpo (body) da requisição.
                     body.profile = userProfile;
+
                     requestOptions = { 
                         method: 'POST', 
                         headers: {'Content-Type': 'application/json'}, 
                         body: JSON.stringify(body) 
                     };
                 }
+                
                 const response = await fetch(backendUrl, requestOptions);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
+                
                 removeTypingIndicator();
                 appendMessage('bot', data.reply);
                 playAudioFromData(data.audioData);
+
             } catch (error) {
                 handleFetchError(error);
             } finally {
@@ -302,6 +358,7 @@
             }
         }
         
+        // --- LÓGICA: RESUMIR E SUGERIR ---
         summarizeButton.addEventListener('click', async () => {
             showTypingIndicator(); setUiDisabled(true);
             try {
@@ -331,6 +388,7 @@
             } finally { setUiDisabled(false); if (!messageInput.value) { messageInput.placeholder = originalPlaceholder; } }
         });
 
+        // --- LÓGICA: REINICIAR CONVERSA ---
         restartButton.addEventListener('click', async () => {
             try {
                 await fetch(`${backendUrl.replace('/chat', '/restart')}`, { method: 'POST' });
@@ -341,32 +399,28 @@
             }
         });
 
+        // const formData = new FormData();
+        // formData.append("audio_file", audioBlob);
+        // formData.append("profile", JSON.stringify({
+        //     name: "Felipe",
+        //     role: "Estudante",
+        //     interestArea: "CDN",
+        //     objective: "Testar chat"
+        // }));
+
+
+        // --- FUNÇÕES AUXILIARES DA UI ---
         function setUiDisabled(isDisabled, recording = false) { messageInput.disabled = isDisabled; sendTextButton.disabled = isDisabled; suggestTopicButton.disabled = isDisabled; summarizeButton.disabled = isDisabled; micButton.disabled = isDisabled && !recording; }
         function handleFetchError(error) { console.error('Erro de comunicação com o backend:', error); removeTypingIndicator(); appendMessage('bot', 'Desculpe, ocorreu um erro de conexão.'); }
-        
         function appendMessage(sender, message) {
-            const wrapper = document.createElement('div');
-            wrapper.classList.add('flex', 'mb-6', 'w-full');
-            const bubble = document.createElement('div');
-            
-            if (sender === 'bot') {
-                wrapper.classList.add('justify-start');
-                bubble.classList.add('bot-bubble');
-                bubble.innerHTML = marked.parse(message);
-            } else {
-                wrapper.classList.add('justify-end');
-                bubble.classList.add('user-bubble');
-                bubble.innerHTML = message;
-            }
-            
-            wrapper.appendChild(bubble);
-            chatMessages.appendChild(wrapper);
-            if (typeof MathJax !== "undefined" && sender === 'bot') {
-                MathJax.typesetPromise([wrapper]).catch((err) => console.log('Erro MathJax:', err));
-            }
+            const wrapper = document.createElement('div'); wrapper.classList.add('flex', 'mb-6');
+            const bubble = document.createElement('div'); bubble.classList.add('p-4', 'rounded-2xl', 'max-w-lg', 'text-lg');
+            if (sender === 'bot') { wrapper.classList.add('justify-start'); bubble.classList.add('bg-zinc-900', 'text-white', 'rounded-bl-none'); bubble.innerHTML = marked.parse(message); } 
+            else { wrapper.classList.add('justify-end'); bubble.classList.add('bg-slate-200', 'text-slate-800', 'rounded-br-none'); bubble.innerHTML = message; }
+            wrapper.appendChild(bubble); chatMessages.appendChild(wrapper);
+            if (typeof MathJax !== "undefined" && sender === 'bot') { MathJax.typesetPromise([wrapper]).catch((err) => console.log('Erro MathJax:', err)); }
             chatMessages.scrollTop = chatMessages.scrollHeight;
         };
-
         function appendSystemMessage(message) {
             const wrapper = document.createElement('div'); wrapper.classList.add('flex', 'justify-center', 'my-4', 'mx-2');
             const bubble = document.createElement('div'); bubble.classList.add('bg-slate-600', 'text-white', 'p-3', 'rounded-xl', 'max-w-xl', 'text-base', 'italic');
@@ -374,13 +428,14 @@
             if (typeof MathJax !== "undefined") { MathJax.typesetPromise([wrapper]).catch((err) => console.log('Erro MathJax:', err)); }
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
-        
-        const showTypingIndicator=()=>{const t=document.createElement('div');t.id='typing-indicator';t.classList.add('flex','justify-start','mb-6');t.innerHTML=`<div class="bot-bubble"><div class="flex items-center space-x-1"><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.2s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.4s"></span></div></div>`;chatMessages.appendChild(t);chatMessages.scrollTop=chatMessages.scrollHeight};
+        const showTypingIndicator=()=>{const t=document.createElement('div');t.id='typing-indicator';t.classList.add('flex','justify-start','mb-6');t.innerHTML=`<div class="bg-zinc-900 text-white p-4 rounded-2xl rounded-bl-none"><div class="flex items-center space-x-1"><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.2s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.4s"></span></div></div>`;chatMessages.appendChild(t);chatMessages.scrollTop=chatMessages.scrollHeight};
         const removeTypingIndicator=()=>{const t=document.getElementById('typing-indicator');if(t){t.remove()}};
         
+        // --- Lógica de TTS ---
         let isTtsEnabled=true;let currentAudio=null;const iconSoundOn=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;const iconSoundOff=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>`;
         function base64ToArrayBuffer(b){const s=window.atob(b);const l=s.length;const B=new Uint8Array(l);for(let i=0;i<l;i++){B[i]=s.charCodeAt(i)}return B.buffer}
         function pcmToWavBlob(d){const r=24000;const p=base64ToArrayBuffer(d);const D=new Int16Array(p);const h=new ArrayBuffer(44);const v=new DataView(h);v.setUint32(0,1380533830,false);v.setUint32(4,36+D.byteLength,true);v.setUint32(8,1463899717,false);v.setUint32(12,1718449184,false);v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,r,true);v.setUint32(28,r*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);v.setUint32(36,1684108385,false);v.setUint32(40,D.byteLength,true);return new Blob([h,D],{type:'audio/wav'})}
+        
         const playAudioFromData=(d)=>{if(currentAudio){currentAudio.pause()}stopTalkingAnimation();if(!isTtsEnabled||!d)return;try{const b=pcmToWavBlob(d);const u=URL.createObjectURL(b);currentAudio=new Audio(u);currentAudio.addEventListener('play',startTalkingAnimation);currentAudio.addEventListener('ended',stopTalkingAnimation);currentAudio.addEventListener('pause',stopTalkingAnimation);currentAudio.addEventListener('error',stopTalkingAnimation);currentAudio.play()}catch(e){console.error("Erro ao tocar áudio:",e)}};
         const updateTtsButtonIcon=()=>{ttsButton.innerHTML=isTtsEnabled?iconSoundOn:iconSoundOff};
         ttsButton.addEventListener('click',()=>{isTtsEnabled=!isTtsEnabled;updateTtsButtonIcon();if(!isTtsEnabled&&currentAudio){currentAudio.pause()}});
