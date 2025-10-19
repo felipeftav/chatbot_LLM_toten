@@ -74,27 +74,44 @@ else:
     cursor = None
 
 def log_message(sender, message_text):
-    """Insere uma mensagem no banco de dados."""
+    """Insere uma mensagem no banco de dados, incluindo dados do perfil."""
     if not conn or not cursor:
         print("⚠️ Banco de dados não disponível. Mensagem não foi salva.")
         return
     
+    # Obtém dados do perfil (vazio se o formulário não foi enviado)
+    profile_data = USER_PROFILE.copy()
+    
     try:
-        # Cria a tabela se não existir
+        # ATUALIZADO: Cria a tabela com todas as novas colunas (user_name, role, etc.)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS chat_log (
                 id SERIAL PRIMARY KEY,
                 sender VARCHAR(10) NOT NULL,
                 message TEXT NOT NULL,
+                user_name VARCHAR(100),
+                role VARCHAR(50),
+                interest_area VARCHAR(100),
+                objective VARCHAR(100),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """)
         conn.commit()
         
-        # Insere a mensagem
+        # ATUALIZADO: Insere a mensagem, passando os valores do perfil
         cursor.execute(
-            "INSERT INTO chat_log (sender, message) VALUES (%s, %s);",
-            (sender, message_text)
+            """
+            INSERT INTO chat_log (sender, message, user_name, role, interest_area, objective) 
+            VALUES (%s, %s, %s, %s, %s, %s);
+            """,
+            (
+                sender, 
+                message_text, 
+                profile_data.get('user_name'),
+                profile_data.get('role'),
+                profile_data.get('interest_area'),
+                profile_data.get('objective')
+            )
         )
         conn.commit()
         print(f"💾 Mensagem de {sender} salva no BD!")
@@ -382,6 +399,33 @@ def chat():
         traceback.print_exc()
         return jsonify({"error": "Erro interno no servidor."}), 500
 
+# @app.route("/save-form", methods=["POST"])
+# def save_form():
+#     """
+#     Recebe as respostas do formulário + chat do usuário e salva no BD.
+#     Espera JSON:
+#     {
+#         "name": "...",
+#         "role": "...",
+#         "interestArea": "...",
+#         "objective": "...",
+#         "chatLog": [{"role": "user", "content": "..."}, {"role": "bot", "content": "..."}]
+#     }
+#     """
+#     if not request.is_json:
+#         return jsonify({"status": "error", "message": "Esperado JSON"}), 400
+    
+#     data = request.json
+    
+#     # Salva cada item do chat
+#     chat_log = data.get("chatLog", [])
+#     for msg in chat_log:
+#         role = "user" if msg.get("role") == "user" else "bot"
+#         content = msg.get("content")
+#         log_message(role, content, user_form=data)
+    
+#     return jsonify({"status": "ok"})
+
 
 @app.route('/suggest-topic', methods=['GET'])
 def suggest_topic():
@@ -416,6 +460,38 @@ def restart():
         return jsonify({"status": "success", "message": "Conversa reiniciada."})
     except Exception as e:
         return jsonify({"error": f"Erro ao reiniciar: {e}"}), 500
+
+
+# ============================================================
+# ⚙️ ROTAS FLASK PARA O LOG DE PERFIL
+# ============================================================
+
+# Variáveis globais para armazenar o perfil do usuário na sessão (temporário)
+USER_PROFILE = {}
+
+@app.route('/save-form', methods=['POST'])
+def handle_save_form(): # <-- RENOMEIE A FUNÇÃO AQUI
+    """Recebe e salva os dados do formulário inicial do usuário."""
+    global USER_PROFILE
+    try:
+        data = request.json
+        
+        # Armazena o perfil para que possa ser usado em logs futuros
+        USER_PROFILE = {
+            'user_name': data.get('name', 'Convidado'),
+            'role': data.get('role'),
+            'interest_area': data.get('interestArea'),
+            'objective': data.get('objective')
+        }
+        
+        # Opcional: Logar a criação do perfil em uma tabela separada (melhor prática)
+        # Por enquanto, vamos apenas garantir que o chat_log consiga usar.
+        print(f"👤 Perfil do usuário salvo temporariamente: {USER_PROFILE['user_name']}")
+        
+        return jsonify({"status": "success", "message": "Perfil capturado."})
+    except Exception as e:
+        print(f"❌ Erro ao salvar dados do formulário: {e}")
+        return jsonify({"error": "Erro ao processar o formulário."}), 500
 
 # ============================================================
 # 🚀 EXECUÇÃO
