@@ -186,10 +186,42 @@ Regras:
 """
 
 # Cria o modelo Gemini configurado com as instruções da LIA
+# model = genai.GenerativeModel(
+#     model_name="gemini-2.5-flash",
+#     system_instruction=SYSTEM_INSTRUCTION,
+#     generation_config={"temperature": 0.9, "top_p": 1, "top_k": 1, "max_output_tokens": 2048},
+#     safety_settings=[
+#         {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+#         {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+#         {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+#         {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+#     ],
+# )
+
+import random
+
+# Lista de modelos possíveis para o chat
+GEMINI_MODELS = [
+    "gemini-2.5-flash",
+    "gemini-2.0-flash",
+    "gemini-2.0-flash-lite",
+    "gemini-1.5-pro"
+]
+
+# Escolhe um modelo aleatório a cada inicialização
+selected_model = random.choice(GEMINI_MODELS)
+print(f"🤖 Modelo selecionado para esta sessão: {selected_model}")
+
+# Cria o modelo Gemini configurado com as instruções da LIA
 model = genai.GenerativeModel(
-    model_name="gemini-2.5-flash",
+    model_name=selected_model,
     system_instruction=SYSTEM_INSTRUCTION,
-    generation_config={"temperature": 0.9, "top_p": 1, "top_k": 1, "max_output_tokens": 2048},
+    generation_config={
+        "temperature": 0.9,
+        "top_p": 1,
+        "top_k": 1,
+        "max_output_tokens": 2048
+    },
     safety_settings=[
         {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
         {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
@@ -275,6 +307,7 @@ def get_gemini_tts_audio_data(text_to_speak):
         
         try:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key={key}"
+            
             response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=30)
             response.raise_for_status()
 
@@ -303,6 +336,7 @@ def get_gemini_tts_audio_data(text_to_speak):
     print("⚠️ Todas as chaves Gemini falharam, usando fallback gTTS.")
     return get_gtts_audio_data(text_to_speak)
 
+
 def get_gtts_audio_data(text_to_speak):
     """Fallback local usando gTTS (voz menos natural, mas garantida)."""
     try:
@@ -330,137 +364,6 @@ def get_tts_audio_data(text_to_speak):
 app = Flask(__name__)
 CORS(app)
 
-# @app.route('/chat', methods=['POST'])
-# def chat():
-#     """Rota principal do chatbot LIA."""
-#     try:
-#         bot_reply_text = ""
-#         audio_base64 = None
-#         tts_is_enabled = False
-
-#         # Caso o usuário envie áudio
-#         if 'audio_file' in request.files:
-#             audio_file = request.files['audio_file']
-#             audio_parts = [{"mime_type": audio_file.mimetype, "data": audio_file.read()}]
-#             response = convo.send_message(["Responda ao que foi dito neste áudio.", audio_parts[0]])
-#             bot_reply_text = response.text
-#             tts_is_enabled = True
-
-#         # Caso o usuário envie JSON
-#         elif request.is_json:
-#             data = request.json
-#             tts_is_enabled = data.get('tts_enabled', False)
-
-#             # Pergunta pré-programada
-#             if 'preset_question' in data:
-#                 question = data['preset_question']
-#                 info = EVENT_INFO.get(question)
-#                 if info:
-#                     bot_reply_text = info["text"]
-#                     if tts_is_enabled:
-#                         try:
-#                             with open(info["audio_path"], "rb") as f:
-#                                 audio_base64 = base64.b64encode(f.read()).decode('utf-8')
-#                         except FileNotFoundError:
-#                             audio_base64 = get_tts_audio_data(bot_reply_text)
-#                 else:
-#                     bot_reply_text = "Desculpe, não tenho uma resposta para essa pergunta."
-
-#             # Mensagem normal
-#             elif 'message' in data:
-#                 user_message = data['message']
-#                 convo.send_message(user_message)
-#                 bot_reply_text = convo.last.text
-
-#         # Gera áudio se o TTS estiver ativo
-#         if audio_base64 is None and tts_is_enabled and bot_reply_text:
-#             audio_base64 = get_tts_audio_data(bot_reply_text)
-
-#         return jsonify({
-#             "reply": bot_reply_text,
-#             "audioData": audio_base64,
-#             "presetQuestions": list(EVENT_INFO.keys())
-#         })
-
-#     except Exception as e:
-#         print(f"Erro no /chat: {e}")
-#         traceback.print_exc()
-#         return jsonify({"error": "Erro interno no servidor."}), 500
-
-# @app.route('/chat', methods=['POST'])
-# def chat():
-#     """Rota principal do chatbot LIA, agora com log no BD."""
-#     bot_reply_text = ""
-#     audio_base64 = None
-#     tts_is_enabled = False
-#     user_message_to_log = None # Variável para capturar a mensagem do usuário
-
-#     try:
-#         # Caso o usuário envie áudio
-#         if 'audio_file' in request.files:
-#             audio_file = request.files['audio_file']
-#             audio_parts = [{"mime_type": audio_file.mimetype, "data": audio_file.read()}]
-            
-#             # Não logamos o áudio, mas sim a transcrição ou a intenção (a resposta do LLM)
-#             response = convo.send_message(["Responda ao que foi dito neste áudio.", audio_parts[0]])
-            
-#             # O texto da resposta do bot é o que será logado
-#             user_message_to_log = "[ÁUDIO ENVIADO]" # Marca para o log
-#             bot_reply_text = response.text
-#             tts_is_enabled = True # Assume TTS ativado para áudio
-
-#         # Caso o usuário envie JSON (Texto ou Preset)
-#         elif request.is_json:
-#             data = request.json
-#             tts_is_enabled = data.get('tts_enabled', False)
-
-#             # Pergunta pré-programada
-#             if 'preset_question' in data:
-#                 question = data['preset_question']
-#                 user_message_to_log = f"[PRESET]: {question}" # Loga como preset
-#                 info = EVENT_INFO.get(question)
-                
-#                 if info:
-#                     bot_reply_text = info["text"]
-#                     if tts_is_enabled:
-#                         try:
-#                             # Tenta ler o áudio pré-gravado
-#                             with open(info["audio_path"], "rb") as f:
-#                                 audio_base64 = base64.b64encode(f.read()).decode('utf-8')
-#                         except FileNotFoundError:
-#                             # Se não encontrar o arquivo, gera o áudio na hora
-#                             audio_base64 = get_tts_audio_data(bot_reply_text)
-#                 else:
-#                     # Se o preset não existir no dict, envia ao LLM como fallback
-#                     convo.send_message(question)
-#                     bot_reply_text = convo.last.text
-
-#             # Mensagem normal de texto
-#             elif 'message' in data:
-#                 user_message = data['message']
-#                 user_message_to_log = user_message # Loga a mensagem do usuário
-#                 convo.send_message(user_message)
-#                 bot_reply_text = convo.last.text
-
-#         # Lógica de Log (Salva a interação após a resposta ser gerada)
-#         if user_message_to_log:
-#             log_message('user', user_message_to_log)
-#             log_message('bot', bot_reply_text)
-
-#         # Gera áudio se o TTS estiver ativo e ainda não tiver sido gerado
-#         if audio_base64 is None and tts_is_enabled and bot_reply_text:
-#             audio_base64 = get_tts_audio_data(bot_reply_text)
-
-#         return jsonify({
-#             "reply": bot_reply_text,
-#             "audioData": audio_base64,
-#             "presetQuestions": list(EVENT_INFO.keys())
-#         })
-
-#     except Exception as e:
-#         print(f"Erro no /chat: {e}")
-#         traceback.print_exc()
-#         return jsonify({"error": "Erro interno no servidor."}), 500
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -473,15 +376,6 @@ def chat():
 
     try:
         # Caso o usuário envie áudio
-        # if 'audio_file' in request.files:
-        #     # (Opcional) Para suportar perfil com áudio, você teria que enviá-lo como campos do form.
-        #     # profile = request.form.to_dict()
-        #     audio_file = request.files['audio_file']
-        #     audio_parts = [{"mime_type": audio_file.mimetype, "data": audio_file.read()}]
-        #     response = convo.send_message(["Responda ao que foi dito neste áudio.", audio_parts[0]])
-        #     user_message_to_log = "[ÁUDIO ENVIADO]"
-        #     bot_reply_text = response.text
-        #     tts_is_enabled = True
         if 'audio_file' in request.files:
             audio_file = request.files['audio_file']
 
@@ -553,34 +447,6 @@ def chat():
         traceback.print_exc()
         return jsonify({"error": "Erro interno no servidor."}), 500
 
-# @app.route("/save-form", methods=["POST"])
-# def save_form():
-#     """
-#     Recebe as respostas do formulário + chat do usuário e salva no BD.
-#     Espera JSON:
-#     {
-#         "name": "...",
-#         "role": "...",
-#         "interestArea": "...",
-#         "objective": "...",
-#         "chatLog": [{"role": "user", "content": "..."}, {"role": "bot", "content": "..."}]
-#     }
-#     """
-#     if not request.is_json:
-#         return jsonify({"status": "error", "message": "Esperado JSON"}), 400
-    
-#     data = request.json
-    
-#     # Salva cada item do chat
-#     chat_log = data.get("chatLog", [])
-#     for msg in chat_log:
-#         role = "user" if msg.get("role") == "user" else "bot"
-#         content = msg.get("content")
-#         log_message(role, content, user_form=data)
-    
-#     return jsonify({"status": "ok"})
-
-
 @app.route('/suggest-topic', methods=['GET'])
 def suggest_topic():
     """Sugere um tópico curto para iniciar uma conversa."""
@@ -615,37 +481,6 @@ def restart():
     except Exception as e:
         return jsonify({"error": f"Erro ao reiniciar: {e}"}), 500
 
-
-# ============================================================
-# ⚙️ ROTAS FLASK PARA O LOG DE PERFIL
-# ============================================================
-
-# # Variáveis globais para armazenar o perfil do usuário na sessão (temporário)
-# USER_PROFILE = {}
-
-# @app.route('/save-form', methods=['POST'])
-# def handle_save_form(): # <-- RENOMEIE A FUNÇÃO AQUI
-#     """Recebe e salva os dados do formulário inicial do usuário."""
-#     global USER_PROFILE
-#     try:
-#         data = request.json
-        
-#         # Armazena o perfil para que possa ser usado em logs futuros
-#         USER_PROFILE = {
-#             'user_name': data.get('name', 'Convidado'),
-#             'role': data.get('role'),
-#             'interest_area': data.get('interestArea'),
-#             'objective': data.get('objective')
-#         }
-        
-#         # Opcional: Logar a criação do perfil em uma tabela separada (melhor prática)
-#         # Por enquanto, vamos apenas garantir que o chat_log consiga usar.
-#         print(f"👤 Perfil do usuário salvo temporariamente: {USER_PROFILE['user_name']}")
-        
-#         return jsonify({"status": "success", "message": "Perfil capturado."})
-#     except Exception as e:
-#         print(f"❌ Erro ao salvar dados do formulário: {e}")
-#         return jsonify({"error": "Erro ao processar o formulário."}), 500
 
 # ============================================================
 # 🚀 EXECUÇÃO
