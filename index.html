@@ -390,14 +390,6 @@
             await fetchBotReply({ message: question, isPreset: true });
         }
 
-        // async function sendAudioToServer(audioBlob) {
-        //     const formData = new FormData();
-        //     formData.append('audio_file', audioBlob, 'user_audio.webm');
-        //     appendMessage('user', '<i>Mensagem de voz enviada...</i>');
-        //     if(presetButtonsContainer) presetButtonsContainer.style.display = 'none';
-        //     await fetchBotReply({ body: formData, isAudio: true });
-        // }
-
         async function sendAudioToServer(audioBlob) {
             const formData = new FormData();
             formData.append('audio_file', audioBlob, 'user_audio.webm');
@@ -493,16 +485,6 @@
                 appendSystemMessage('<strong>Erro:</strong> Não foi possível conectar ao servidor para reiniciar a conversa.');
             }
         });
-
-        // const formData = new FormData();
-        // formData.append("audio_file", audioBlob);
-        // formData.append("profile", JSON.stringify({
-        //     name: "Felipe",
-        //     role: "Estudante",
-        //     interestArea: "CDN",
-        //     objective: "Testar chat"
-        // }));
-
 
         // --- FUNÇÕES AUXILIARES DA UI ---
         function setUiDisabled(isDisabled, recording = false) { messageInput.disabled = isDisabled; sendTextButton.disabled = isDisabled; suggestTopicButton.disabled = isDisabled; summarizeButton.disabled = isDisabled; micButton.disabled = isDisabled && !recording; }
