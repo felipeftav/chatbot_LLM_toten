@@ -5,3 +5,4 @@ Flask-Cors
 requests
 google-cloud-texttospeech
 gTTS
+gunicorn
