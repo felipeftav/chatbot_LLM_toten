@@ -1,15 +1,19 @@
 /* chatbot_LLM_toten/styles.css */
 
+/* --- GERAL E FUNDO --- */
 body {
     font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #FDBB2D 0%, #D62222 100%);
+    overflow: hidden; /* Evita barras de rolagem indesejadas na página principal */
 }
 
-/* --- NOVO: Estilos para o layout principal com avatar --- */
+
+/* --- LAYOUT PRINCIPAL --- */
 #main-container {
     display: flex;
-    align-items: center; /* Centraliza verticalmente */
-    justify-content: center; /* Centraliza horizontalmente */
-    gap: 2rem; /* Espaçamento entre o chat e o avatar */
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
     width: 100%;
     height: 100%;
     padding: 1rem;
@@ -17,34 +21,33 @@ body {
 
 #chat-container {
     width: 100%;
-    max-width: 48rem; /* Aumentado um pouco o max-width */
-    height: 95vh;
+    max-width: 48rem;
+    height: 95vh; /* Mantido para consistência */
     display: flex;
     flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 }
 
 #avatar-container {
     width: 100%;
-    max-width: 20rem; /* Largura máxima do avatar */
-    display: none; /* Escondido em telas pequenas */
+    max-width: 20rem; 
+    display: none; /* Escondido em telas pequenas por padrão */
 }
 
-/* --- NOVO: Media query para exibir o avatar em telas maiores --- */
-@media (min-width: 1024px) { /* 'lg' breakpoint do Tailwind */
+@media (min-width: 1024px) {
     #avatar-container {
         display: block;
     }
 }
 
 #avatar-image {
-    width: 100%;
+    width: 100%; 
     height: auto;
-    border-radius: 1.5rem; /* bordas arredondadas */
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    border-radius: 1.5rem; 
 }
 
 
-/* Estilização da barra de rolagem (sem alterações) */
+/* --- BARRA DE ROLAGEM --- */
 #chat-messages::-webkit-scrollbar {
     width: 8px;
 }
@@ -59,7 +62,7 @@ body {
     background: #94a3b8;
 }
 
-/* Animação de "pulsar" para o botão de gravação (sem alterações) */
+/* --- ANIMAÇÃO DE GRAVAÇÃO --- */
 .recording {
     animation: pulse 1.5s infinite;
 }
@@ -76,37 +79,63 @@ body {
     }
 }
 
-/* chatbot_LLM_toten/styles.css */
 
-/* ... (todo o seu CSS anterior aqui) ... */
+/* --- TELA INICIAL (SPLASH SCREEN) --- */
+/* ✨ REMOVIDO: As regras de layout da tela inicial foram movidas para as classes do TailwindCSS no HTML para melhor responsividade e manutenção. */
 
 
-/* ✨ NOVO: Estilos para a tela inicial com layout lateral */
-
-/* Transforma o container principal em um flex container para criar as colunas */
-#splash-screen {
-    display: flex;
-    align-items: center; /* Centraliza o conteúdo verticalmente */
-    gap: 2rem; /* Cria um espaço entre a imagem e o formulário */
-    max-width: 56rem; /* Aumenta a largura máxima para o layout caber bem */
-    text-align: left; /* Alinha o texto do formulário à esquerda */
+/* --- BOLHAS DE MENSAGEM --- */
+.bot-bubble {
+    background-color: #045c5c; 
+    color: white;
+    padding: 1rem;
+    border-radius: 1.25rem;
+    border-bottom-left-radius: 0;
+    max-width: 85%;
+    line-height: 1.6;
 }
 
-/* Define a coluna do formulário para ocupar o espaço disponível */
-#splash-content {
-    flex: 1; /* Faz esta coluna crescer */
+.user-bubble {
+    background-color: #e5e7eb; 
+    color: #1f2937; 
+    padding: 1rem;
+    border-radius: 1.25rem;
+    border-bottom-right-radius: 0;
+    max-width: 85%;
+    line-height: 1.6;
 }
 
-/* Define a coluna do avatar com um tamanho fixo */
-#splash-avatar-container {
-    flex-basis: 250px; /* Define a largura base do avatar */
-    flex-shrink: 0; /* Impede que o avatar encolha */
-}
+/* --- TRATAMENTO RESPONSIVO PARA BOTÕES PREDEFINIDOS --- */
+/* Em telas menores (como celulares) */
+@media (max-width: 767px) {
+    #preset-buttons-container .flex {
+        /* Impede que os botões quebrem para a próxima linha */
+        flex-wrap: nowrap;
+        
+        /* Habilita a rolagem horizontal quando os itens ultrapassam a largura */
+        overflow-x: auto;
 
-/* Estilo da imagem do avatar dentro do novo container */
-#splash-avatar-container img {
-    width: 100%;
-    height: auto;
-    border-radius: 1.5rem; /* Bordas arredondadas para combinar com o chat */
-}
+        /* Alinha os botões no início do contêiner */
+        justify-content: flex-start;
 
+        /* Adiciona um pouco de preenchimento para que os botões não fiquem colados nas bordas */
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-bottom: 1rem; /* Espaço para a barra de rolagem não sobrepor o conteúdo */
+
+        /* Remove a barra de rolagem visualmente, mas mantém a funcionalidade */
+        scrollbar-width: none; /* Para Firefox */
+        -ms-overflow-style: none;  /* Para Internet Explorer e Edge */
+    }
+
+    /* Remove a barra de rolagem visualmente para navegadores WebKit (Chrome, Safari) */
+    #preset-buttons-container .flex::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Garante que o texto dentro dos botões não quebre em duas linhas */
+    .preset-button {
+        white-space: nowrap;
+        flex-shrink: 0; /* Impede que os botões encolham */
+    }
+}

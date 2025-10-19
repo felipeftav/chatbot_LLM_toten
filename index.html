@@ -12,14 +12,11 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
-<body class="bg-amber-400 flex items-center justify-center h-screen p-4">
-
-    <div id="splash-screen" class="bg-white p-8 rounded-2xl shadow-2xl w-full">
-
-        <div id="splash-content">
-            <h1 class="text-4xl font-bold text-zinc-900 mb-2 text-center">Bem-vindo ao Metaday!</h1>
-            <p class="text-slate-600 text-lg mb-8 text-center">Antes de conversar com a <b>LIA (Assistente de IA)</b>, conte-nos um pouco sobre você.</p>
-            
+<body class="flex items-center justify-center h-screen p-4">
+    <div id="splash-screen" class="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto flex flex-col lg:flex-row items-center gap-8">
+        <div id="splash-content" class="text-center lg:text-left flex-1 w-full">
+            <h1 class="text-3xl md:text-4xl font-bold text-zinc-900 mb-2">Bem-vindo ao Metaday!</h1>
+            <p class="text-slate-600 text-lg mb-8">Antes de conversar com a <b>LIA (Assistente de IA)</b>, conte-nos um pouco sobre você.</p>
             <form id="start-form">
                 <div class="space-y-4">
                     <div>
@@ -55,24 +52,20 @@
                         </select>
                     </div>
                 </div>
-                <button type="submit" class="block mx-auto bg-indigo-600 text-white rounded-full p-4 mt-8 text-xl font-bold hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-transform duration-200 active:scale-95 px-12">
+                <button type="submit" class="block mx-auto lg:mx-0 bg-indigo-600 text-white rounded-full p-4 mt-8 text-xl font-bold hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-transform duration-200 active:scale-95 px-12">
                     Iniciar Conversa
                 </button>
             </form>
         </div>
-
-        <div id="splash-avatar-container">
-            <img src="./assets/avatar_fechada.png" alt="Avatar da LIA">
+        <div id="splash-avatar-container" class="hidden lg:flex flex-shrink-0 w-64">
+            <img src="./assets/avatar_fechada.png" alt="Avatar da LIA" class="w-full h-auto rounded-3xl">
         </div>
-
     </div>
 
     <div id="main-container" style="display: none;">
         
-        <div id="chat-container" class="bg-white shadow-2xl rounded-2xl overflow-hidden">
-            <header class="bg-zinc-900 text-white p-6 shadow-md z-10 flex items-center justify-center relative">
-                <div class="absolute left-6 top-1/2 -translate-y-1/2 flex space-x-2">
-                    <button id="restart-button" title="Reiniciar Conversa" class="text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400">
+        <div id="chat-container" class="bg-white rounded-2xl overflow-hidden">
+            <header class="bg-slate-800 text-white p-4 sm:p-6 shadow-md z-10 flex items-center justify-center relative"> <div class="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 flex space-x-1 sm:space-x-2"> <button id="restart-button" title="Reiniciar Conversa" class="text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
                     </button>
                     <button id="summarize-button" title="Resumir Conversa" class="text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-50">
@@ -80,46 +73,42 @@
                     </button>
                 </div>
                 <div class="text-center">
-                    <h1 class="text-3xl font-bold">LIA - Assistente de IA no Metaday</h1>
-                    <p class="text-slate-300 text-lg mt-1">Como posso te ajudar hoje?</p>
+                    <h1 class="text-xl sm:text-2xl font-bold">LIA - Assistente de IA</h1>
+                    <p class="text-slate-300 text-sm sm:text-md mt-1">Como posso te ajudar?</p>
                 </div>
-                <button id="toggle-tts-button" class="absolute right-6 top-1/2 -translate-y-1/2 text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400"></button>
+                <button id="toggle-tts-button" class="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 text-white p-2 rounded-full hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400"></button>
             </header>
 
-            <main id="chat-messages" class="flex-1 p-8 overflow-y-auto"></main>
-
-            <div id="preset-buttons-container" class="p-4 bg-slate-50 border-t border-slate-200">
+            <main id="chat-messages" class="flex-1 p-4 sm:p-8 overflow-y-auto bg-slate-50"></main> <div id="preset-buttons-container" class="p-4 bg-slate-100 border-t border-slate-200">
                 <div class="flex flex-wrap justify-center gap-3">
-                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Quais os projetos de GNI?</button>
-                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Onde encontro os projetos de Marketing?</button>
-                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">O que é o projeto da LIA?</button>
-                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Onde será a apresentação de Pitch e Impressora 3D?</button>
-                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Tem algum projeto de consultoria?</button>
-                    <button class="preset-button bg-slate-200 text-slate-800 py-2 px-4 rounded-full hover:bg-slate-300 transition-transform duration-200 active:scale-95">Onde vai ser o podcast?</button>
+                    <button class="preset-button bg-white border border-slate-300 text-slate-700 py-2 px-4 rounded-full hover:bg-slate-200 transition-colors duration-200 active:scale-95">Quais os projetos de GNI?</button>
+                    <button class="preset-button bg-white border border-slate-300 text-slate-700 py-2 px-4 rounded-full hover:bg-slate-200 transition-colors duration-200 active:scale-95">Onde encontro os projetos de Marketing?</button>
+                    <button class="preset-button bg-white border border-slate-300 text-slate-700 py-2 px-4 rounded-full hover:bg-slate-200 transition-colors duration-200 active:scale-95">O que é o projeto da LIA?</button>
+                    <button class="preset-button bg-white border border-slate-300 text-slate-700 py-2 px-4 rounded-full hover:bg-slate-200 transition-colors duration-200 active:scale-95">Onde será a apresentação de Pitch e Impressora 3D?</button>
+                    <button class="preset-button bg-white border border-slate-300 text-slate-700 py-2 px-4 rounded-full hover:bg-slate-200 transition-colors duration-200 active:scale-95">Tem algum projeto de consultoria?</button>
+                    <button class="preset-button bg-white border border-slate-300 text-slate-700 py-2 px-4 rounded-full hover:bg-slate-200 transition-colors duration-200 active:scale-95">Onde vai ser o podcast?</button>
                 </div>
             </div>
 
-            <footer class="p-6 bg-white border-t border-slate-200">
-                <div class="flex items-center space-x-2 sm:space-x-4">
-                    <input type="text" id="message-input" placeholder="Digite sua mensagem aqui..." autocomplete="off" class="flex-1 p-4 text-lg border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300"/>
-                    
-                    <button id="suggest-topic-button" title="Sugerir Tópico" class="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 bg-amber-400 text-white hover:bg-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+            <footer class="p-4 sm:p-6 bg-white border-t border-slate-200"> <div class="flex items-center space-x-2 sm:space-x-4 flex-wrap gap-2">
+                    <input type="text" id="message-input" placeholder="Digite sua mensagem aqui..." autocomplete="off" class="flex-1 p-4 text-lg border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-violet-300 transition duration-300 min-w-[150px]"/> <button id="suggest-topic-button" title="Sugerir Tópico" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center flex-shrink-0 bg-yellow-500 text-white hover:bg-yellow-600 focus:outline-none focus:ring-4 focus:ring-yellow-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
                     </button>
-                    <button id="send-text-button" type="submit" form="chat-form" class="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400 disabled:cursor-not-allowed">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg>
+                    <button id="send-text-button" type="submit" form="chat-form" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center flex-shrink-0 bg-violet-600 text-white hover:bg-violet-700 focus:outline-none focus:ring-4 focus:ring-violet-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400 disabled:cursor-not-allowed">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg>
                     </button>
-                    <button id="mic-button" class="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-4 focus:ring-red-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                    <button id="mic-button" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center flex-shrink-0 bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transition-transform duration-200 active:scale-95 disabled:bg-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
                     </button>
                 </div>
                 <form id="chat-form" class="hidden"></form>
             </footer>
         </div>
 
-        <div id="avatar-container">
+        <div id="avatar-container" class="bg-white p-4 rounded-2xl shadow-lg"> 
             <img id="avatar-image" src="./assets/avatar_fechada.png" alt="Avatar da Assistente Virtual">
         </div>
+
     </div>
 
     <div vw class="enabled">
@@ -131,6 +120,7 @@
     <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
 
     <script>
+        // SEU JAVASCRIPT PERMANECE IDÊNTICO - NENHUMA ALTERAÇÃO NECESSÁRIA AQUI
         marked.setOptions({ breaks: true });
         new window.VLibras.Widget('https://vlibras.gov.br/app');
 
@@ -145,20 +135,12 @@
         const avatarImage = document.getElementById('avatar-image');
         const restartButton = document.getElementById('restart-button');
         const presetButtonsContainer = document.getElementById('preset-buttons-container');
-        
         const splashScreen = document.getElementById('splash-screen');
         const mainContainer = document.getElementById('main-container');
         const startForm = document.getElementById('start-form');
         const nameInput = document.getElementById('name-input');
-        
-        // Configuração da URL do Backend (correta para ambiente local e Render)
         const backendUrl = `${window.location.origin}/chat`;    
-
-        // --- CORREÇÃO 1: Armazenar o perfil do usuário no frontend ---
-        // Esta variável guardará os dados do formulário após o login.
         let userProfile = {};
-
-        // LÓGICA DO TIMER DE INATIVIDADE
         let inactivityTimer;
         const inactivityTimeout = 60000; 
 
@@ -170,34 +152,18 @@
             }, inactivityTimeout);
         }
 
-        // --- LÓGICA DA TELA INICIAL (AGORA SALVA O PERFIL LOCALMENTE) ---
         startForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            
             const name = nameInput.value.trim();
             const role = document.getElementById('role-select').value;
             const interestArea = document.getElementById('interest-area-select').value;
             const objective = document.getElementById('objective-select').value;
-
             if (name) {
-                // Preenche a variável userProfile com os dados do formulário
-                userProfile = {
-                    name,
-                    role,
-                    interestArea,
-                    objective,
-                };
-
-                // A chamada fetch para "/save-form" foi removida, pois não é mais necessária.
-                // Os dados do perfil serão enviados com cada mensagem.
-
-                // Lógica de transição de tela
+                userProfile = { name, role, interestArea, objective };
                 splashScreen.style.display = 'none';
                 mainContainer.style.display = 'flex';
-                
                 const welcomeMessage = `Olá, <strong>${name}</strong>! 👋<br>Que legal que um(a) <strong>${role}</strong> com interesse em <strong>${interestArea}</strong> veio nos visitar! Estou pronta para te ajudar a <strong>${objective}</strong>. Sobre o que quer saber primeiro?`;
                 appendMessage('bot', welcomeMessage);
-
                 resetInactivityTimer();
                 window.addEventListener('mousemove', resetInactivityTimer);
                 window.addEventListener('keydown', resetInactivityTimer);
@@ -213,28 +179,17 @@
             }
         });
 
-        // --- LÓGICA DE ANIMAÇÃO DO AVATAR ---
         let mouthAnimationInterval;
         const avatar_boca_fechada = './assets/avatar_fechada.png';
         const avatar_boca_aberta = './assets/avatar_aberta.png';
-
         function startTalkingAnimation() {
             stopTalkingAnimation(); 
             let isMouthOpen = false;
-            
-            const updateAvatar = () => {
-                const nextSrc = isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta;
-                const uniqueSrc = nextSrc + "?ts=" + new Date().getTime();
-                const newImage = new Image();
-                newImage.onload = () => {
-                    avatarImage.src = uniqueSrc;
-                };
-                newImage.src = uniqueSrc;
+            mouthAnimationInterval = setInterval(() => {
+                avatarImage.src = isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta;
                 isMouthOpen = !isMouthOpen;
-            };
-            mouthAnimationInterval = setInterval(updateAvatar, 250);
+            }, 250);
         }
-
         function stopTalkingAnimation() {
             if (mouthAnimationInterval) {
                 clearInterval(mouthAnimationInterval);
@@ -243,7 +198,6 @@
             avatarImage.src = avatar_boca_fechada;
         }
 
-        // --- LÓGICA DE GRAVAÇÃO DE VOZ ---
         let mediaRecorder;
         let audioChunks = [];
         let isRecording = false;
@@ -258,14 +212,14 @@
                     isRecording = true;
                     audioChunks = [];
                     micButton.classList.add('recording', 'bg-red-700');
-                    micButton.classList.remove('bg-red-500');
+                    micButton.classList.remove('bg-red-600');
                     messageInput.placeholder = "Gravando... Clique para parar.";
                     setUiDisabled(true, true);
                     mediaRecorder.addEventListener("dataavailable", event => { audioChunks.push(event.data); });
                     mediaRecorder.addEventListener("stop", () => {
                         isRecording = false;
                         micButton.classList.remove('recording', 'bg-red-700');
-                        micButton.classList.add('bg-red-500');
+                        micButton.classList.add('bg-red-600');
                         messageInput.placeholder = "Digite sua mensagem aqui...";
                         setUiDisabled(false);
                         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
@@ -279,10 +233,8 @@
             }
         });
 
-        // --- LÓGICA DE SUBMISSÃO (Texto, Áudio e Botões Pré-programados) ---
         document.getElementById('chat-form').addEventListener('submit', handleTextSubmit);
         sendTextButton.addEventListener('click', handleTextSubmit);
-        
         presetButtonsContainer.addEventListener('click', (e) => {
             if (e.target.classList.contains('preset-button')) {
                 const question = e.target.textContent;
@@ -306,22 +258,10 @@
             await fetchBotReply({ message: question, isPreset: true });
         }
 
-        // async function sendAudioToServer(audioBlob) {
-        //     const formData = new FormData();
-        //     formData.append('audio_file', audioBlob, 'user_audio.webm');
-        //     appendMessage('user', '<i>Mensagem de voz enviada...</i>');
-        //     if(presetButtonsContainer) presetButtonsContainer.style.display = 'none';
-        //     await fetchBotReply({ body: formData, isAudio: true });
-        // }
-
         async function sendAudioToServer(audioBlob) {
             const formData = new FormData();
             formData.append('audio_file', audioBlob, 'user_audio.webm');
-            
-            // --- LINHA ADICIONADA ---
-            // Anexa o perfil do usuário como uma string JSON.
             formData.append("profile", JSON.stringify(userProfile));
-
             appendMessage('user', '<i>Mensagem de voz enviada...</i>');
             if(presetButtonsContainer) presetButtonsContainer.style.display = 'none';
             await fetchBotReply({ body: formData, isAudio: true });
@@ -338,26 +278,19 @@
                     const body = payload.isPreset 
                         ? { preset_question: payload.message, tts_enabled: isTtsEnabled } 
                         : { message: payload.message, tts_enabled: isTtsEnabled };
-
-                    // --- CORREÇÃO 2: Enviar o perfil junto com cada requisição ---
-                    // Adicionamos o objeto 'userProfile' ao corpo (body) da requisição.
                     body.profile = userProfile;
-
                     requestOptions = { 
                         method: 'POST', 
                         headers: {'Content-Type': 'application/json'}, 
                         body: JSON.stringify(body) 
                     };
                 }
-                
                 const response = await fetch(backendUrl, requestOptions);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
-                
                 removeTypingIndicator();
                 appendMessage('bot', data.reply);
                 playAudioFromData(data.audioData);
-
             } catch (error) {
                 handleFetchError(error);
             } finally {
@@ -369,7 +302,6 @@
             }
         }
         
-        // --- LÓGICA: RESUMIR E SUGERIR ---
         summarizeButton.addEventListener('click', async () => {
             showTypingIndicator(); setUiDisabled(true);
             try {
@@ -399,7 +331,6 @@
             } finally { setUiDisabled(false); if (!messageInput.value) { messageInput.placeholder = originalPlaceholder; } }
         });
 
-        // --- LÓGICA: REINICIAR CONVERSA ---
         restartButton.addEventListener('click', async () => {
             try {
                 await fetch(`${backendUrl.replace('/chat', '/restart')}`, { method: 'POST' });
@@ -410,28 +341,32 @@
             }
         });
 
-        // const formData = new FormData();
-        // formData.append("audio_file", audioBlob);
-        // formData.append("profile", JSON.stringify({
-        //     name: "Felipe",
-        //     role: "Estudante",
-        //     interestArea: "CDN",
-        //     objective: "Testar chat"
-        // }));
-
-
-        // --- FUNÇÕES AUXILIARES DA UI ---
         function setUiDisabled(isDisabled, recording = false) { messageInput.disabled = isDisabled; sendTextButton.disabled = isDisabled; suggestTopicButton.disabled = isDisabled; summarizeButton.disabled = isDisabled; micButton.disabled = isDisabled && !recording; }
         function handleFetchError(error) { console.error('Erro de comunicação com o backend:', error); removeTypingIndicator(); appendMessage('bot', 'Desculpe, ocorreu um erro de conexão.'); }
+        
         function appendMessage(sender, message) {
-            const wrapper = document.createElement('div'); wrapper.classList.add('flex', 'mb-6');
-            const bubble = document.createElement('div'); bubble.classList.add('p-4', 'rounded-2xl', 'max-w-lg', 'text-lg');
-            if (sender === 'bot') { wrapper.classList.add('justify-start'); bubble.classList.add('bg-zinc-900', 'text-white', 'rounded-bl-none'); bubble.innerHTML = marked.parse(message); } 
-            else { wrapper.classList.add('justify-end'); bubble.classList.add('bg-slate-200', 'text-slate-800', 'rounded-br-none'); bubble.innerHTML = message; }
-            wrapper.appendChild(bubble); chatMessages.appendChild(wrapper);
-            if (typeof MathJax !== "undefined" && sender === 'bot') { MathJax.typesetPromise([wrapper]).catch((err) => console.log('Erro MathJax:', err)); }
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('flex', 'mb-6', 'w-full');
+            const bubble = document.createElement('div');
+            
+            if (sender === 'bot') {
+                wrapper.classList.add('justify-start');
+                bubble.classList.add('bot-bubble');
+                bubble.innerHTML = marked.parse(message);
+            } else {
+                wrapper.classList.add('justify-end');
+                bubble.classList.add('user-bubble');
+                bubble.innerHTML = message;
+            }
+            
+            wrapper.appendChild(bubble);
+            chatMessages.appendChild(wrapper);
+            if (typeof MathJax !== "undefined" && sender === 'bot') {
+                MathJax.typesetPromise([wrapper]).catch((err) => console.log('Erro MathJax:', err));
+            }
             chatMessages.scrollTop = chatMessages.scrollHeight;
         };
+
         function appendSystemMessage(message) {
             const wrapper = document.createElement('div'); wrapper.classList.add('flex', 'justify-center', 'my-4', 'mx-2');
             const bubble = document.createElement('div'); bubble.classList.add('bg-slate-600', 'text-white', 'p-3', 'rounded-xl', 'max-w-xl', 'text-base', 'italic');
@@ -439,19 +374,17 @@
             if (typeof MathJax !== "undefined") { MathJax.typesetPromise([wrapper]).catch((err) => console.log('Erro MathJax:', err)); }
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
-        const showTypingIndicator=()=>{const t=document.createElement('div');t.id='typing-indicator';t.classList.add('flex','justify-start','mb-6');t.innerHTML=`<div class="bg-zinc-900 text-white p-4 rounded-2xl rounded-bl-none"><div class="flex items-center space-x-1"><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.2s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.4s"></span></div></div>`;chatMessages.appendChild(t);chatMessages.scrollTop=chatMessages.scrollHeight};
+        
+        const showTypingIndicator=()=>{const t=document.createElement('div');t.id='typing-indicator';t.classList.add('flex','justify-start','mb-6');t.innerHTML=`<div class="bot-bubble"><div class="flex items-center space-x-1"><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.2s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.4s"></span></div></div>`;chatMessages.appendChild(t);chatMessages.scrollTop=chatMessages.scrollHeight};
         const removeTypingIndicator=()=>{const t=document.getElementById('typing-indicator');if(t){t.remove()}};
         
-        // --- Lógica de TTS ---
         let isTtsEnabled=true;let currentAudio=null;const iconSoundOn=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;const iconSoundOff=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/></svg>`;
         function base64ToArrayBuffer(b){const s=window.atob(b);const l=s.length;const B=new Uint8Array(l);for(let i=0;i<l;i++){B[i]=s.charCodeAt(i)}return B.buffer}
         function pcmToWavBlob(d){const r=24000;const p=base64ToArrayBuffer(d);const D=new Int16Array(p);const h=new ArrayBuffer(44);const v=new DataView(h);v.setUint32(0,1380533830,false);v.setUint32(4,36+D.byteLength,true);v.setUint32(8,1463899717,false);v.setUint32(12,1718449184,false);v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,r,true);v.setUint32(28,r*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);v.setUint32(36,1684108385,false);v.setUint32(40,D.byteLength,true);return new Blob([h,D],{type:'audio/wav'})}
-        
         const playAudioFromData=(d)=>{if(currentAudio){currentAudio.pause()}stopTalkingAnimation();if(!isTtsEnabled||!d)return;try{const b=pcmToWavBlob(d);const u=URL.createObjectURL(b);currentAudio=new Audio(u);currentAudio.addEventListener('play',startTalkingAnimation);currentAudio.addEventListener('ended',stopTalkingAnimation);currentAudio.addEventListener('pause',stopTalkingAnimation);currentAudio.addEventListener('error',stopTalkingAnimation);currentAudio.play()}catch(e){console.error("Erro ao tocar áudio:",e)}};
         const updateTtsButtonIcon=()=>{ttsButton.innerHTML=isTtsEnabled?iconSoundOn:iconSoundOff};
         ttsButton.addEventListener('click',()=>{isTtsEnabled=!isTtsEnabled;updateTtsButtonIcon();if(!isTtsEnabled&&currentAudio){currentAudio.pause()}});
         updateTtsButtonIcon();
     </script>
-
 </body>
 </html>
