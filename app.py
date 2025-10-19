@@ -286,14 +286,22 @@ def restart():
 
 from flask import send_from_directory
 
+from flask import make_response, send_from_directory
+
+@app.route("/assets/<path:filename>")
+def assets(filename):
+    response = make_response(send_from_directory("assets", filename))
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    return response
+
 # Serve o index.html da raiz
 @app.route('/')
 def serve_index():
     return send_from_directory('.', 'index.html')
 
-@app.route("/assets/<path:filename>")
-def assets(filename):
-    return send_from_directory("assets", filename)
+# @app.route("/assets/<path:filename>")
+# def assets(filename):
+#     return send_from_directory("assets", filename)
 
 # Serve qualquer outro arquivo estático da raiz (CSS, JS, imagens, etc)
 @app.route('/<path:filename>')
