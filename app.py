@@ -606,7 +606,7 @@ def assets(filename):
 # Serve o index.html da raiz
 @app.route('/')
 def serve_index():
-    return send_from_directory('.', 'index.html')
+    return send_from_directory('.', 'index_main.html')
 
 # Serve qualquer outro arquivo estático da raiz (CSS, JS, imagens, etc)
 @app.route('/<path:filename>')
