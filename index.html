@@ -206,14 +206,41 @@
         const avatar_boca_fechada = './assets/avatar_fechada.png';
         const avatar_boca_aberta = './assets/avatar_aberta.png';
 
+        // function startTalkingAnimation() {
+        //     stopTalkingAnimation(); 
+        //     let isMouthOpen = false;
+        //     mouthAnimationInterval = setInterval(() => {
+        //         // avatarImage.src = isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta;
+        //         avatarImage.src = (isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta) + "?ts=" + new Date().getTime();
+        //         isMouthOpen = !isMouthOpen;
+        //     }, 250);
+        // }
+
         function startTalkingAnimation() {
             stopTalkingAnimation(); 
             let isMouthOpen = false;
-            mouthAnimationInterval = setInterval(() => {
-                // avatarImage.src = isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta;
-                avatarImage.src = (isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta) + "?ts=" + new Date().getTime();
+            
+            const updateAvatar = () => {
+                const nextSrc = isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta;
+                
+                // 1. Cria uma URL ÚNICA para Cache Busting
+                const uniqueSrc = nextSrc + "?ts=" + new Date().getTime();
+                
+                // 2. Cria um novo objeto Image para forçar o recarregamento imediato
+                const newImage = new Image();
+                
+                // 3. Define um listener para garantir que só troque quando carregar
+                newImage.onload = () => {
+                    avatarImage.src = uniqueSrc;
+                };
+
+                // 4. Define o source da nova imagem, forçando o fetch
+                newImage.src = uniqueSrc;
+
                 isMouthOpen = !isMouthOpen;
-            }, 250);
+            };
+
+            mouthAnimationInterval = setInterval(updateAvatar, 250);
         }
 
         function stopTalkingAnimation() {
