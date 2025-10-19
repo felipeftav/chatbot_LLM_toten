@@ -4,7 +4,7 @@
 body {
     font-family: 'Inter', sans-serif;
     background: linear-gradient(135deg, #FDBB2D 0%, #D62222 100%);
-    overflow: hidden; /* Evita barras de rolagem indesejadas na página principal */
+    /* overflow: hidden;  */
 }
 
 
