@@ -75,61 +75,71 @@ else:
 
 import pytz
 from datetime import datetime
+import json
+
+import pytz
+from datetime import datetime
 
 def log_message(sender, message_text, profile_data={}):
-    """Insere uma mensagem no banco de dados, incluindo dados do perfil e um timestamp de SP como string."""
-    if not conn or not cursor:
+    """Insere uma mensagem no banco de dados usando a conexão global, com timestamp SP como string."""
+    global conn  # garante que usamos a conexão global
+
+    if not conn:
         print("⚠️ Banco de dados não disponível. Mensagem não foi salva.")
         return
 
     try:
-        # Criação da tabela com nova coluna 'created_at_sp_str'
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS chat_log (
-                id SERIAL PRIMARY KEY,
-                sender VARCHAR(10) NOT NULL,
-                message TEXT NOT NULL,
-                user_name VARCHAR(100),
-                role VARCHAR(50),
-                interest_area VARCHAR(100),
-                objective VARCHAR(100),
-                created_at TIMESTAMP WITH TIME ZONE,
-                created_at_sp_str VARCHAR(25)  -- nova coluna como string
-            );
-        """)
+        with conn.cursor() as cursor:  # cria cursor local que fecha automaticamente
+            # Criação da tabela, se não existir
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS chat_log (
+                    id SERIAL PRIMARY KEY,
+                    sender VARCHAR(10) NOT NULL,
+                    message TEXT NOT NULL,
+                    user_name VARCHAR(100),
+                    role VARCHAR(50),
+                    interest_area VARCHAR(100),
+                    objective VARCHAR(100),
+                    created_at TIMESTAMP WITH TIME ZONE,
+                    created_at_sp_str VARCHAR(25)
+                );
+            """)
 
-        # Cria o timestamp em SP
-        sp_tz = pytz.timezone("America/Sao_Paulo")
-        timestamp_sp = datetime.now(sp_tz)
+            # Timestamp SP
+            sp_tz = pytz.timezone("America/Sao_Paulo")
+            timestamp_sp = datetime.now(sp_tz)
+            timestamp_sp_str = timestamp_sp.strftime("%Y-%m-%d %H:%M:%S")
 
-        # Formata como string
-        timestamp_sp_str = timestamp_sp.strftime("%Y-%m-%d %H:%M:%S")
-
-        # Inserção no banco
-        cursor.execute(
-            """
-            INSERT INTO chat_log 
-                (sender, message, user_name, role, interest_area, objective, created_at, created_at_sp_str) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
-            """,
-            (
-                sender,
-                message_text,
-                profile_data.get('name'),
-                profile_data.get('role'),
-                profile_data.get('interestArea'),
-                profile_data.get('objective'),
-                timestamp_sp,        # mantém UTC para histórico
-                timestamp_sp_str     # salva SP exato como string
+            # Inserção da mensagem
+            cursor.execute(
+                """
+                INSERT INTO chat_log 
+                    (sender, message, user_name, role, interest_area, objective, created_at, created_at_sp_str) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+                """,
+                (
+                    sender,
+                    message_text,
+                    profile_data.get('name', ''),
+                    profile_data.get('role', ''),
+                    profile_data.get('interestArea', ''),
+                    profile_data.get('objective', ''),
+                    timestamp_sp,        # mantém UTC
+                    timestamp_sp_str     # salva SP como string
+                )
             )
-        )
 
-        conn.commit()
+        conn.commit()  # commit fora do with, para garantir persistência
         print(f"💾 Mensagem de {sender} salva no BD com timestamp SP como string!")
 
     except Exception as e:
         print(f"❌ Erro ao salvar mensagem: {e}")
-        conn.rollback()
+        try:
+            conn.rollback()
+        except:
+            print("⚠️ Não foi possível fazer rollback; a conexão pode estar quebrada.")
+
+
 
 
 
