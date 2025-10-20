@@ -238,25 +238,54 @@
         });
 
         // --- LÓGICA DE ANIMAÇÃO DO AVATAR ---
+        // let mouthAnimationInterval;
+        // const avatar_boca_fechada = './assets/avatar_fechada.png';
+        // const avatar_boca_aberta = './assets/avatar_aberta.png';
+
+        // function startTalkingAnimation() {
+        //     stopTalkingAnimation(); 
+        //     let isMouthOpen = false;
+            
+        //     const updateAvatar = () => {
+        //         const nextSrc = isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta;
+        //         const uniqueSrc = nextSrc + "?ts=" + new Date().getTime();
+        //         const newImage = new Image();
+        //         newImage.onload = () => {
+        //             avatarImage.src = uniqueSrc;
+        //         };
+        //         newImage.src = uniqueSrc;
+        //         isMouthOpen = !isMouthOpen;
+        //     };
+        //     mouthAnimationInterval = setInterval(updateAvatar, 250);
+        // }
+
+        // function stopTalkingAnimation() {
+        //     if (mouthAnimationInterval) {
+        //         clearInterval(mouthAnimationInterval);
+        //         mouthAnimationInterval = null;
+        //     }
+        //     avatarImage.src = avatar_boca_fechada;
+        // }
+
+        // --- LÓGICA DE ANIMAÇÃO DO AVATAR ---
         let mouthAnimationInterval;
         const avatar_boca_fechada = './assets/avatar_fechada.png';
         const avatar_boca_aberta = './assets/avatar_aberta.png';
 
+        // Pré-carregar imagens para evitar lag no início
+        const imgFechada = new Image();
+        const imgAberta = new Image();
+        imgFechada.src = avatar_boca_fechada;
+        imgAberta.src = avatar_boca_aberta;
+
         function startTalkingAnimation() {
             stopTalkingAnimation(); 
             let isMouthOpen = false;
-            
-            const updateAvatar = () => {
-                const nextSrc = isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta;
-                const uniqueSrc = nextSrc + "?ts=" + new Date().getTime();
-                const newImage = new Image();
-                newImage.onload = () => {
-                    avatarImage.src = uniqueSrc;
-                };
-                newImage.src = uniqueSrc;
+
+            mouthAnimationInterval = setInterval(() => {
+                avatarImage.src = isMouthOpen ? imgFechada.src : imgAberta.src;
                 isMouthOpen = !isMouthOpen;
-            };
-            mouthAnimationInterval = setInterval(updateAvatar, 250);
+            }, 250);
         }
 
         function stopTalkingAnimation() {
@@ -264,8 +293,9 @@
                 clearInterval(mouthAnimationInterval);
                 mouthAnimationInterval = null;
             }
-            avatarImage.src = avatar_boca_fechada;
+            avatarImage.src = imgFechada.src;
         }
+
 
         // --- LÓGICA DE GRAVAÇÃO DE VOZ ---
         let mediaRecorder;
