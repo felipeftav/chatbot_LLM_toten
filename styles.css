@@ -7,7 +7,6 @@ body {
     /* overflow: hidden;  */
 }
 
-
 /* --- LAYOUT PRINCIPAL --- */
 /* Estas regras são um fallback. O layout principal é controlado majoritariamente pelo TailwindCSS no HTML. */
 #main-container {
