@@ -166,3 +166,9 @@ body {
         font-size: 0.95rem;
     }
 }
+
+@media (max-width: 640px) {
+  #lgpd-consent {
+    transform: scale(1.2);
+  }
+}
