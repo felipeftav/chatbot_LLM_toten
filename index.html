@@ -58,16 +58,6 @@
                                 <option value="apenas explorar">Apenas explorar</option>
                             </select>
                         </div>
-
-                        <div class="flex items-start space-x-2 mt-4">
-                            <input type="checkbox" id="lgpd-consent" required
-                                class="mt-1 h-5 w-5 text-indigo-600 border-2 border-slate-300 rounded focus:ring-4 focus:ring-indigo-300 transition duration-300">
-                            <label for="lgpd-consent" class="text-slate-700 text-base text-left">
-                                Concordo com o uso dos meus dados conforme a 
-                                <a href="https://www.gov.br/esporte/pt-br/acesso-a-informacao/lgpd" target="_blank" class="text-indigo-600 hover:underline">Política de Privacidade da LGPD</a>.
-                            </label>
-                        </div>
-
                     </div>
                 </form>
             </div>
@@ -246,16 +236,6 @@
                 sendTextButton.click();
             }
         });
-
-
-        startForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const consent = document.getElementById('lgpd-consent').checked;
-            if (!consent) {
-                alert('Você precisa aceitar o uso dos dados para continuar.');
-                return;
-            }
 
         // --- LÓGICA DE ANIMAÇÃO DO AVATAR ---
         // let mouthAnimationInterval;
