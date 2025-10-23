@@ -139,6 +139,56 @@ def log_message(sender, message_text, profile_data={}):
         except:
             print("⚠️ Não foi possível fazer rollback; a conexão pode estar quebrada.")
 
+def log_interaction(user_message, bot_reply, profile_data={}):
+    """Salva a mensagem do usuário e a resposta do bot na mesma linha."""
+    global conn
+    if not conn:
+        print("⚠️ Banco de dados não disponível. Interação não foi salva.")
+        return
+
+    try:
+        with conn.cursor() as cursor:
+            # Cria a tabela com as novas colunas (uma linha por interação)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS chat_log (
+                    id SERIAL PRIMARY KEY,
+                    user_message TEXT,
+                    bot_reply TEXT,
+                    user_name VARCHAR(100),
+                    role VARCHAR(50),
+                    interest_area VARCHAR(100),
+                    objective VARCHAR(100),
+                    created_at TIMESTAMP WITH TIME ZONE,
+                    created_at_sp_str VARCHAR(25)
+                );
+            """)
+
+            # Timestamp de São Paulo
+            sp_tz = pytz.timezone("America/Sao_Paulo")
+            timestamp_sp = datetime.now(sp_tz)
+            timestamp_sp_str = timestamp_sp.strftime("%Y-%m-%d %H:%M:%S")
+
+            # Inserção única com pergunta + resposta
+            cursor.execute("""
+                INSERT INTO chat_log 
+                    (user_message, bot_reply, user_name, role, interest_area, objective, created_at, created_at_sp_str)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+            """, (
+                user_message,
+                bot_reply,
+                profile_data.get('name', ''),
+                profile_data.get('role', ''),
+                profile_data.get('interestArea', ''),
+                profile_data.get('objective', ''),
+                timestamp_sp,
+                timestamp_sp_str
+            ))
+
+        conn.commit()
+        print("💾 Interação (usuário + bot) salva com sucesso no BD!")
+    except Exception as e:
+        print(f"❌ Erro ao salvar interação: {e}")
+        conn.rollback()
 
 
 
@@ -539,8 +589,9 @@ def chat():
         # Lógica de Log (Salva a interação após a resposta ser gerada)
         if user_message_to_log:
             # <-- MUDANÇA 3: Passa a variável 'profile' para a função de log
-            log_message('user', user_message_to_log, profile)
-            log_message('bot', bot_reply_text, profile)
+            # log_message('user', user_message_to_log, profile)
+            # log_message('bot', bot_reply_text, profile)
+            log_interaction(user_message_to_log, bot_reply_text, profile)
 
         # Gera áudio se o TTS estiver ativo e ainda não tiver sido gerado
         if audio_base64 is None and tts_is_enabled and bot_reply_text:
