@@ -451,7 +451,9 @@ def get_gemini_tts_audio_data(text_to_speak):
             "responseModalities": ["AUDIO"],
             "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": "Aoede"}}}
         },
-        "model": "gemini-2.5-flash-preview-tts"
+        # "model": "gemini-2.5-flash-preview-tts"
+        "model": "gemini-2.5-flash-tts"
+        
     }
     headers = {'Content-Type': 'application/json'}
 
