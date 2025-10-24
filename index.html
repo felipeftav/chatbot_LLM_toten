@@ -701,133 +701,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meta Day - Chatbot</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800&display=swap" rel="stylesheet">
-  <style>
-   .meta-day-logo {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.meta-day-logo:hover {
-  transform: scale(1.05);
-}
-
-.logo-icon {
-  position: relative;
-  background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: box-shadow 0.3s ease;
-}
-
-.meta-day-logo:hover .logo-icon {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-}
-
-
-    
-  </style>
+  
+  <link rel="stylesheet" href="styles.css">
+  
 </head>
 <body>
-    <div class="event-status-badge">
-  <span class="status-pulse"></span>
-  <span class="status-text">Evento ao vivo</span>
-</div>
-
-<style>
-.event-status-badge {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 10px 20px;
-  border-radius: 25px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  color: #1a1a1a;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
-}
-
-.status-pulse {
-  width: 10px;
-  height: 10px;
-  background: #22c55e;
-  border-radius: 50%;
-  animation: pulse-animation 2s infinite;
-}
-
-@keyframes pulse-animation {
-  0%, 100% { 
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% { 
-    opacity: 0.6;
-    transform: scale(1.2);
-  }
-}
-</style>
+  
+  <div class="event-status-badge">
+    <span class="status-pulse"></span>
+    <span class="status-text">Evento ao vivo</span>
+  </div>
 
   <div class="meta-day-logo">
     <div class="logo-icon"></div>
     <div class="logo-text">Meta Day</div>
   </div>
+
+  <button class="tour-button" onclick="startTour()">
+    <span>❔</span>
+  </button>
   
+  <script>
+    function startTour() {
+      alert('Bem-vindo ao Meta Day! 🎉\n\nUse o chat para tirar dúvidas sobre:\n• Localização dos projetos\n• Horários das palestras\n• Informações gerais do evento');
+    }
+  </script>
+
 </body>
 </html>
-
-<button class="tour-button" onclick="startTour()">
-  <span>❔</span>
-</button>
-
-<style>
-.tour-button {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  z-index: 999;
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
-  border: none;
-  border-radius: 50%;
-  color: white;
-  font-size: 28px;
-  cursor: pointer;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tour-button:hover {
-  transform: scale(1.1) rotate(15deg);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-}
-
-.tour-button:active {
-  transform: scale(0.95);
-}
-</style>
-
-<script>
-function startTour() {
-  alert('Bem-vindo ao Meta Day! 🎉\n\nUse o chat para tirar dúvidas sobre:\n• Localização dos projetos\n• Horários das palestras\n• Informações gerais do evento');
-}
-</script>
-
