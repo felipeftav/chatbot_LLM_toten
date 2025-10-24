@@ -140,7 +140,7 @@ def log_message(sender, message_text, profile_data={}):
             print("⚠️ Não foi possível fazer rollback; a conexão pode estar quebrada.")
 
 def log_interaction(user_message, bot_reply, profile_data={}):
-    """Salva a mensagem do usuário e a resposta do bot na mesma linha."""
+    """Salva a interação completa (mensagem do usuário + resposta do bot) em uma tabela separada."""
     global conn
     if not conn:
         print("⚠️ Banco de dados não disponível. Interação não foi salva.")
@@ -148,9 +148,9 @@ def log_interaction(user_message, bot_reply, profile_data={}):
 
     try:
         with conn.cursor() as cursor:
-            # Cria a tabela com as novas colunas (uma linha por interação)
+            # Cria uma nova tabela separada para interações completas
             cursor.execute("""
-                CREATE TABLE IF NOT EXISTS chat_log (
+                CREATE TABLE IF NOT EXISTS chat_interactions (
                     id SERIAL PRIMARY KEY,
                     user_message TEXT,
                     bot_reply TEXT,
@@ -168,9 +168,9 @@ def log_interaction(user_message, bot_reply, profile_data={}):
             timestamp_sp = datetime.now(sp_tz)
             timestamp_sp_str = timestamp_sp.strftime("%Y-%m-%d %H:%M:%S")
 
-            # Inserção única com pergunta + resposta
+            # Inserção da interação completa
             cursor.execute("""
-                INSERT INTO chat_log 
+                INSERT INTO chat_interactions 
                     (user_message, bot_reply, user_name, role, interest_area, objective, created_at, created_at_sp_str)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
             """, (
@@ -185,10 +185,11 @@ def log_interaction(user_message, bot_reply, profile_data={}):
             ))
 
         conn.commit()
-        print("💾 Interação (usuário + bot) salva com sucesso no BD!")
+        print("💾 Interação (usuário + bot) salva com sucesso na tabela chat_interactions!")
     except Exception as e:
         print(f"❌ Erro ao salvar interação: {e}")
         conn.rollback()
+
 
 
 
@@ -450,7 +451,9 @@ def get_gemini_tts_audio_data(text_to_speak):
             "responseModalities": ["AUDIO"],
             "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": "Aoede"}}}
         },
-        "model": "gemini-2.5-flash-preview-tts"
+        # "model": "gemini-2.5-flash-preview-tts"
+        "model": "gemini-2.5-flash-tts"
+        
     }
     headers = {'Content-Type': 'application/json'}
 
