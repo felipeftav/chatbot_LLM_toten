@@ -29,23 +29,71 @@ body {
     box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 }
 
+/* --- AVATAR (PERSONAGEM) --- */
 #avatar-container {
+    background-color: #ffffff;
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 20rem; 
-    display: none; /* Escondido em telas pequenas por padrão */
+    max-width: 20rem;
+    animation: fadeInScale 0.8s ease-out;
 }
 
+/* --- TELAS GRANDES (DESKTOP) --- */
 @media (min-width: 1024px) {
     #avatar-container {
+        position: static; /* segue o layout normal */
         display: block;
+        border-radius: 1rem;
+        max-width: 20rem;
+    }
+
+    #avatar-image {
+        width: 100%;
+        height: auto;
+        border-radius: 1.5rem;
     }
 }
 
-#avatar-image {
-    width: 100%; 
-    height: auto;
-    border-radius: 1.5rem; 
+/* --- TELAS PEQUENAS (MOBILE) --- */
+@media (max-width: 1023px) {
+    #avatar-container {
+        position: fixed;
+        bottom: 5.5rem;
+        right: 1.2rem;
+        width: 7rem;
+        height: 7rem;
+        display: block;
+        border-radius: 50%;
+        padding: 0;
+        overflow: hidden;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        animation: fadeInScale 0.8s ease-out;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #avatar-container:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    #avatar-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
 }
+
+/* --- ANIMAÇÃO QUANDO FALA --- */
+#avatar-container.speaking {
+    animation: avatarPulse 2s infinite;
+}
+
+
+
 
 
 /* --- BARRA DE ROLAGEM --- */
@@ -338,10 +386,7 @@ button[type="submit"]:hover::before,
     height: 300px;
 }
 
-/* Animação suave para o avatar */
-#avatar-container {
-    animation: fadeInScale 0.8s ease-out;
-}
+
 
 @keyframes fadeInScale {
     from {
@@ -354,10 +399,7 @@ button[type="submit"]:hover::before,
     }
 }
 
-/* Pulso sutil no avatar quando está falando */
-#avatar-container.speaking {
-    animation: avatarPulse 2s infinite;
-}
+
 
 @keyframes avatarPulse {
     0%, 100% {
