@@ -10,6 +10,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import google.generativeai as genai
 import psycopg2
+from psycopg2 import pool
 
 
 # ============================================================
@@ -53,7 +54,12 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL:
     try:
         # Tenta conectar ao BD usando a URL
-        conn = psycopg2.connect(DATABASE_URL)
+        # conn = psycopg2.connect(DATABASE_URL)
+        conn = psycopg2.connect(
+            DATABASE_URL,
+            sslmode='require',  # Força SSL
+            connect_timeout=10   # Timeout de 10 segundos
+        )
         cursor = conn.cursor()
         print("✅ Conexão com o banco de dados PostgreSQL estabelecida com sucesso!")
         
