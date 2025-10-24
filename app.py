@@ -647,6 +647,26 @@ def restart():
         return jsonify({"error": f"Erro ao reiniciar: {e}"}), 500
 
 
+@app.route('/get-audio', methods=['POST'])
+def get_audio():
+    """Rota simples para converter um texto em áudio."""
+    try:
+        data = request.json
+        text_to_speak = data.get('text')
+
+        if not text_to_speak:
+            return jsonify({"error": "Nenhum texto fornecido."}), 400
+
+        # Reutiliza a função TTS existente
+        audio_base64 = get_tts_audio_data(text_to_speak)
+        
+        return jsonify({"audioData": audio_base64})
+
+    except Exception as e:
+        print(f"Erro no /get-audio: {e}")
+        traceback.print_exc()
+        return jsonify({"error": "Erro interno no servidor."}), 500
+
 # ============================================================
 # 🚀 EXECUÇÃO
 # ============================================================
