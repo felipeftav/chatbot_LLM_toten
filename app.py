@@ -51,33 +51,50 @@ configure_genai_with_available_key()
 # O Render irá popular esta variável com a URL Interna do seu lia-db
 DATABASE_URL = os.getenv("DATABASE_URL") 
 
+# if DATABASE_URL:
+#     try:
+#         # Tenta conectar ao BD usando a URL
+#         # conn = psycopg2.connect(DATABASE_URL)
+#         conn = psycopg2.connect(
+#             DATABASE_URL,
+#             sslmode='require',  # Força SSL
+#             connect_timeout=10   # Timeout de 10 segundos
+#         )
+#         cursor = conn.cursor()
+#         print("✅ Conexão com o banco de dados PostgreSQL estabelecida com sucesso!")
+           
+#     except Exception as e:
+#         print(f"❌ Erro ao conectar ao banco de dados: {e}")
+#         conn = None 
+#         cursor = None
+# else:
+#     print("⚠️ DATABASE_URL não encontrada. O aplicativo não terá acesso ao banco de dados.")
+#     conn = None 
+#     cursor = None
+
+db_pool = None
+
 if DATABASE_URL:
     try:
-        # Tenta conectar ao BD usando a URL
-        # conn = psycopg2.connect(DATABASE_URL)
-        conn = psycopg2.connect(
-            DATABASE_URL,
-            sslmode='require',  # Força SSL
-            connect_timeout=10   # Timeout de 10 segundos
+        db_pool = psycopg2.pool.ThreadedConnectionPool(
+            minconn=1,
+            maxconn=10,
+            dsn=DATABASE_URL,
+            sslmode='require'
         )
+        # Teste rápido
+        conn = db_pool.getconn()
         cursor = conn.cursor()
-        print("✅ Conexão com o banco de dados PostgreSQL estabelecida com sucesso!")
-        
-        # Exemplo: Executar uma query de teste (opcional)
-        # cursor.execute("SELECT version();")
-        # db_version = cursor.fetchone()
-        # print(f"Versão do PostgreSQL: {db_version[0]}")
-        
+        cursor.execute("SELECT version();")
+        print(f"✅ Conexão com pool estabelecida! PostgreSQL: {cursor.fetchone()[0]}")
+        cursor.close()
+        db_pool.putconn(conn)
     except Exception as e:
-        print(f"❌ Erro ao conectar ao banco de dados: {e}")
-        # Uma estratégia comum é permitir que o app inicie mesmo sem o BD,
-        # mas desativar as funcionalidades que dependem dele.
-        conn = None 
-        cursor = None
+        print(f"❌ Erro ao criar pool de conexões: {e}")
+        db_pool = None
 else:
     print("⚠️ DATABASE_URL não encontrada. O aplicativo não terá acesso ao banco de dados.")
-    conn = None 
-    cursor = None
+
 
 import pytz
 from datetime import datetime
@@ -87,16 +104,14 @@ import pytz
 from datetime import datetime
 
 def log_message(sender, message_text, profile_data={}):
-    """Insere uma mensagem no banco de dados usando a conexão global, com timestamp SP como string."""
-    global conn  # garante que usamos a conexão global
-
-    if not conn:
+    """Insere uma mensagem no banco usando pool de conexões."""
+    if not db_pool:
         print("⚠️ Banco de dados não disponível. Mensagem não foi salva.")
         return
 
+    conn = db_pool.getconn()
     try:
-        with conn.cursor() as cursor:  # cria cursor local que fecha automaticamente
-            # Criação da tabela, se não existir
+        with conn.cursor() as cursor:
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS chat_log (
                     id SERIAL PRIMARY KEY,
@@ -110,51 +125,44 @@ def log_message(sender, message_text, profile_data={}):
                     created_at_sp_str VARCHAR(25)
                 );
             """)
-
-            # Timestamp SP
             sp_tz = pytz.timezone("America/Sao_Paulo")
             timestamp_sp = datetime.now(sp_tz)
             timestamp_sp_str = timestamp_sp.strftime("%Y-%m-%d %H:%M:%S")
 
-            # Inserção da mensagem
-            cursor.execute(
-                """
+            cursor.execute("""
                 INSERT INTO chat_log 
                     (sender, message, user_name, role, interest_area, objective, created_at, created_at_sp_str) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
-                """,
-                (
-                    sender,
-                    message_text,
-                    profile_data.get('name', ''),
-                    profile_data.get('role', ''),
-                    profile_data.get('interestArea', ''),
-                    profile_data.get('objective', ''),
-                    timestamp_sp,        # mantém UTC
-                    timestamp_sp_str     # salva SP como string
-                )
-            )
+            """, (
+                sender,
+                message_text,
+                profile_data.get('name', ''),
+                profile_data.get('role', ''),
+                profile_data.get('interestArea', ''),
+                profile_data.get('objective', ''),
+                timestamp_sp,
+                timestamp_sp_str
+            ))
 
-        conn.commit()  # commit fora do with, para garantir persistência
+        conn.commit()
         print(f"💾 Mensagem de {sender} salva no BD com timestamp SP como string!")
 
     except Exception as e:
         print(f"❌ Erro ao salvar mensagem: {e}")
-        try:
-            conn.rollback()
-        except:
-            print("⚠️ Não foi possível fazer rollback; a conexão pode estar quebrada.")
+        conn.rollback()
+    finally:
+        db_pool.putconn(conn)
+
 
 def log_interaction(user_message, bot_reply, profile_data={}):
-    """Salva a interação completa (mensagem do usuário + resposta do bot) em uma tabela separada."""
-    global conn
-    if not conn:
+    """Salva a interação completa usando pool de conexões."""
+    if not db_pool:
         print("⚠️ Banco de dados não disponível. Interação não foi salva.")
         return
 
+    conn = db_pool.getconn()
     try:
         with conn.cursor() as cursor:
-            # Cria uma nova tabela separada para interações completas
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS chat_interactions (
                     id SERIAL PRIMARY KEY,
@@ -168,13 +176,10 @@ def log_interaction(user_message, bot_reply, profile_data={}):
                     created_at_sp_str VARCHAR(25)
                 );
             """)
-
-            # Timestamp de São Paulo
             sp_tz = pytz.timezone("America/Sao_Paulo")
             timestamp_sp = datetime.now(sp_tz)
             timestamp_sp_str = timestamp_sp.strftime("%Y-%m-%d %H:%M:%S")
 
-            # Inserção da interação completa
             cursor.execute("""
                 INSERT INTO chat_interactions 
                     (user_message, bot_reply, user_name, role, interest_area, objective, created_at, created_at_sp_str)
@@ -189,20 +194,13 @@ def log_interaction(user_message, bot_reply, profile_data={}):
                 timestamp_sp,
                 timestamp_sp_str
             ))
-
         conn.commit()
-        print("💾 Interação (usuário + bot) salva com sucesso na tabela chat_interactions!")
+        print("💾 Interação (usuário + bot) salva com sucesso!")
     except Exception as e:
         print(f"❌ Erro ao salvar interação: {e}")
         conn.rollback()
-
-
-
-
-
-# Exemplo de como chamar a função
-# log_message("User", "Testando o timestamp forçado.", {"name": "Usuario Teste"})
-
+    finally:
+        db_pool.putconn(conn)
 
 
 # ============================================================
@@ -382,19 +380,6 @@ EVENT_INFO = {
         "audio_path": "respostas_pre_gravadas/onde_e_podcast.mp3"
     }
 }
-
-# Cria o modelo Gemini configurado com as instruções da LIA
-# model = genai.GenerativeModel(
-#     model_name="gemini-2.5-flash",
-#     system_instruction=SYSTEM_INSTRUCTION,
-#     generation_config={"temperature": 0.9, "top_p": 1, "top_k": 1, "max_output_tokens": 2048},
-#     safety_settings=[
-#         {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-#         {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-#         {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-#         {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-#     ],
-# )
 
 import random
 
