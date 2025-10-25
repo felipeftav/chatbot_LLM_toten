@@ -509,40 +509,6 @@ def get_tts_audio_data(text_to_speak):
     except Exception as e:
         print(f"Erro no Gemini TTS: {e}")
         return get_gtts_audio_data(text_to_speak)
-    
-    
-import base64
-import io
-from pydub import AudioSegment
-import speech_recognition as sr
-
-def transcrever_audio_base64(audio_base64):
-    try:
-        # Verifica se veio algo
-        if not audio_base64:
-            raise ValueError("O áudio recebido está vazio.")
-
-        # Decodifica o base64 em bytes
-        audio_bytes = base64.b64decode(audio_base64)
-
-        # Converte o áudio para WAV (SpeechRecognition entende melhor WAV)
-        audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
-        wav_io = io.BytesIO()
-        audio.export(wav_io, format="wav")
-        wav_io.seek(0)
-
-        # Usa SpeechRecognition para transcrever
-        recognizer = sr.Recognizer()
-        with sr.AudioFile(wav_io) as source:
-            audio_data = recognizer.record(source)
-            texto = recognizer.recognize_google(audio_data, language="pt-BR")
-        
-        return texto
-
-    except Exception as e:
-        print(f"Erro na transcrição do áudio: {e}")
-        return "[Falha na transcrição]"
-
 
 # ============================================================
 # 🌐 APLICAÇÃO FLASK
@@ -577,19 +543,9 @@ def chat():
             audio_parts = [{"mime_type": audio_file.mimetype, "data": audio_file.read()}]
             response = convo.send_message(["Responda ao que foi dito neste áudio.", audio_parts[0]])
             
-            import base64
-
-            # Pega o primeiro arquivo da lista
-            audio_bytes = audio_parts[0]["data"]
-
-            # Converte para base64
-            audio_base64_transcript = base64.b64encode(audio_bytes).decode("utf-8")
-
-            # Agora dá para chamar a função
-            texto = transcrever_audio_base64(audio_base64_transcript)
             
             
-            user_message_to_log = f"[ÁUDIO ENVIADO]: {texto}"
+            user_message_to_log = "[ÁUDIO ENVIADO]"
             bot_reply_text = response.text
             tts_is_enabled = True
 

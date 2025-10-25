@@ -8,3 +8,5 @@ gTTS
 gunicorn
 psycopg2-binary
 pytz
+SpeechRecognition
+pydub
