@@ -1,9 +1,16 @@
+# Imports built-in
 import os
+import io
 import json
+import random
+import threading
+import traceback
+from datetime import datetime
+
+# Imports de terceiros
 import requests
 import base64
-import io
-import traceback
+import pytz
 from gtts import gTTS
 from flask import Flask, request, jsonify, render_template, make_response, send_from_directory
 from flask_cors import CORS
@@ -11,6 +18,9 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 import psycopg2
 from psycopg2 import pool
+from pydub import AudioSegment
+import speech_recognition as sr
+
 
 
 # ============================================================
@@ -51,27 +61,6 @@ configure_genai_with_available_key()
 # O Render irá popular esta variável com a URL Interna do seu lia-db
 DATABASE_URL = os.getenv("DATABASE_URL") 
 
-# if DATABASE_URL:
-#     try:
-#         # Tenta conectar ao BD usando a URL
-#         # conn = psycopg2.connect(DATABASE_URL)
-#         conn = psycopg2.connect(
-#             DATABASE_URL,
-#             sslmode='require',  # Força SSL
-#             connect_timeout=10   # Timeout de 10 segundos
-#         )
-#         cursor = conn.cursor()
-#         print("✅ Conexão com o banco de dados PostgreSQL estabelecida com sucesso!")
-           
-#     except Exception as e:
-#         print(f"❌ Erro ao conectar ao banco de dados: {e}")
-#         conn = None 
-#         cursor = None
-# else:
-#     print("⚠️ DATABASE_URL não encontrada. O aplicativo não terá acesso ao banco de dados.")
-#     conn = None 
-#     cursor = None
-
 db_pool = None
 
 if DATABASE_URL:
@@ -95,13 +84,6 @@ if DATABASE_URL:
 else:
     print("⚠️ DATABASE_URL não encontrada. O aplicativo não terá acesso ao banco de dados.")
 
-
-import pytz
-from datetime import datetime
-import json
-
-import pytz
-from datetime import datetime
 
 def log_message(sender, message_text, profile_data={}):
     """Insere uma mensagem no banco usando pool de conexões."""
@@ -241,16 +223,17 @@ def log_interaction(user_message, bot_reply, profile_data={}):
 # """
 
 SYSTEM_INSTRUCTION = """
-Você é LIA, a assistente virtual oficial do evento Metaday.
+Você é LIA, a assistente virtual oficial do evento Metaday, evento que acontece na Fatec Sebrae.
 Sua missão é ajudar os participantes com informações sobre o evento de forma amigável, clara e entusiasmada.
 
 --- REGRAS GERAIS ---
 - Seja sempre prestativa e positiva.
 - Responda de forma concisa e direta.
 - Use emojis para deixar a conversa mais leve. 😊
-- Fale apenas sobre o Metaday. Se não souber de alguma informação específica, diga que vai verificar com a organização.
+- Fale apenas sobre o Metaday da Fatec Sebrae. Se não souber de alguma informação específica, diga que vai verificar com a organização.
 - Não invente informações. Baseie-se estritamente nos dados fornecidos abaixo.
 - Seja o mais breve possível na resposta.
+- Responda somente até 350 caracteres de tamanho total da resposta.
 
 --- INFORMAÇÕES GERAIS DO EVENTO ---
 
@@ -263,8 +246,7 @@ O Metaday está dividido em andares:
 
 **Ciência de Dados para Negócios (CDN)**
 - **1º Semestre (Tarde):** Prof. Nathane de Castro.
-- **2º Semestre (Tarde):** Prof. Nathane de Castro.
-- **Projeto Especial IA:** Prof. Isabel.
+- **2º Semestre (Tarde):** Prof. Nathane de Castro e Romulo Francisco De Souza Maia. (Responsáveis pela orientação da criação da LIA pelos alunos 2º Semestre (Tarde))
 
 **Gestão de Negócios e Inovação (GNI)**
 - **1º Semestre (Noite):** Prof. Clayton Alves Cunha.
@@ -381,7 +363,7 @@ EVENT_INFO = {
     }
 }
 
-import random
+
 
 # Lista de modelos possíveis para o chat
 GEMINI_MODELS = [
@@ -419,7 +401,7 @@ convo = model.start_chat(history=[])
 # 🔊 FUNÇÕES DE CONVERSÃO DE TEXTO EM ÁUDIO (TTS)
 # ============================================================
 
-import threading # Adicione esta linha no topo do seu arquivo, caso ainda não tenha
+
 
 # ============================================================
 # 🔊 FUNÇÕES DE CONVERSÃO DE TEXTO EM ÁUDIO (TTS)
@@ -512,9 +494,7 @@ def get_tts_audio_data(text_to_speak):
     
     
 
-import io
-from pydub import AudioSegment
-import speech_recognition as sr
+
 
 def transcrever_audio_base64(audio_base64):
     try:
