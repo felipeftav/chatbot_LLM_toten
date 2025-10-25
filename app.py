@@ -511,7 +511,7 @@ def get_tts_audio_data(text_to_speak):
         return get_gtts_audio_data(text_to_speak)
     
     
-import base64
+
 import io
 from pydub import AudioSegment
 import speech_recognition as sr
@@ -577,7 +577,7 @@ def chat():
             audio_parts = [{"mime_type": audio_file.mimetype, "data": audio_file.read()}]
             response = convo.send_message(["Responda ao que foi dito neste áudio.", audio_parts[0]])
             
-            import base64
+            
 
             # Pega o primeiro arquivo da lista
             audio_bytes = audio_parts[0]["data"]
