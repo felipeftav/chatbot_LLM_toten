@@ -84,6 +84,8 @@ body {
         height: 100%;
         object-fit: cover;
         border-radius: 50%;
+        object-fit: contain !important; /* mostra a imagem inteira */
+        object-position: center; 
     }
 }
 
@@ -215,6 +217,20 @@ body {
 @media (max-width: 640px) {
   #lgpd-consent {
     transform: scale(1.2);
+  }
+
+  /* Ajuste do avatar no mobile */
+  #avatar-container {
+    padding: 2px;              /* borda branca mais fina */
+    border-radius: 50%;        /* mantém circular */
+    overflow: hidden;
+  }
+
+  #avatar-image {
+    object-fit: contain !important; /* mostra a imagem inteira */
+    object-position: center;        /* centraliza */
+    border-radius: 50%;
+    background-color: #fff;         /* fundo branco para não ficar com bordas vazias */
   }
 }
 
