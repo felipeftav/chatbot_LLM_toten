@@ -443,7 +443,7 @@ def get_gemini_tts_audio_data(text_to_speak):
         try:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key={key}"
             
-            response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=30)
+            response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=90)
             response.raise_for_status()
 
             result = response.json()
