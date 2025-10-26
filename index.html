@@ -593,15 +593,6 @@
         // --- FUNÇÕES AUXILIARES DA UI ---
         function setUiDisabled(isDisabled, recording = false) { messageInput.disabled = isDisabled; sendTextButton.disabled = isDisabled; suggestTopicButton.disabled = isDisabled; summarizeButton.disabled = isDisabled; micButton.disabled = isDisabled && !recording; }
         function handleFetchError(error) { console.error('Erro de comunicação com o backend:', error); removeTypingIndicator(); appendMessage('bot', 'Desculpe, ocorreu um erro de conexão.'); }
-        // function appendMessage(sender, message) {
-        //     const wrapper = document.createElement('div'); wrapper.classList.add('flex', 'mb-6');
-        //     const bubble = document.createElement('div'); bubble.classList.add('p-4', 'rounded-2xl', 'max-w-lg', 'text-lg');
-        //     if (sender === 'bot') { wrapper.classList.add('justify-start'); bubble.classList.add('bg-zinc-900', 'text-white', 'rounded-bl-none'); bubble.innerHTML = marked.parse(message); } 
-        //     else { wrapper.classList.add('justify-end'); bubble.classList.add('bg-slate-200', 'text-slate-800', 'rounded-br-none'); bubble.innerHTML = message; }
-        //     wrapper.appendChild(bubble); chatMessages.appendChild(wrapper);
-        //     if (typeof MathJax !== "undefined" && sender === 'bot') { MathJax.typesetPromise([wrapper]).catch((err) => console.log('Erro MathJax:', err)); }
-        //     chatMessages.scrollTop = chatMessages.scrollHeight;
-        // };
 
         function appendMessage(sender, message) {
             const wrapper = document.createElement('div');
@@ -612,7 +603,7 @@
 
             if (sender === 'bot') {
                 wrapper.classList.add('justify-start');
-                bubble.classList.add('bg-zinc-900', 'text-white', 'rounded-bl-none');
+                bubble.classList.add('bg-slate-800', 'text-white', 'rounded-bl-none');
                 bubble.innerHTML = marked.parse(message);
             } else {
                 wrapper.classList.add('justify-end');
@@ -644,7 +635,7 @@
             if (typeof MathJax !== "undefined") { MathJax.typesetPromise([wrapper]).catch((err) => console.log('Erro MathJax:', err)); }
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
-        const showTypingIndicator=()=>{const t=document.createElement('div');t.id='typing-indicator';t.classList.add('flex','justify-start','mb-6');t.innerHTML=`<div class="bg-zinc-900 text-white p-4 rounded-2xl rounded-bl-none"><div class="flex items-center space-x-1"><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.2s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.4s"></span></div></div>`;chatMessages.appendChild(t);chatMessages.scrollTop=chatMessages.scrollHeight};
+        const showTypingIndicator=()=>{const t=document.createElement('div');t.id='typing-indicator';t.classList.add('flex','justify-start','mb-6');t.innerHTML=`<div class="bg-slate-800 text-white p-4 rounded-2xl rounded-bl-none"><div class="flex items-center space-x-1"><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.2s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.4s"></span></div></div>`;chatMessages.appendChild(t);chatMessages.scrollTop=chatMessages.scrollHeight};
         const removeTypingIndicator=()=>{const t=document.getElementById('typing-indicator');if(t){t.remove()}};
         
         // --- Lógica de TTS ---
