@@ -27,6 +27,10 @@ import speech_recognition as sr
 # 🔧 CONFIGURAÇÕES INICIAIS
 # ============================================================
 
+active_conversations = {}
+convo_lock = threading.Lock() # Para segurança em threads
+
+
 # Carrega as variáveis do arquivo .env
 load_dotenv()
 
@@ -530,59 +534,62 @@ CORS(app)
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    """Rota principal do chatbot LIA, agora com log no BD."""
     bot_reply_text = ""
     audio_base64 = None
     tts_is_enabled = False
     user_message_to_log = None
-    profile = {}  # <-- MUDANÇA 1: Variável local para o perfil
+    profile = {}
+    session_id = None
 
     try:
-        # Caso o usuário envie áudio
+        # Extrair perfil e sessionId
         if 'audio_file' in request.files:
             audio_file = request.files['audio_file']
-
-            # Lê o perfil enviado como JSON no FormData (se existir)
             profile_str = request.form.get('profile', '{}')
             try:
                 profile = json.loads(profile_str)
             except json.JSONDecodeError:
                 profile = {}
+            session_id = profile.get('sessionId')
 
+            if not session_id:
+                return jsonify({"error": "Nenhum ID de sessão fornecido."}), 400
+
+            # Buscar ou criar conversa ativa
+            with convo_lock:
+                if session_id not in active_conversations:
+                    active_conversations[session_id] = model.start_chat(history=[])
+                convo = active_conversations[session_id]
+
+            # Processa áudio
             audio_parts = [{"mime_type": audio_file.mimetype, "data": audio_file.read()}]
             response = convo.send_message(["Responda ao que foi dito neste áudio.", audio_parts[0]])
-            
-            
-
-            # Pega o primeiro arquivo da lista
             audio_bytes = audio_parts[0]["data"]
-
-            # Converte para base64
             audio_base64_transcript = base64.b64encode(audio_bytes).decode("utf-8")
-
-            # Agora dá para chamar a função
             texto = transcrever_audio_base64(audio_base64_transcript)
-            
-            
+
             user_message_to_log = f"[ÁUDIO ENVIADO]: {texto}"
             bot_reply_text = response.text
             tts_is_enabled = True
 
-
-        # Caso o usuário envie JSON (Texto ou Preset)
         elif request.is_json:
             data = request.json
             tts_is_enabled = data.get('tts_enabled', False)
-
-            # <-- MUDANÇA 2: Extrai o perfil da requisição JSON
             profile = data.get('profile', {})
+            session_id = profile.get('sessionId')
 
-            # Pergunta pré-programada
+            if not session_id:
+                return jsonify({"error": "Nenhum ID de sessão fornecido."}), 400
+
+            with convo_lock:
+                if session_id not in active_conversations:
+                    active_conversations[session_id] = model.start_chat(history=[])
+                convo = active_conversations[session_id]
+
             if 'preset_question' in data:
                 question = data['preset_question']
                 user_message_to_log = f"[PRESET]: {question}"
                 info = EVENT_INFO.get(question)
-                
                 if info:
                     bot_reply_text = info["text"]
                     if tts_is_enabled:
@@ -595,21 +602,17 @@ def chat():
                     convo.send_message(question)
                     bot_reply_text = convo.last.text
 
-            # Mensagem normal de texto
             elif 'message' in data:
                 user_message = data['message']
                 user_message_to_log = user_message
                 convo.send_message(user_message)
                 bot_reply_text = convo.last.text
 
-        # Lógica de Log (Salva a interação após a resposta ser gerada)
+        # Lógica de log (assumindo log_interaction)
         if user_message_to_log:
-            # <-- MUDANÇA 3: Passa a variável 'profile' para a função de log
-            # log_message('user', user_message_to_log, profile)
-            # log_message('bot', bot_reply_text, profile)
             log_interaction(user_message_to_log, bot_reply_text, profile)
 
-        # Gera áudio se o TTS estiver ativo e ainda não tiver sido gerado
+        # Gera TTS se necessário
         if audio_base64 is None and tts_is_enabled and bot_reply_text:
             audio_base64 = get_tts_audio_data(bot_reply_text)
 
@@ -638,8 +641,24 @@ def suggest_topic():
 def summarize():
     """Resume o histórico atual da conversa."""
     try:
-        if not convo.history:
+        # 1. Obter o JSON enviado pelo frontend
+        data = request.json
+        session_id = data.get('profile', {}).get('sessionId')
+
+        if not session_id:
+            return jsonify({"error": "Nenhum ID de sessão fornecido."}), 400
+
+        # 2. Encontrar a conversa correta
+        convo = None
+        with convo_lock:
+            if session_id in active_conversations:
+                convo = active_conversations[session_id]
+
+        # 3. Usar a 'convo' específica da sessão
+        if not convo or not convo.history:
             return jsonify({"summary": "Ainda não há histórico de conversa."})
+        
+        # O resto da sua lógica original, mas usando a 'convo' correta
         formatted = "\n".join(
             f"{'Usuário' if m.role == 'user' else 'Assistente'}: {m.parts[0].text}"
             for m in convo.history if m.parts and hasattr(m.parts[0], 'text')
@@ -647,17 +666,33 @@ def summarize():
         prompt = f"Resuma a conversa em português, de forma breve e objetiva:\n\n{formatted}"
         response = model.generate_content(prompt)
         return jsonify({"summary": response.text})
+        
     except Exception as e:
         return jsonify({"error": f"Erro ao resumir: {e}"}), 500
 
 @app.route('/restart', methods=['POST'])
 def restart():
-    """Reinicia a conversa (limpa o histórico)."""
+    """Reinicia a conversa de uma sessão específica."""
     try:
-        convo.history.clear()
-        return jsonify({"status": "success", "message": "Conversa reiniciada."})
+        # O frontend deve enviar o profile com sessionId
+        data = request.json
+        session_id = data.get('profile', {}).get('sessionId')
+
+        if not session_id:
+            return jsonify({"error": "Nenhum ID de sessão fornecido."}), 400
+
+        # Limpa a sessão específica de forma thread-safe
+        with convo_lock:
+            if session_id in active_conversations:
+                del active_conversations[session_id]
+                print(f"Sessão {session_id} reiniciada.")
+
+        return jsonify({"status": "success", "message": f"Conversa da sessão {session_id} reiniciada."})
+
     except Exception as e:
+        traceback.print_exc()
         return jsonify({"error": f"Erro ao reiniciar: {e}"}), 500
+
 
 
 @app.route('/get-audio', methods=['POST'])

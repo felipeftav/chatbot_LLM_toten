@@ -265,6 +265,7 @@
             const role = document.getElementById('role-select').value;
             const interestArea = document.getElementById('interest-area-select').value;
             const objective = document.getElementById('objective-select').value;
+            const sessionId = crypto.randomUUID();
 
             if (name) {
                 // Preenche a variável userProfile com os dados do formulário
@@ -273,6 +274,7 @@
                     role,
                     interestArea,
                     objective,
+                    sessionId,
                 };
 
                 // Lógica de transição de tela
@@ -532,8 +534,17 @@
         summarizeButton.addEventListener('click', async () => {
             showTypingIndicator(); setUiDisabled(true);
             try {
-                const response = await fetch(`${backendUrl.replace('/chat', '/summarize')}`, { method: 'POST' });
+                // CORREÇÃO: Adiciona headers e o body com o userProfile
+                const response = await fetch(`${backendUrl.replace('/chat', '/summarize')}`, { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ profile: userProfile }) 
+                });
+                
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                // ... resto do código
                 const data = await response.json();
                 if (data.summary) { appendSystemMessage(data.summary); } 
                 else if (data.error) { appendSystemMessage(`<strong>Erro:</strong> ${data.error}`); }
@@ -561,8 +572,18 @@
         // --- LÓGICA: REINICIAR CONVERSA ---
         restartButton.addEventListener('click', async () => {
             try {
-                await fetch(`${backendUrl.replace('/chat', '/restart')}`, { method: 'POST' });
-                window.location.reload();
+                // CORREÇÃO: Adiciona headers e o body com o userProfile
+                await fetch(`${backendUrl.replace('/chat', '/restart')}`, { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ profile: userProfile }) 
+                });
+                
+                // Agora o reload faz sentido, pois o backend limpou a sessão
+                window.location.reload(); 
+                
             } catch (error) {
                 console.error('Erro ao reiniciar a conversa:', error);
                 appendSystemMessage('<strong>Erro:</strong> Não foi possível conectar ao servidor para reiniciar a conversa.');
