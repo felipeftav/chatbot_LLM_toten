@@ -82,7 +82,7 @@
                 </form>
             </div>
             <div id="splash-avatar-container" class="hidden lg:flex flex-shrink-0 w-64">
-                <img src="./assets/avatar_fechada.png" alt="Avatar da LIA" class="w-full h-auto rounded-3xl">
+                <img src="./assets/avatar_fechada.webp" alt="Avatar da LIA" class="w-full h-auto rounded-3xl">
             </div>
         </div>
 
@@ -164,7 +164,7 @@
         </div>
 
         <div id="avatar-container"> 
-            <img id="avatar-image" src="./assets/avatar_fechada.png" alt="Avatar da Assistente Virtual">
+            <img id="avatar-image" src="./assets/avatar_fechada.webp" alt="Avatar da Assistente Virtual">
         </div>
 
     </div>
@@ -322,39 +322,9 @@
         });
 
         // --- LÓGICA DE ANIMAÇÃO DO AVATAR ---
-        // let mouthAnimationInterval;
-        // const avatar_boca_fechada = './assets/avatar_fechada.png';
-        // const avatar_boca_aberta = './assets/avatar_aberta.png';
-
-        // function startTalkingAnimation() {
-        //     stopTalkingAnimation(); 
-        //     let isMouthOpen = false;
-            
-        //     const updateAvatar = () => {
-        //         const nextSrc = isMouthOpen ? avatar_boca_fechada : avatar_boca_aberta;
-        //         const uniqueSrc = nextSrc + "?ts=" + new Date().getTime();
-        //         const newImage = new Image();
-        //         newImage.onload = () => {
-        //             avatarImage.src = uniqueSrc;
-        //         };
-        //         newImage.src = uniqueSrc;
-        //         isMouthOpen = !isMouthOpen;
-        //     };
-        //     mouthAnimationInterval = setInterval(updateAvatar, 250);
-        // }
-
-        // function stopTalkingAnimation() {
-        //     if (mouthAnimationInterval) {
-        //         clearInterval(mouthAnimationInterval);
-        //         mouthAnimationInterval = null;
-        //     }
-        //     avatarImage.src = avatar_boca_fechada;
-        // }
-
-        // --- LÓGICA DE ANIMAÇÃO DO AVATAR ---
         let mouthAnimationInterval;
-        const avatar_boca_fechada = './assets/avatar_fechada.png';
-        const avatar_boca_aberta = './assets/avatar_aberta.png';
+        const avatar_boca_fechada = './assets/avatar_fechada.webp';
+        const avatar_boca_aberta = './assets/avatar_aberta.webp';
 
         // Pré-carregar imagens para evitar lag no início
         const imgFechada = new Image();

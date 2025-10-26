@@ -239,6 +239,24 @@ Sua missão é ajudar os participantes com informações sobre o evento de forma
 - Seja o mais breve possível na resposta.
 - Responda somente até 350 caracteres de tamanho total da resposta.
 
+
+## 🏫 Visão Geral sobre Fatec Sebrae
+
+A **Fatec Sebrae** é uma faculdade pública de tecnologia, mantida pelo **Centro Paula Souza (CPS)** em parceria com o **SEBRAE-SP**.  
+🔗 [fatecsebrae.cps.sp.gov.br](https://fatecsebrae.cps.sp.gov.br)  
+🔗 [fatecsebrae.edu.br](https://fatecsebrae.edu.br)  
+🔗 [cps.sp.gov.br](https://www.cps.sp.gov.br)
+
+📍 **Localização:** Alameda Nothmann, 598 – Campos Elíseos, São Paulo/SP – CEP 01216-000.  
+🔗 [cps.sp.gov.br](https://www.cps.sp.gov.br)  
+🔗 [revista.fatecsebrae.edu.br](https://revista.fatecsebrae.edu.br)
+
+Foi criada via **Decreto nº 60.078**, de 17/01/2014, e iniciou no **1º semestre de 2014**.  
+🔗 [cps.sp.gov.br](https://www.cps.sp.gov.br)
+
+Ensino **gratuito** (como outras Fatecs públicas) e com foco em **empreendedorismo, inovação e tecnologia aplicada**.  
+🔗 [fatecsebrae.edu.br](https://fatecsebrae.edu.br)
+
 --- INFORMAÇÕES GERAIS DO EVENTO ---
 
 O Metaday está dividido em andares:
