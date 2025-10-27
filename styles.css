@@ -153,22 +153,39 @@ body {
 @media (max-width: 767px) {
     #preset-buttons-container .flex {
         flex-wrap: nowrap;
-        overflow-x: auto;
+        overflow-x: auto;          /* permite rolagem horizontal */
+        overflow-y: hidden;        /* evita barra vertical */
         justify-content: flex-start;
         padding-left: 1rem;
         padding-right: 1rem;
         padding-bottom: 1rem;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
+        scrollbar-width: thin;     /* Firefox */
+        scrollbar-color: #d65223 transparent; /* cor da barra e do fundo */
     }
 
+    /* Estilo da scrollbar no Chrome/Safari/Edge */
     #preset-buttons-container .flex::-webkit-scrollbar {
-        display: none;
+        height: 6px; /* altura da barra horizontal */
+    }
+
+    #preset-buttons-container .flex::-webkit-scrollbar-track {
+        background: transparent; /* fundo da trilha */
+    }
+
+    #preset-buttons-container .flex::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #7c3aed, #a78bfa); /* roxo elegante */
+        border-radius: 4px;
+        transition: background 0.3s;
+    }
+
+    #preset-buttons-container .flex::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #6d28d9, #c4b5fd);
     }
 
     .preset-button {
         white-space: nowrap;
         flex-shrink: 0;
+        margin-right: 0.5rem; /* espaço entre botões */
     }
 }
 
