@@ -655,7 +655,7 @@ def chat():
 def suggest_topic():
     """Sugere um tópico curto para iniciar uma conversa."""
     try:
-        response = model.generate_content("Sugira uma pergunta breve e divertida que pareça vinda do próprio usuário, para começar a conversar sobre o evento Metaday.")
+        response = model.generate_content(f"Sugira uma pergunta breve e divertida que pareça vinda do próprio usuário, para começar a conversar sobre o evento Metaday. Leve em consideração o prompt do sustem completo com info {SYSTEM_INSTRUCTION}")
         return jsonify({"topic": response.text.strip()})
     except Exception as e:
         return jsonify({"error": f"Erro ao sugerir tópico: {e}"}), 500
