@@ -25,31 +25,31 @@
 </head>
 <body class="flex items-center justify-center h-screen p-4">
     <!-- ANTES: bg-white -->
-        <div id="splash-screen" class="bg-white/95 backdrop-blur-sm p-6 sm:p-8 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto flex flex-col items-center gap-6 border border-white/20">
+        <div id="splash-screen" class="bg-white/95 backdrop-blur-sm p-6 sm:p-8 rounded-3xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto flex flex-col items-center gap-3 border border-white/20">
         <div class="text-center w-full">
-            <h1 class="text-3xl md:text-4xl font-bold text-zinc-900 mb-2">Bem-vindo ao Metaday!</h1>
-            <p class="text-slate-600 text-lg mb-4">Antes de conversar com a <b>LIA (Assistente de IA)</b>, conte-nos um pouco sobre você.</p>
+            <h1 class="text-2xl md:text-3xl font-bold text-zinc-900 mb-2">Bem-vindo ao Metaday!</h1>
+            <p class="text-slate-600 text-base mb-4">Antes de conversar com a <b>LIA (Assistente de IA)</b>, conte-nos um pouco sobre você.</p>
         </div>
 
         <div class="flex flex-col lg:flex-row items-center justify-center gap-8 w-full">
             <div id="splash-content" class="flex-1 w-full">
                 <form id="start-form">
-                    <div class="space-y-4">
+                    <div class="space-y-3">
                         <div>
-                            <label for="name-input" class="block text-left text-lg font-bold text-slate-700 mb-2">Qual é o seu nome?</label>
-                            <input type="text" id="name-input" placeholder="Digite seu nome aqui" required class="w-full p-4 text-lg border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300">
+                            <label for="name-input" class="block text-left text-base font-bold text-slate-700 mb-2">Qual é o seu nome?</label>
+                            <input type="text" id="name-input" placeholder="Digite seu nome aqui" required class="w-full p-4 text-base border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300">
                         </div>
                         <div>
-                            <label for="role-select" class="block text-left text-lg font-bold text-slate-700 mb-2">Você é:</label>
-                            <select id="role-select" class="w-full p-4 text-lg border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300">
+                            <label for="role-select" class="block text-left text-base font-bold text-slate-700 mb-2">Você é:</label>
+                            <select id="role-select" class="w-full p-4 text-base border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300">
                                 <option value="aluno">Aluno(a)</option>
                                 <option value="visitante">Visitante</option>
                                 <option value="professor">Professor(a)</option>
                             </select>
                         </div>
                         <div>
-                            <label for="interest-area-select" class="block text-left text-lg font-bold text-slate-700 mb-2">Qual sua área de maior interesse?</label>
-                            <select id="interest-area-select" class="w-full p-4 text-lg border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300">
+                            <label for="interest-area-select" class="block text-left text-base font-bold text-slate-700 mb-2">Qual sua área de maior interesse?</label>
+                            <select id="interest-area-select" class="w-full p-4 text-base border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300">
                                 <option value="Ciência de Dados para Negócios">Ciência de Dados para Negócios</option>
                                 <option value="Negócios e Inovação">Gestão de Negócios e Inovação</option>
                                 <option value="Marketing">Marketing</option>
@@ -58,8 +58,8 @@
                             </select>
                         </div>
                         <div>
-                            <label for="objective-select" class="block text-left text-lg font-bold text-slate-700 mb-2">Seu principal objetivo no evento é:</label>
-                            <select id="objective-select" class="w-full p-4 text-lg border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300">
+                            <label for="objective-select" class="block text-left text-base font-bold text-slate-700 mb-2">Seu principal objetivo no evento é:</label>
+                            <select id="objective-select" class="w-full p-4 text-base border-2 border-slate-300 rounded-full focus:outline-none focus:ring-4 focus:ring-indigo-300 transition duration-300">
                                 <option value="conhecer os projetos">Conhecer os projetos dos alunos</option>
                                 <option value="assistir palestras">Assistir palestras / workshops</option>
                                 <option value="fazer networking">Fazer networking</option>
@@ -91,6 +91,18 @@
         <div class="w-full text-center mt-2">
         <button type="submit" form="start-form" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full p-4 text-xl font-bold hover:from-purple-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-purple-300 transition-all duration-300 active:scale-95 px-12 shadow-lg">                Iniciar Conversa
             </button>
+        </div>
+
+        <div class="text-center mt-2">
+            <p id="dev-credits" class="text-xs text-slate-500 cursor-pointer">
+                Desenvolvido por 
+                <strong>Felipe Tavares</strong>, 
+                <strong>Thiago Teles</strong>, 
+                <strong>Paulo Futagawa</strong>,
+                <strong>Thais Nakazone</strong> e
+                <strong>Riquelme Nichiyama</strong> - (CDN - 2º Semestre)
+            </p>
+        </div>
         </div>
     </div>
 
@@ -619,28 +631,111 @@
         updateTtsButtonIcon();
 
         document.addEventListener('DOMContentLoaded', () => {
-        const lgpdLink = document.getElementById('lgpd-info');
-        
-        const tooltip = document.createElement('div');
-        tooltip.id = 'lgpd-tooltip';
-        tooltip.className = 'hidden absolute bg-white border border-slate-300 p-3 rounded-xl shadow-lg max-w-xs text-sm text-slate-700';
-        tooltip.innerHTML = `
-            <strong>Resumo da LGPD:</strong><br>
-            A Lei Geral de Proteção de Dados (Lei nº 13.709/2018) garante que seus dados pessoais
-            só sejam usados com o seu consentimento e para finalidades legítimas, como melhorar sua
-            experiência neste evento. Nenhuma informação é compartilhada sem autorização.
-        `;
-        document.body.appendChild(tooltip);
+            
+            // --- LÓGICA UNIVERSAL PARA POSICIONAR TOOLTIPS ---
+            // Esta função centraliza a lógica para não repetir código
+            const positionTooltip = (tooltipElement, mouseEvent) => {
+                // Remove 'hidden' para calcular as dimensões
+                tooltipElement.classList.remove('hidden');
+                
+                const tooltipHeight = tooltipElement.offsetHeight;
+                const tooltipWidth = tooltipElement.offsetWidth;
+                const margin = 15; // Espaço do cursor
 
-        lgpdLink.addEventListener('mouseenter', (e) => {
-            tooltip.style.left = e.pageX + 'px';
-            tooltip.style.top = (e.pageY + 20) + 'px';
-            tooltip.classList.remove('hidden');
-        });
-        lgpdLink.addEventListener('mouseleave', () => {
-            tooltip.classList.add('hidden');
-        });
-        });
+                let top, left;
+
+                // Lógica Y (Cima/Baixo)
+                if (mouseEvent.clientY > window.innerHeight / 2) {
+                    // Mouse na metade de baixo -> Tooltip para CIMA
+                    top = mouseEvent.pageY - tooltipHeight - margin;
+                } else {
+                    // Mouse na metade de cima -> Tooltip para BAIXO
+                    top = mouseEvent.pageY + margin;
+                }
+
+                // Lógica X (Esquerda/Direita)
+                // Começa centralizado
+                left = mouseEvent.pageX - (tooltipWidth / 2);
+
+                // Ajusta se sair pela esquerda
+                if (left < margin) {
+                    left = margin;
+                }
+                // Ajusta se sair pela direita
+                if (left + tooltipWidth + margin > window.innerWidth) {
+                    left = window.innerWidth - tooltipWidth - margin;
+                }
+                
+                // Aplica as posições
+                tooltipElement.style.top = top + 'px';
+                tooltipElement.style.left = left + 'px';
+            };
+
+            // =================================================
+            //  TOOLTIP DA LGPD (COM LÓGICA INTELIGENTE)
+            // =================================================
+            const lgpdLink = document.getElementById('lgpd-info');
+            
+            const tooltip = document.createElement('div');
+            tooltip.id = 'lgpd-tooltip';
+            tooltip.className = 'hidden absolute bg-white border border-slate-300 p-3 rounded-xl shadow-lg max-w-xs text-sm text-slate-700 z-50';
+            tooltip.innerHTML = `
+                <strong>Resumo da LGPD:</strong><br>
+                A Lei Geral de Proteção de Dados (Lei nº 13.709/2018) garante que seus dados pessoais
+                só sejam usados com o seu consentimento e para finalidades legítimas, como melhorar sua
+                experiência neste evento. Nenhuma informação é compartilhada sem autorização.
+            `;
+            document.body.appendChild(tooltip);
+
+            // Eventos do tooltip da LGPD
+            lgpdLink.addEventListener('mouseenter', (e) => {
+                positionTooltip(tooltip, e); // Usa a nova função!
+            });
+            lgpdLink.addEventListener('mouseleave', () => {
+                tooltip.classList.add('hidden');
+            });
+
+            // =================================================
+            //  TOOLTIP DOS DEVS (COM LÓGICA INTELIGENTE)
+            // =================================================
+
+            // 1. Pega o elemento dos créditos
+            const devCreditsLink = document.getElementById('dev-credits');
+            
+            // 2. Cria o tooltip dos devs
+            const devTooltip = document.createElement('div');
+            devTooltip.id = 'dev-tooltip';
+            devTooltip.className = 'hidden absolute bg-white border border-slate-300 p-3 rounded-xl shadow-lg max-w-xs text-sm text-slate-700 z-50';
+            
+            // 3. Define o conteúdo (personalize aqui)
+            devTooltip.innerHTML = `
+                <strong>Sobre os Desenvolvedores:</strong><br>
+                Alunos do 2º Semestre de Ciência de Dados para Negócios da Fatec Sebrae.<br><br>
+                <strong>- Felipe Tavares</strong><br>
+                <strong>- Thiago Teles</strong><br>
+                <strong>- Paulo Futagawa</strong><br>
+                <strong>- Thais Nakazone</strong><br>
+                <strong>- Riquelme Nichiyama</strong><br><br>
+
+                <strong>Orientadores:</strong><br>
+                - Romulo Francisco de Souza Maia<br>
+                - Nathane de Castro
+            `;
+            
+            // 4. Adiciona o tooltip à página
+            document.body.appendChild(devTooltip);
+
+            // 5. Evento de mouse para o tooltip dos devs
+            devCreditsLink.addEventListener('mouseenter', (e) => {
+                positionTooltip(devTooltip, e); // Usa a nova função!
+            });
+
+            // 6. Evento de mouse para esconder
+            devCreditsLink.addEventListener('mouseleave', () => {
+                devTooltip.classList.add('hidden');
+            });
+
+        }); // Fim do 'DOMContentLoaded'
 
 
         const canvas = document.getElementById('particles');
@@ -689,7 +784,7 @@
 </head>
 <body>
   
-  <div class="event-status-badge">
+  <div class="event-status-badge cursor-pointer">
     <span class="status-pulse"></span>
     <span class="status-text">Evento ao vivo</span>
   </div>
