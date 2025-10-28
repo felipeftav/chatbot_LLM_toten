@@ -87,7 +87,18 @@
 
             <div id="splash-avatar-container" class="hidden lg:flex flex-col items-center gap-4 flex-shrink-0 w-64">
                 
-                <img src="./assets/avatar_fechada.webp" alt="Avatar da LIA" class="w-40 h-auto rounded-3xl mx-auto">
+                <!-- Vídeo com fallback -->
+                <video 
+                    autoplay 
+                    loop 
+                    muted 
+                    playsinline 
+                    class="w-40 h-auto rounded-3xl mx-auto">
+                    <source src="./assets/LIA - Splash.mp4" type="video/mp4">
+                    <!-- Fallback: imagem exibida se o vídeo não carregar -->
+                    <img src="./assets/avatar_fechada.webp" alt="Avatar da LIA">
+                    Seu navegador não suporta vídeo HTML5.
+                </video>
                 
                 <div class="text-center p-2">
                     <p class="text-sm font-semibold text-slate-700 mb-2">Acesse no seu celular:</p>
