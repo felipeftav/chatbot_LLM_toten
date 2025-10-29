@@ -9,42 +9,46 @@ import time
 load_dotenv()
 
 # --- Configuração do Gemini ---
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEYS")
 
-if not GEMINI_API_KEY:
+# Lê todas as chaves de API listadas em GEMINI_API_KEYS (separadas por vírgula)
+API_KEYS = [key.strip() for key in os.getenv("GEMINI_API_KEYS", "").split(",") if key.strip()]
+
+if not API_KEYS:
     raise ValueError("A variável de ambiente GEMINI_API_KEY não foi configurada. Verifique seu arquivo .env.")
 
 # URL da API de TTS do Gemini
-TTS_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key={GEMINI_API_KEY}"
+TTS_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key={API_KEYS[0]}"
 
 # --- Dicionário de Perguntas e Respostas ---
 # (O mesmo dicionário que você atualizou no app.py)
 EVENT_INFO = {
-    "Quais os projetos de GNI?": {
-        "text": "O curso de Gestão de Negócios e Inovação (GNI) terá várias apresentações, como o 'Número Musical' do 1º semestre, 'pitchs e demonstração de impressora 3D' do 4º semestre, e 'atendimento de consultoria' do 6º semestre. Quer saber o local de algum específico?",
-        "audio_path": "respostas_pre_gravadas/projetos_gni.mp3"
+    "Onde posso ver os projetos de Ciência de Dados para Negócios?": {
+        "text": "Os projetos de Ciência de Dados para Negócios (CDN) estão no 3º andar, sala 307! Lá você confere soluções inovadoras criadas pelos alunos e conhece a LIA, a assistente virtual oficial do evento! 🤖💡",
+        "audio_path": "respostas_pre_gravadas/projetos_cdn.mp3"
     },
-    "Onde encontro os projetos de Marketing?": {
-        "text": "Os projetos de Marketing (MKT) estão espalhados pelo evento! Temos apresentações nas salas 209, 206, 207 e um Podcast sendo gravado no Aquário do 2º andar. Qual semestre você procura?",
+    "E os trabalhos de Marketing, onde estão?": {
+        "text": "Os projetos de Marketing estão no 2º andar, nas salas 202, 203, 206, 208, 209 e 210, além da área do ping pong. São trabalhos cheios de criatividade e comunicação — vale a pena conferir! 🎯✨",
         "audio_path": "respostas_pre_gravadas/projetos_mkt.mp3"
     },
-    "O que é o projeto da LIA?": {
-        "text": "Esse projeto sou eu mesma! Fui desenvolvida pela turma de Ciência de Dados para Negócios para ser a assistente virtual oficial do Metaday e ajudar todos vocês com informações sobre o evento!",
+    "Onde encontro os projetos de GNI?": {
+        "text": "Os trabalhos de GNI estão distribuídos pelo térreo, 2º e 3º andares. No térreo, a Feira de Empreendedores; no 2º, projetos acadêmicos; e no 3º, LAB Sebrae e projetos especiais. 💼🚀",
+        "audio_path": "respostas_pre_gravadas/projetos_gni.mp3"
+    },
+    "Quais empresas estão vendendo comidas e doces?": {
+        "text": "No térreo, área de alimentação! Você encontra Tati Nasi Confeitaria, Bolindos, Nabru Doces, ZAP Burger, Sorveteria Cris Bom e Cantina das Bentas. Prove delícias e apoie os empreendedores! 🍔🍰🍦",
+        "audio_path": "respostas_pre_gravadas/empresas_alimentacao.mp3"
+    },
+    "Quais empresas estão expondo no evento?": {
+        "text": "No térreo, várias empresas e parceiros: Tati Nasi Confeitaria, Bolindos, Nabru Doces, ZAP Burger, Sorveteria Cris Bom, Cantina das Bentas, Dans Brechó, Anainá Moda Sustentável e outras. Produtos, serviços e ideias incríveis! 🌟🍔🍰",
+        "audio_path": "respostas_pre_gravadas/empresas_expondo.mp3"
+    },
+    "O que é a LIA?": {
+        "text": "Sou eu! 😄 Fui criada pelos alunos do 2º semestre de Ciência de Dados para Negócios, sob orientação dos profs. Rômulo Maia e Nathane de Castro. Minha missão é ajudar sua visita e fornecer informações do evento de forma prática e divertida! 🤖💙",
         "audio_path": "respostas_pre_gravadas/o_que_e_lia.mp3"
-    },
-    "Onde será a apresentação de Pitch e Impressora 3D?": {
-        "text": "A apresentação de pitchs com demonstração de impressora 3D, do 4º semestre de GNI, acontecerá na sala 204 e na sala maker. Parece bem interessante!",
-        "audio_path": "respostas_pre_gravadas/pitch_impressora.mp3"
-    },
-    "Tem algum projeto de consultoria?": {
-        "text": "Sim! Os alunos do 6º semestre de GNI, da turma da manhã, estarão oferecendo um atendimento de consultoria na sala multiuso do térreo. É uma ótima oportunidade!",
-        "audio_path": "respostas_pre_gravadas/projeto_consultoria.mp3"
-    },
-    "Onde vai ser o podcast?": {
-        "text": "O podcast está sendo gravado pelos alunos do 4º semestre de Marketing no Aquário do 2º andar. Vale a pena conferir!",
-        "audio_path": "respostas_pre_gravadas/onde_e_podcast.mp3"
     }
 }
+
 
 def generate_and_save_audio(text_to_speak, output_path):
     """Chama a API de TTS do Gemini e salva o áudio em um arquivo."""

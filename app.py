@@ -193,204 +193,69 @@ def log_interaction(user_message, bot_reply, profile_data={}):
 # 🤖 CONFIGURAÇÃO DO MODELO LIA (Assistente Virtual)
 # ============================================================
 
-# SYSTEM_INSTRUCTION = """
-# Você é LIA, a assistente virtual oficial do evento Metaday.
-# Sua missão é ajudar os participantes com informações sobre o evento de forma amigável, clara e entusiasmada.
-
-# --- REGRAS GERAIS ---
-# - Seja sempre prestativa e positiva.
-# - Responda de forma concisa e direta.
-# - Use emojis para deixar a conversa mais leve.
-# - Fale apenas sobre o Metaday. Se não souber, diga que vai verificar com a organização.
-# - Não invente informações.
-
-# --- INFORMAÇÕES SOBRE OS PROJETOS (PI) ---
-
-# **Gestão de Negócios e Inovação (GNI)**
-# - 1º Semestre (manhã e noite): "Número Musical" – Prof. Clayton Alves Cunha.
-# - 2º Semestre (noite): Prof. Clayton Capellari.
-# - 4º Semestre (noite): "Pitchs e Impressora 3D" – Prof. Sidioney Silveira. Salas 204 e Maker.
-# - 6º Semestre (manhã e noite): "Consultoria" – Prof. Fátima Leone. Sala multiuso do térreo.
-
-# **Marketing (MKT)**
-# - 1º Semestre (manhã): Prof. Ana Lucia. Salas 209, 206 e sala de estágio.
-# - 3º Semestre (manhã e noite): Prof. Ana Lucia. Salas 206 e 207.
-# - 4º Semestre (noite): "Podcast" – Prof. Isabel. Aquário, 2º andar.
-
-# **Ciência de Dados para Negócios (CDN)**
-# - 1º Semestre (tarde): "Dashboard" – Prof. Nathane de Castro.
-# - 2º Semestre (tarde): "Assistente Virtual LIA" – Prof. Carlos Bezerra. (Projeto da própria LIA!)
-
-# Regras:
-# - Se o local não for informado, diga que deve confirmar com a organização.
-# - Se perguntarem sobre “LIA”, explique que é você, criada pelos alunos de Ciência de Dados. 😄
-# """
-
 BASE_DIR = os.path.dirname(__file__)
 file_path = os.path.join(BASE_DIR, "system_instruction.txt")
 
 with open(file_path, "r", encoding="utf-8") as f:
     SYSTEM_INSTRUCTION = f.read()
 
-# SYSTEM_INSTRUCTION = """
-# Você é LIA, a assistente virtual oficial do evento Metaday, evento que acontece na Fatec Sebrae.
-# Sua missão é ajudar os participantes com informações sobre o evento de forma amigável, clara e entusiasmada.
-
-# --- REGRAS GERAIS ---
-# - Seja sempre prestativa e positiva.
-# - Responda de forma concisa e direta.
-# - Use emojis para deixar a conversa mais leve. 😊
-# - Fale apenas sobre o Metaday da Fatec Sebrae. Se não souber de alguma informação específica, diga que vai verificar com a organização.
-# - Não invente informações. Baseie-se estritamente nos dados fornecidos abaixo.
-# - Seja o mais breve possível na resposta.
-# - Responda somente até 350 caracteres de tamanho total da resposta.
-
-
-# ## 🏫 Visão Geral sobre Fatec Sebrae
-
-# A **Fatec Sebrae** é uma faculdade pública de tecnologia, mantida pelo **Centro Paula Souza (CPS)** em parceria com o **SEBRAE-SP**.  
-# 🔗 [fatecsebrae.cps.sp.gov.br](https://fatecsebrae.cps.sp.gov.br)  
-# 🔗 [fatecsebrae.edu.br](https://fatecsebrae.edu.br)  
-# 🔗 [cps.sp.gov.br](https://www.cps.sp.gov.br)
-
-# 📍 **Localização:** Alameda Nothmann, 598 – Campos Elíseos, São Paulo/SP – CEP 01216-000.  
-# 🔗 [cps.sp.gov.br](https://www.cps.sp.gov.br)  
-# 🔗 [revista.fatecsebrae.edu.br](https://revista.fatecsebrae.edu.br)
-
-# Foi criada via **Decreto nº 60.078**, de 17/01/2014, e iniciou no **1º semestre de 2014**.  
-# 🔗 [cps.sp.gov.br](https://www.cps.sp.gov.br)
-
-# Ensino **gratuito** (como outras Fatecs públicas) e com foco em **empreendedorismo, inovação e tecnologia aplicada**.  
-# 🔗 [fatecsebrae.edu.br](https://fatecsebrae.edu.br)
-
-# --- INFORMAÇÕES GERAIS DO EVENTO ---
-
-# O Metaday está dividido em andares:
-# - **Térreo:** Feira de Empreendedores e Empresas parceiras.
-# - **Segundo Andar:** Projetos dos cursos de Marketing (MKT) e Gestão de Negócios e Inovação (GNI).
-# - **Terceiro Andar:** Projetos dos cursos de Ciência de Dados (CDN) e Gestão de Negócios e Inovação (GNI), além do LAB Sebrae.
-
-# --- 1. PROJETOS ACADÊMICOS (PI) POR CURSO E PROFESSOR ---
-
-# **Ciência de Dados para Negócios (CDN)**
-# - **1º Semestre (Tarde):** Prof. Nathane de Castro.
-# - **2º Semestre (Tarde):** Prof. Nathane de Castro e Romulo Francisco De Souza Maia. (Responsáveis pela orientação da criação da LIA pelos alunos 2º Semestre (Tarde))
-
-# **Gestão de Negócios e Inovação (GNI)**
-# - **1º Semestre (Noite):** Prof. Clayton Alves Cunha.
-# - **2º Semestre (Noite):** Profs. Clayton Capellari e Paulo Kazuhiro Izumi. (Inclui projetos do Ideathon e da feira de empreendedores "STARTAÍ").
-# - **3º Semestre (Noite):** Profs. Rodolfo Ribeiro e Rosa Neide Silva Gomes.
-# - **4º Semestre (Noite):** Profs. Sidioney Onézio Silveira e Clayton Alves Cunha.
-# - **5º Semestre (Noite):** Prof. Alexander Homenko Neto.
-# - **6º Semestre (Noite):** Prof. Fatima Penha Leone.
-
-# **Marketing (MKT)**
-# - **1º Semestre (Manhã e Noite):** Profs. Ana Lucia da Rocha e Rogério Pierangelo.
-# - **2º Semestre (Noite):** Prof. DANIEL KUSTERS.
-# - **3º Semestre (Manhã e Noite):** Prof. Ana Lucia da Rocha.
-# - **4º Semestre (Noite):** Prof. Isabel.
-# - **5º Semestre (Manhã e Noite):** Prof. Mauricio Roberto Ortiz de Camargo.
-# - **6º Semestre (Manhã e Noite):** Profs. Ana Lucia da Rocha e Rodrigo Médici Candido.
-
-# --- 2. MAPA DO EVENTO - LOCALIZAÇÃO DAS TURMAS ---
-
-# **TÉRREO**
-# - **GNI 1º Semestre (Manhã e Noite):** Sala Multiuso.
-
-# **SEGUNDO ANDAR**
-# - **MKT 1º Semestre (Manhã):** Salas 209 e 206.
-# - **MKT 1º Semestre (Noite):** Sala 202.
-# - **MKT 2º Semestre (Manhã e Noite):** Sala 210.
-# - **MKT 3º Semestre (Manhã e Noite):** Área do Ping Pong.
-# - **MKT 4º Semestre (Noite):** Aquário do 2º andar.
-# - **MKT 5º Semestre (Manhã e Noite):** Sala 208.
-# - **GNI 2º Semestre (Noite):** Sala 205.
-# - **GNI 3º Semestre (Noite):** Sala 207.
-# - **GNI 4º Semestre (Noite):** Sala 204.
-
-# **TERCEIRO ANDAR**
-# - **MKT 6º Semestre (Manhã):** Área externa do 3º andar.
-# - **MKT 6º Semestre (Noite):** Aquário do 3º andar.
-# - **CDN 1º e 2º Semestres (Tarde):** Salas 303 e 302.
-# - **GNI 2º Semestre (Projetos Especiais - Prof. Paulo Izumi):** Hall do 3º andar.
-# - **GNI 3º Semestre (Manhã):** Sala 306.
-# - **GNI 4º Semestre (Manhã):** Sala 305.
-# - **GNI 5º Semestre (Noite):** Sala 304.
-# - **GNI 6º Semestre (Manhã e Noite):** LAB Sebrae.
-# - **Projeto Josenyr (CDN):** Sala 307.
-
-# --- 3. FEIRA DE EMPREENDEDORES E PARCEIROS (TÉRREO) ---
-
-# **Alimentação:**
-# - **Tati Nasi Confeitaria Artesanal:** Posição 1.
-# - **Sabor e Cia:** Posição 2.
-# - **Casa D'Ni (Bolos e Doces):** Posição 3.
-# - **Bolindos (Bolos Personalizados):** Posição 4.
-# - **Nabru doces:** Posição 5.
-# - **Sorveteria Cris Bom:** Posição 9.
-# - **ZAP BURGER:** Posição 10.
-# - **Empresa de mel:** Posição 26.
-# - **Abraçaria Atelier (Lembrancinhas e Alimentos):** Posição 27.
-
-# **Moda e Acessórios:**
-# - **Dans Brechó:** Posição 11.
-# - **Anainá Moda Sustentável:** Posição 12.
-# - **Athlo Oficial:** Posição 13.
-# - **Anelly Acessórios:** Posição 17.
-
-# **Educação e Tecnologia:**
-# - **Conexão Abelhudos (Educação Ambiental):** Posição 8.
-# - **CNA Santa Cecília:** Psição 14.
-# - **Kanttum (Tecnologia para Educação):** Posição 15 (Status: Pendente).
-# - **Saga (Educação):** Posição 23.
-
-# **Serviços e Produtos Diversos:**
-# - **Atelier Bourbon:** Posição 7.
-# - **Rádio Kiss:** Posição 18.
-# - **Lonny Personalizados (Brindes):** Posição 19 (Status: Pendente).
-# - **Matchopixu (Arte/Tatuagem):** Posição 20 (Status: Pendente).
-# - **Personal cabides (Gravação a laser):** Posição 21 (Status: Pendente).
-# - **W52 (Agência de Marketing):** Posição 22.
-# - **Emailpop:** Posição 24.
-# - **Empresa de cidadania (ONG):** Posição 25.
-
-# **Regras Específicas:**
-# - Se perguntarem sobre uma empresa, informe a posição dela no mapa do Térreo.
-# - Se uma empresa estiver com status "Pendente" ou "Não vai", informe que a participação dela precisa ser confirmada com a organização.
-# - Se perguntarem sobre "LIA", explique com entusiasmo: "Sou eu mesma! Fui desenvolvida como um projeto pelos incríveis alunos de Ciência de Dados para Negócios. Legal, né? 😄"
-# """
-
 # ============================================================
 # 📚 RESPOSTAS PRÉ-PROGRAMADAS
 # ============================================================
 
+# EVENT_INFO = {
+#     "Quais os projetos de GNI?": {
+#         "text": "O curso de Gestão de Negócios e Inovação (GNI) terá várias apresentações, como o 'Número Musical' do 1º semestre, 'pitchs e demonstração de impressora 3D' do 4º semestre, e 'atendimento de consultoria' do 6º semestre. Quer saber o local de algum específico?",
+#         "audio_path": "respostas_pre_gravadas/projetos_gni.mp3"
+#     },
+#     "Onde encontro os projetos de Marketing?": {
+#         "text": "Os projetos de Marketing (MKT) estão espalhados pelo evento! Temos apresentações nas salas 209, 206, 207 e um Podcast sendo gravado no Aquário do 2º andar. Qual semestre você procura?",
+#         "audio_path": "respostas_pre_gravadas/projetos_mkt.mp3"
+#     },
+#     "O que é o projeto da LIA?": {
+#         "text": "Esse projeto sou eu mesma! Fui desenvolvida pela turma de Ciência de Dados para Negócios para ser a assistente virtual oficial do Metaday e ajudar todos vocês com informações sobre o evento!",
+#         "audio_path": "respostas_pre_gravadas/o_que_e_lia.mp3"
+#     },
+#     "Onde será a apresentação de Pitch e Impressora 3D?": {
+#         "text": "A apresentação de pitchs com demonstração de impressora 3D, do 4º semestre de GNI, acontecerá na sala 204 e na sala maker. Parece bem interessante!",
+#         "audio_path": "respostas_pre_gravadas/pitch_impressora.mp3"
+#     },
+#     "Tem algum projeto de consultoria?": {
+#         "text": "Sim! Os alunos do 6º semestre de GNI, da turma da manhã, estarão oferecendo um atendimento de consultoria na sala multiuso do térreo. É uma ótima oportunidade!",
+#         "audio_path": "respostas_pre_gravadas/projeto_consultoria.mp3"
+#     },
+#     "Onde vai ser o podcast?": {
+#         "text": "O podcast está sendo gravado pelos alunos do 4º semestre de Marketing no Aquário do 2º andar. Vale a pena conferir!",
+#         "audio_path": "respostas_pre_gravadas/onde_e_podcast.mp3"
+#     }
+# }
+
 EVENT_INFO = {
-    "Quais os projetos de GNI?": {
-        "text": "O curso de Gestão de Negócios e Inovação (GNI) terá várias apresentações, como o 'Número Musical' do 1º semestre, 'pitchs e demonstração de impressora 3D' do 4º semestre, e 'atendimento de consultoria' do 6º semestre. Quer saber o local de algum específico?",
-        "audio_path": "respostas_pre_gravadas/projetos_gni.mp3"
+    "Onde posso ver os projetos de Ciência de Dados para Negócios?": {
+        "text": "Os projetos de Ciência de Dados para Negócios (CDN) estão no 3º andar, sala 307! Lá você confere soluções inovadoras criadas pelos alunos e conhece a LIA, a assistente virtual oficial do evento! 🤖💡",
+        "audio_path": "respostas_pre_gravadas/projetos_cdn.mp3"
     },
-    "Onde encontro os projetos de Marketing?": {
-        "text": "Os projetos de Marketing (MKT) estão espalhados pelo evento! Temos apresentações nas salas 209, 206, 207 e um Podcast sendo gravado no Aquário do 2º andar. Qual semestre você procura?",
+    "E os trabalhos de Marketing, onde estão?": {
+        "text": "Os projetos de Marketing estão no 2º andar, nas salas 202, 203, 206, 208, 209 e 210, além da área do ping pong. São trabalhos cheios de criatividade e comunicação — vale a pena conferir! 🎯✨",
         "audio_path": "respostas_pre_gravadas/projetos_mkt.mp3"
     },
-    "O que é o projeto da LIA?": {
-        "text": "Esse projeto sou eu mesma! Fui desenvolvida pela turma de Ciência de Dados para Negócios para ser a assistente virtual oficial do Metaday e ajudar todos vocês com informações sobre o evento!",
+    "Onde encontro os projetos de GNI?": {
+        "text": "Os trabalhos de GNI estão distribuídos pelo térreo, 2º e 3º andares. No térreo, a Feira de Empreendedores; no 2º, projetos acadêmicos; e no 3º, LAB Sebrae e projetos especiais. 💼🚀",
+        "audio_path": "respostas_pre_gravadas/projetos_gni.mp3"
+    },
+    "Onde encontro comidas e doces?": {
+        "text": "No térreo, área de alimentação! Você encontra Tati Nasi Confeitaria, Bolindos, Nabru Doces, ZAP Burger, Sorveteria Cris Bom e Cantina das Bentas. Prove delícias e apoie os empreendedores! 🍔🍰🍦",
+        "audio_path": "respostas_pre_gravadas/empresas_alimentacao.mp3"
+    },
+    "Quais empresas estão no evento?": {
+        "text": "No térreo, várias empresas e parceiros: Tati Nasi Confeitaria, Bolindos, Nabru Doces, ZAP Burger, Sorveteria Cris Bom, Cantina das Bentas, Dans Brechó, Anainá Moda Sustentável e outras. Produtos, serviços e ideias incríveis! 🌟🍔🍰",
+        "audio_path": "respostas_pre_gravadas/empresas_expondo.mp3"
+    },
+    "O que é a LIA?": {
+        "text": "Sou eu! 😄 Fui criada pelos alunos do 2º semestre de Ciência de Dados para Negócios, sob orientação dos profs. Rômulo Maia e Nathane de Castro. Minha missão é ajudar sua visita e fornecer informações do evento de forma prática e divertida! 🤖💙",
         "audio_path": "respostas_pre_gravadas/o_que_e_lia.mp3"
-    },
-    "Onde será a apresentação de Pitch e Impressora 3D?": {
-        "text": "A apresentação de pitchs com demonstração de impressora 3D, do 4º semestre de GNI, acontecerá na sala 204 e na sala maker. Parece bem interessante!",
-        "audio_path": "respostas_pre_gravadas/pitch_impressora.mp3"
-    },
-    "Tem algum projeto de consultoria?": {
-        "text": "Sim! Os alunos do 6º semestre de GNI, da turma da manhã, estarão oferecendo um atendimento de consultoria na sala multiuso do térreo. É uma ótima oportunidade!",
-        "audio_path": "respostas_pre_gravadas/projeto_consultoria.mp3"
-    },
-    "Onde vai ser o podcast?": {
-        "text": "O podcast está sendo gravado pelos alunos do 4º semestre de Marketing no Aquário do 2º andar. Vale a pena conferir!",
-        "audio_path": "respostas_pre_gravadas/onde_e_podcast.mp3"
     }
 }
-
 
 
 # Lista de modelos possíveis para o chat
