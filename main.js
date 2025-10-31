@@ -149,8 +149,8 @@ startForm.addEventListener('submit', async (e) => { // <-- 1. Adicionado 'async'
         if (matchedGuest) {
             // Mensagem personalizada para convidados especiais
             const description = specialGuests[matchedGuest];
-            welcomeMessageHTML = `Seja muito bem-vindo(a), <strong>${name}</strong>! 👏<br>É uma honra receber <strong>${description}</strong> neste evento!`;
-            welcomeMessageText = `Seja muito bem-vindo, ${name}! É uma honra receber ${description} neste evento!`;
+            welcomeMessageHTML = `Seja muito bem-vindo(a), <strong>${name}</strong>! 👏<br>É uma honra receber <strong>${description}</strong> neste evento!<br> Em que posso te ajudar?`;
+            welcomeMessageText = `Seja muito bem-vindo, ${name}! É uma honra receber ${description} neste evento! Em que posso te ajudar?`;
         } else {
             // Mensagem padrão
             welcomeMessageHTML = `Olá, <strong>${name}</strong>! 👋<br>Que legal que um(a) <strong>${role}</strong> com interesse em <strong>${interestArea}</strong> veio nos visitar! Estou pronta para te ajudar a <strong>${objective}</strong>. Sobre o que quer saber primeiro?`;
