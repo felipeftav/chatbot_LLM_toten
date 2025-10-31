@@ -85,7 +85,53 @@ startForm.addEventListener('submit', async (e) => { // <-- 1. Adicionado 'async'
     const sessionId = crypto.randomUUID();
 
     if (name) {
-        // Preenche a variável userProfile com os dados do formulário
+        // --- 1. Lista de pessoas importantes ---
+        const specialGuests = {
+            "clovis dias": "o presidente do Centro Paula Souza",
+            "maycon geres": "o vice-presidente do Centro Paula Souza.",
+            "robson dos santos": "o coordenador geral de Ensino Superior de Graduação do Centro Paula Souza",
+            "divanil antunes urbano": "o coordenador geral de Ensino Médio e Técnico do Centro Paula Souza",
+            "paulo marcelo tavares ribeiro": "o gerente da Unidade de Cultura Empreendedora do Sebrae-SP",
+            "andré velasques de oliveira": "o coordenador da Assessoria de Comunicação do Centro Paula Souza",
+            "marcos antonio maia lavio de oliveira": "o coordenador da Fatec Itapevi",
+            "paulo hélio kanayama": "o coordenador da Fatec Franco da Rocha",
+            "marta da silva": "a chefe da Divisão Educacional Regional 5",
+            "nelson hervey costa": "o diretor superintendente do Sebrae São Paulo",
+            "marco vinholi": "o diretor técnico do Sebrae São Paulo.",
+            "reinaldo pedro corrêa": "o diretor de administração e finanças do Sebrae São Paulo"
+        };
+
+        // --- 2. Função auxiliar para normalizar o nome ---
+        function normalize(str) {
+            return str
+                .normalize("NFD") // remove acentos
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase()
+                .trim();
+        }
+
+        const normalizedInput = normalize(name);
+        let matchedGuest = null;
+
+        // --- 3. Verifica se o nome digitado corresponde a algum da lista ---
+        for (const guestName in specialGuests) {
+            const normalizedGuest = normalize(guestName);
+
+            // Divide os nomes em palavras
+            const inputWords = normalizedInput.split(/\s+/);
+            const guestWords = normalizedGuest.split(/\s+/);
+
+            // Conta quantas palavras coincidem
+            const matchedWords = inputWords.filter(word => guestWords.includes(word)).length;
+
+            // Exige pelo menos 2 palavras coincidentes ou igualdade total
+            if (matchedWords >= 2 || normalizedInput === normalizedGuest) {
+                matchedGuest = guestName;
+                break;
+            }
+        }
+
+        // --- 4. Monta o perfil do usuário ---
         userProfile = {
             name,
             role,
@@ -94,41 +140,38 @@ startForm.addEventListener('submit', async (e) => { // <-- 1. Adicionado 'async'
             sessionId,
         };
 
-        // Lógica de transição de tela
+        // --- 5. Lógica de transição de tela ---
         splashScreen.style.display = 'none';
         mainContainer.style.display = 'flex';
-        
-        // --- NOVA LÓGICA DE TRANSIÇÃO ---
 
-        // 1. Mensagem com HTML (para depois)
-        const welcomeMessageHTML = `Olá, <strong>${name}</strong>! 👋<br>Que legal que um(a) <strong>${role}</strong> com interesse em <strong>${interestArea}</strong> veio nos visitar! Estou pronta para te ajudar a <strong>${objective}</strong>. Sobre o que quer saber primeiro?`;
-        
-        // 2. Mensagem em texto puro (para o áudio)
-        const welcomeMessageText = `Olá, ${name}! Que legal que um ${role} com interesse em ${interestArea} veio nos visitar! Estou pronta para te ajudar a ${objective}. Sobre o que quer saber primeiro?`;
+        let welcomeMessageHTML, welcomeMessageText;
 
-        // 3. Mostra o indicador de "digitando" para disfarçar o delay do áudio
+        if (matchedGuest) {
+            // Mensagem personalizada para convidados especiais
+            const description = specialGuests[matchedGuest];
+            welcomeMessageHTML = `Seja muito bem-vindo(a), <strong>${name}</strong>! 👏<br>É uma honra receber <strong>${description}</strong> neste evento!`;
+            welcomeMessageText = `Seja muito bem-vindo, ${name}! É uma honra receber ${description} neste evento!`;
+        } else {
+            // Mensagem padrão
+            welcomeMessageHTML = `Olá, <strong>${name}</strong>! 👋<br>Que legal que um(a) <strong>${role}</strong> com interesse em <strong>${interestArea}</strong> veio nos visitar! Estou pronta para te ajudar a <strong>${objective}</strong>. Sobre o que quer saber primeiro?`;
+            welcomeMessageText = `Olá, ${name}! Que legal que um ${role} com interesse em ${interestArea} veio nos visitar! Estou pronta para te ajudar a ${objective}. Sobre o que quer saber primeiro?`;
+        }
+
+        // --- 6. Mostra indicador e toca áudio ---
         showTypingIndicator();
-
-        // 4. Busca o áudio de boas-vindas e ESPERA a resposta
-        //    (Usa a função 'fetchWelcomeAudio' que será modificada abaixo)
         const audioData = await fetchWelcomeAudio(welcomeMessageText);
-
-        // 5. Quando o áudio estiver pronto (await terminou):
-        //    - Remove o indicador "digitando"
-        //    - Adiciona a mensagem visual
-        //    - Toca o áudio
         removeTypingIndicator();
         appendMessage('bot', welcomeMessageHTML);
-        playAudioFromData(audioData); // 'playAudioFromData' já checa se audioData é nulo
-        
-        // --- FIM DA NOVA LÓGICA ---
+        playAudioFromData(audioData);
 
+        // --- 7. Continua lógica normal ---
         resetInactivityTimer();
         window.addEventListener('mousemove', resetInactivityTimer);
         window.addEventListener('keydown', resetInactivityTimer);
         window.addEventListener('click', resetInactivityTimer);
         window.addEventListener('scroll', resetInactivityTimer, true);
     }
+
 });
 
 messageInput.addEventListener('keydown', function(event) {

@@ -203,33 +203,6 @@ with open(file_path, "r", encoding="utf-8") as f:
 # 📚 RESPOSTAS PRÉ-PROGRAMADAS
 # ============================================================
 
-# EVENT_INFO = {
-#     "Quais os projetos de GNI?": {
-#         "text": "O curso de Gestão de Negócios e Inovação (GNI) terá várias apresentações, como o 'Número Musical' do 1º semestre, 'pitchs e demonstração de impressora 3D' do 4º semestre, e 'atendimento de consultoria' do 6º semestre. Quer saber o local de algum específico?",
-#         "audio_path": "respostas_pre_gravadas/projetos_gni.mp3"
-#     },
-#     "Onde encontro os projetos de Marketing?": {
-#         "text": "Os projetos de Marketing (MKT) estão espalhados pelo evento! Temos apresentações nas salas 209, 206, 207 e um Podcast sendo gravado no Aquário do 2º andar. Qual semestre você procura?",
-#         "audio_path": "respostas_pre_gravadas/projetos_mkt.mp3"
-#     },
-#     "O que é o projeto da LIA?": {
-#         "text": "Esse projeto sou eu mesma! Fui desenvolvida pela turma de Ciência de Dados para Negócios para ser a assistente virtual oficial do Metaday e ajudar todos vocês com informações sobre o evento!",
-#         "audio_path": "respostas_pre_gravadas/o_que_e_lia.mp3"
-#     },
-#     "Onde será a apresentação de Pitch e Impressora 3D?": {
-#         "text": "A apresentação de pitchs com demonstração de impressora 3D, do 4º semestre de GNI, acontecerá na sala 204 e na sala maker. Parece bem interessante!",
-#         "audio_path": "respostas_pre_gravadas/pitch_impressora.mp3"
-#     },
-#     "Tem algum projeto de consultoria?": {
-#         "text": "Sim! Os alunos do 6º semestre de GNI, da turma da manhã, estarão oferecendo um atendimento de consultoria na sala multiuso do térreo. É uma ótima oportunidade!",
-#         "audio_path": "respostas_pre_gravadas/projeto_consultoria.mp3"
-#     },
-#     "Onde vai ser o podcast?": {
-#         "text": "O podcast está sendo gravado pelos alunos do 4º semestre de Marketing no Aquário do 2º andar. Vale a pena conferir!",
-#         "audio_path": "respostas_pre_gravadas/onde_e_podcast.mp3"
-#     }
-# }
-
 EVENT_INFO = {
     "Onde posso ver os projetos de Ciência de Dados para Negócios?": {
         "text": "Os projetos de Ciência de Dados para Negócios (CDN) estão no 3º andar, sala 307! Lá você confere soluções inovadoras criadas pelos alunos e conhece a LIA, a assistente virtual oficial do evento! 🤖💡",
