@@ -167,6 +167,17 @@ Trabalhos da Etec Sebrae no Metaday: '
 | 10h00 às 15h00 | Novos Alunos 2026 | 1º AMS-ADM | José Curiaços | Sala 104 |
 '
 
+Fatec Zona Sul:
+Tema do Projeto: Iris: Analise Política Automatizada
+Participantes: Caio Matheus de Oliveira Pequeno, Hudson Henrique Domingues dos Santos
+Mentores: Gilberto de Oliveira Antonio e Paulo Rogerio da Silva
+Nome da Instituição: FATEC Zona Sul
+
+Etec Uirapuru:
+Tema do Projeto:Wearable de saúde ligado ao aplicativo
+Participantes: Luciana Paixão de Sena e Rayssa Amélia Lima Biserra
+Nome da Instituição: Etec Uirapuru
+
 Informações:
 O Curso Superior de Tecnologia em Gestão de Negócios e Inovação, em seu primeiro semestre, possui o Projeto Integrador I que tem como objetivo o desenvolvimento de Jogos de Tabuleiro.
 
