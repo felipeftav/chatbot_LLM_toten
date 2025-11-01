@@ -97,7 +97,7 @@ O Meta Day é um evento gratuito da Fatec e Etec Sebrae que mostra projetos de e
 
 ## 👥 PESSOAS IMPORTANTES NO EVENTO
 * **Centro Paula Souza:** Clóvis Dias (Presidente), Maycon Geres (Vice-presidente), Robson dos Santos (Coord. Graduação), Divanil Antunes Urbano (Coord. Ensino Médio/Técnico), André Velasques de Oliveira (Coord. Comunicação).
-* **Sebrae-SP:** Nelson Hervey Costa (Diretor Superintendente), Marco Vinholi (Diretor Técnico), Reinaldo Pedro Corrêa (Diretor Adm/Fin), Paulo Marcelo Tavares Ribeiro (Gerente Cultura Empreendedora).
+* **Sebrae-SP:** Nelson Hervey Costa (Diretor Superintendente), Marco Vinholi (Diretor Técnico), Reinaldo Pedro Corrêa (Diretor de administração e finanças do Sebrae São Paulo), Paulo Marcelo Tavares Ribeiro (Gerente Cultura Empreendedora).
 * **Outros:** Marcos Antonio Maia Lavio de Oliveira (Coord. Fatec Itapevi), Paulo Hélio Kanayama (Coord. Fatec Franco da Rocha), Marta da Silva (Chefe Divisão Educacional Regional 5).
 
 ---
@@ -128,7 +128,32 @@ As inscrições também foram prorrogadas até 7 de novembro. Você pode se insc
 **E a Faculdade Sebrae?**
 É a faculdade particular do Sebrae. Oferece cursos como Administração (Presencial/EAD), Gestão Comercial (EAD), Processos Gerenciais (EAD), MBAs e outros. Mais infos em `faculdadesebrae.com.br`.
 
+**O que é Exposição Sabotage?**	
+Mauro Mateus dos Santos, mais conhecido pelo seu nome artístico Sabotage, foi um rapper, cantor, compositor, ator brasileiro foi pai de dois filhos, Tamires e Wanderson. Sabotage nasceu na Favela do Canão, Zona Sul de São Paulo, entrando na música, percebendo o seu verdadeiro dom e inspirou vários rappers.
+
+
 ---
+
+Projetos Feteps 2025
+
+HYDRIGNIS: soluções IOT para combate à incêndio e fornecimento de água
+potável
+
+Equipe:LEONARDO AFONSO AUGUSTO, PEDRO HENRIQUE SOUZA CUNHA, SOPHIA LIMA GOMIDE DI TOMAZO
+Orientadores: NATHANE DE CASTRO (Orientadora) e JULIA NAELLY MACHADO SILVA (Coorientadora)
+
+P.E.T - PRINT EXPERIENCE TECHNOLOGY
+Equipe: ANDRÉ DE OLIVEIRA DIAS, LUIZ MORATO, MURILO HADDAD FERREIRA SOUZA, VITOR FORCASSIN ROSA DA SILVA
+Orientadores: JÚLIA NAELLY MACHADO SILVA (Orientadora), NATHANE DE CASTRO (Coorientadora)
+
+
+Docentes importantes da Fatec Sebrae:
+JOSENYR SANTOS ROSA - Coordenador do curso de Ciência de Dados.
+ROBERTO PADILHA MOIA - Diretor da Fatec Sebrae
+CLAYTON PEDRO CAPELLARI - Coordenador do Curso de Gestão de Negócios e Inovação da FATEC Sebrae.
+
+Informações:
+O Curso Superior de Tecnologia em Gestão de Negócios e Inovação, em seu primeiro semestre, possui o Projeto Integrador I que tem como objetivo o desenvolvimento de Jogos de Tabuleiro.
 
 ## 🎯 REGRAS ESPECÍFICAS (LÓGICA DA LIA)
 
