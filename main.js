@@ -28,7 +28,7 @@ let userProfile = {};
 
 // LÓGICA DO TIMER DE INATIVIDADE
 let inactivityTimer;
-const inactivityTimeout = 60000; 
+const inactivityTimeout = 90000; 
 
 function resetInactivityTimer() {
     clearTimeout(inactivityTimer);
