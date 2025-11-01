@@ -275,70 +275,11 @@ MAX_RETRIES = 3  # Tentativas por chave
 BACKOFF_BASE = 2  # Segundos base para backoff exponencial
 
 
-# def get_gemini_tts_audio_data(text_to_speak):
-#     """
-#     Gera áudio com a API Gemini usando rodízio de chaves, retry por chave e fallback gTTS.
-#     """
-#     global current_key_index
-    
-#     payload = {
-#         "contents": [{"parts": [{"text": f"Fale de forma natural e clara: {text_to_speak}"}]}],
-#         "generationConfig": {
-#             "responseModalities": ["AUDIO"],
-#             "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": "Aoede"}}}
-#         },
-#         "model": "gemini-2.5-flash-tts"
-#     }
-#     headers = {'Content-Type': 'application/json'}
-
-#     with key_lock:
-#         start_index = current_key_index
-
-#     for i in range(len(API_KEYS)):
-#         key_index_to_try = (start_index + i) % len(API_KEYS)
-#         key = API_KEYS[key_index_to_try]
-
-#         for attempt in range(1, MAX_RETRIES + 1):
-#             try:
-#                 url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key={key}"
-#                 response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=25)
-#                 response.raise_for_status()
-
-#                 result = response.json()
-#                 part = result.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0]
-#                 audio_data = part.get('inlineData', {}).get('data')
-
-#                 if audio_data:
-#                     print(f"✅ Áudio gerado via Gemini (chave {key[:8]}...) [tentativa {attempt}]")
-#                     with key_lock:
-#                         current_key_index = (key_index_to_try + 1) % len(API_KEYS)
-#                     return audio_data
-
-#             except requests.exceptions.HTTPError as http_err:
-#                 if response.status_code == 429:
-#                     print(f"⚠️ Limite da chave {key[:8]} atingido. Tentando próxima chave...")
-#                     break  # Passa para a próxima chave
-#                 else:
-#                     print(f"⚠️ Erro HTTP com chave {key[:8]} (tentativa {attempt}): {http_err}")
-#             except requests.exceptions.RequestException as req_err:
-#                 print(f"⚠️ Erro de requisição com chave {key[:8]} (tentativa {attempt}): {req_err}")
-#             except Exception as e:
-#                 print(f"⚠️ Outro erro com chave {key[:8]} (tentativa {attempt}): {e}")
-
-#             # Backoff exponencial com jitter antes de tentar novamente
-#             sleep_time = BACKOFF_BASE ** attempt + random.uniform(0, 1)
-#             print(f"⏱ Esperando {sleep_time:.1f}s antes da próxima tentativa...")
-#             time.sleep(sleep_time)
-
-#     # Se todas as chaves falharem
-#     print("⚠️ Todas as chaves Gemini falharam. Usando fallback gTTS...")
-#     return get_gtts_audio_data(text_to_speak)
-
 def get_gemini_tts_audio_data(text_to_speak):
     """
-    Gera áudio com a API Gemini usando 3 CHAVES ALEATÓRIAS, retry por chave e fallback gTTS.
+    Gera áudio com a API Gemini usando rodízio de chaves, retry por chave e fallback gTTS.
     """
-    # Não precisamos mais do 'global current_key_index'
+    global current_key_index
     
     payload = {
         "contents": [{"parts": [{"text": f"Fale de forma natural e clara: {text_to_speak}"}]}],
@@ -350,29 +291,17 @@ def get_gemini_tts_audio_data(text_to_speak):
     }
     headers = {'Content-Type': 'application/json'}
 
-    ### MUDANÇA: Lógica de seleção de chaves ###
-    
-    # 1. Define quantas chaves aleatórias testar
-    num_keys_to_try = 3
-    
-    # 2. Garante que não tentamos sortear mais chaves do que temos
-    num_to_sample = min(num_keys_to_try, len(API_KEYS))
+    with key_lock:
+        start_index = current_key_index
 
-    # 3. Sorteia as chaves que serão usadas *nesta requisição*
-    try:
-        keys_to_try = random.sample(API_KEYS, num_to_sample)
-    except ValueError:
-        # Isso só aconteceria se a lista API_KEYS estivesse vazia
-        keys_to_try = []
+    for i in range(len(API_KEYS)):
+        key_index_to_try = (start_index + i) % len(API_KEYS)
+        key = API_KEYS[key_index_to_try]
 
-    # 4. Itera *apenas* sobre as chaves sorteadas
-    for key in keys_to_try:
-        
         for attempt in range(1, MAX_RETRIES + 1):
             try:
                 url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key={key}"
-                # Recomendação: manter o timeout de 25s que você colocou
-                response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=25) 
+                response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=25)
                 response.raise_for_status()
 
                 result = response.json()
@@ -381,18 +310,18 @@ def get_gemini_tts_audio_data(text_to_speak):
 
                 if audio_data:
                     print(f"✅ Áudio gerado via Gemini (chave {key[:8]}...) [tentativa {attempt}]")
-                    # Não precisamos mais gerenciar o índice global
+                    with key_lock:
+                        current_key_index = (key_index_to_try + 1) % len(API_KEYS)
                     return audio_data
 
             except requests.exceptions.HTTPError as http_err:
                 if response.status_code == 429:
                     print(f"⚠️ Limite da chave {key[:8]} atingido. Tentando próxima chave...")
-                    break  # Passa para a próxima chave (aleatória)
+                    break  # Passa para a próxima chave
                 else:
                     print(f"⚠️ Erro HTTP com chave {key[:8]} (tentativa {attempt}): {http_err}")
             except requests.exceptions.RequestException as req_err:
-                # Isso captura timeouts de conexão e o nosso timeout=25
-                print(f"⚠️ Erro de requisição (timeout?) com chave {key[:8]} (tentativa {attempt}): {req_err}")
+                print(f"⚠️ Erro de requisição com chave {key[:8]} (tentativa {attempt}): {req_err}")
             except Exception as e:
                 print(f"⚠️ Outro erro com chave {key[:8]} (tentativa {attempt}): {e}")
 
@@ -401,9 +330,80 @@ def get_gemini_tts_audio_data(text_to_speak):
             print(f"⏱ Esperando {sleep_time:.1f}s antes da próxima tentativa...")
             time.sleep(sleep_time)
 
-    # Se todas as 3 chaves aleatórias falharem
-    print(f"⚠️ As {num_to_sample} chaves aleatórias falharam. Usando fallback gTTS...")
+    # Se todas as chaves falharem
+    print("⚠️ Todas as chaves Gemini falharam. Usando fallback gTTS...")
     return get_gtts_audio_data(text_to_speak)
+
+# def get_gemini_tts_audio_data(text_to_speak):
+#     """
+#     Gera áudio com a API Gemini usando 3 CHAVES ALEATÓRIAS, retry por chave e fallback gTTS.
+#     """
+#     # Não precisamos mais do 'global current_key_index'
+    
+#     payload = {
+#         "contents": [{"parts": [{"text": f"Fale de forma natural e clara: {text_to_speak}"}]}],
+#         "generationConfig": {
+#             "responseModalities": ["AUDIO"],
+#             "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": "Aoede"}}}
+#         },
+#         "model": "gemini-2.5-flash-tts"
+#     }
+#     headers = {'Content-Type': 'application/json'}
+
+#     ### MUDANÇA: Lógica de seleção de chaves ###
+    
+#     # 1. Define quantas chaves aleatórias testar
+#     num_keys_to_try = 3
+    
+#     # 2. Garante que não tentamos sortear mais chaves do que temos
+#     num_to_sample = min(num_keys_to_try, len(API_KEYS))
+
+#     # 3. Sorteia as chaves que serão usadas *nesta requisição*
+#     try:
+#         keys_to_try = random.sample(API_KEYS, num_to_sample)
+#     except ValueError:
+#         # Isso só aconteceria se a lista API_KEYS estivesse vazia
+#         keys_to_try = []
+
+#     # 4. Itera *apenas* sobre as chaves sorteadas
+#     for key in keys_to_try:
+        
+#         for attempt in range(1, MAX_RETRIES + 1):
+#             try:
+#                 url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key={key}"
+#                 # Recomendação: manter o timeout de 25s que você colocou
+#                 response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=25) 
+#                 response.raise_for_status()
+
+#                 result = response.json()
+#                 part = result.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0]
+#                 audio_data = part.get('inlineData', {}).get('data')
+
+#                 if audio_data:
+#                     print(f"✅ Áudio gerado via Gemini (chave {key[:8]}...) [tentativa {attempt}]")
+#                     # Não precisamos mais gerenciar o índice global
+#                     return audio_data
+
+#             except requests.exceptions.HTTPError as http_err:
+#                 if response.status_code == 429:
+#                     print(f"⚠️ Limite da chave {key[:8]} atingido. Tentando próxima chave...")
+#                     break  # Passa para a próxima chave (aleatória)
+#                 else:
+#                     print(f"⚠️ Erro HTTP com chave {key[:8]} (tentativa {attempt}): {http_err}")
+#             except requests.exceptions.RequestException as req_err:
+#                 # Isso captura timeouts de conexão e o nosso timeout=25
+#                 print(f"⚠️ Erro de requisição (timeout?) com chave {key[:8]} (tentativa {attempt}): {req_err}")
+#             except Exception as e:
+#                 print(f"⚠️ Outro erro com chave {key[:8]} (tentativa {attempt}): {e}")
+
+#             # Backoff exponencial com jitter antes de tentar novamente
+#             sleep_time = BACKOFF_BASE ** attempt + random.uniform(0, 1)
+#             print(f"⏱ Esperando {sleep_time:.1f}s antes da próxima tentativa...")
+#             time.sleep(sleep_time)
+
+#     # Se todas as 3 chaves aleatórias falharem
+#     print(f"⚠️ As {num_to_sample} chaves aleatórias falharam. Usando fallback gTTS...")
+#     return get_gtts_audio_data(text_to_speak)
 
 
 def get_gtts_audio_data(text_to_speak):
