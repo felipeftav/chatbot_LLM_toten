@@ -23,31 +23,32 @@ TTS_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2
 # --- Dicionário de Perguntas e Respostas ---
 # (O mesmo dicionário que você atualizou no app.py)
 EVENT_INFO = {
-    "Onde posso ver os projetos de Ciência de Dados para Negócios?": {
-        "text": "Os projetos de Ciência de Dados para Negócios (CDN) estão no 3º andar, sala 307! Lá você confere soluções inovadoras criadas pelos alunos e conhece a LIA, a assistente virtual oficial do evento! 🤖💡",
-        "audio_path": "respostas_pre_gravadas/projetos_cdn.mp3"
-    },
-    "E os trabalhos de Marketing, onde estão?": {
-        "text": "Os projetos de Marketing estão no 2º andar, nas salas 202, 203, 206, 208, 209 e 210, além da área do ping pong. São trabalhos cheios de criatividade e comunicação — vale a pena conferir! 🎯✨",
-        "audio_path": "respostas_pre_gravadas/projetos_mkt.mp3"
-    },
-    "Onde encontro os projetos de GNI?": {
-        "text": "Os trabalhos de GNI estão distribuídos pelo térreo, 2º e 3º andares. No térreo, a Feira de Empreendedores; no 2º, projetos acadêmicos; e no 3º, LAB Sebrae e projetos especiais. 💼🚀",
-        "audio_path": "respostas_pre_gravadas/projetos_gni.mp3"
-    },
-    "Quais empresas estão vendendo comidas e doces?": {
-        "text": "No térreo, área de alimentação! Você encontra Tati Nasi Confeitaria, Bolindos, Nabru Doces, ZAP Burger, Sorveteria Cris Bom e Cantina das Bentas. Prove delícias e apoie os empreendedores! 🍔🍰🍦",
-        "audio_path": "respostas_pre_gravadas/empresas_alimentacao.mp3"
-    },
-    "Quais empresas estão expondo no evento?": {
-        "text": "No térreo, várias empresas e parceiros: Tati Nasi Confeitaria, Bolindos, Nabru Doces, ZAP Burger, Sorveteria Cris Bom, Cantina das Bentas, Dans Brechó, Anainá Moda Sustentável e outras. Produtos, serviços e ideias incríveis! 🌟🍔🍰",
-        "audio_path": "respostas_pre_gravadas/empresas_expondo.mp3"
-    },
+    # "Onde posso ver os projetos de Ciência de Dados para Negócios?": {
+    #     "text": "Os projetos de Ciência de Dados para Negócios estão no 3º andar, sala 307! 💡 Lá, os alunos mostram soluções inovadoras e é onde você encontra a LIA — eu! 🤖",
+    #     "audio_path": "respostas_pre_gravadas/projetos_cdn.mp3"
+    # },
+    # "E os trabalhos de Marketing, onde estão?": {
+    #     "text": "Os projetos de Marketing estão no 2º andar, nas salas 202, 203, 206, 208, 209, 210 e também na área do ping pong. 🎯 Uma mostra cheia de criatividade e estratégia!",
+    #     "audio_path": "respostas_pre_gravadas/projetos_mkt.mp3"
+    # },
+    # "Onde encontro os projetos de GNI?": {
+    #     "text": "Os projetos de Gestão de Negócios e Inovação (GNI) estão espalhados pelo térreo, 2º e 3º andares. 💼 No térreo há a Feira de Empreendedores, e nos outros andares, os projetos acadêmicos e especiais!",
+    #     "audio_path": "respostas_pre_gravadas/projetos_gni.mp3"
+    # },
+    # "Onde encontro comidas e doces?": {
+    #     "text": "A área de alimentação fica no térreo! 🍔🍰 Você encontra Tati Nasi Confeitaria, Bolindos, Nabru Doces, ZAP Burger, Sorveteria Cris Bom e Cantina das Bentas. Delícias feitas por empreendedores da feira!",
+    #     "audio_path": "respostas_pre_gravadas/empresas_alimentacao.mp3"
+    # },
+    # "Quais empresas estão no evento?": {
+    #     "text": "No térreo estão várias empresas e parceiros incríveis! 🌟 Como Tati Nasi, Bolindos, Nabru Doces, ZAP Burger, Sorveteria Cris Bom, Cantina das Bentas, Dans Brechó, Anainá Moda Sustentável e muitas outras!",
+    #     "audio_path": "respostas_pre_gravadas/empresas_expondo.mp3"
+    # },
     "O que é a LIA?": {
-        "text": "Sou eu! 😄 Fui criada pelos alunos do 2º semestre de Ciência de Dados para Negócios, sob orientação dos profs. Rômulo Maia e Nathane de Castro. Minha missão é ajudar sua visita e fornecer informações do evento de forma prática e divertida! 🤖💙",
+        "text": "Sou eu! 😄 Fui criada pelos alunos do 2º semestre de Ciência de Dados para Negócios — Felipe Tavares, Thiago Teles, Paulo Futagawa, Thais Nakazone e Riquelme Nichiyama — com orientação dos profs. Rômulo Maia e Nathane de Castro. Minha missão é ajudar você no Meta Day! 💙🤖",
         "audio_path": "respostas_pre_gravadas/o_que_e_lia.mp3"
     }
 }
+
 
 
 def generate_and_save_audio(text_to_speak, output_path):

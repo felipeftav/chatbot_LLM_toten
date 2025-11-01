@@ -50,7 +50,6 @@ O Meta Day é um evento gratuito da Fatec e Etec Sebrae que mostra projetos de e
 * **GNI 4º Sem (Manhã):** Sala 305 (Prof. Clayton Alves Cunha).
 * **GNI 5º Sem (Noite):** Sala 309 (Prof. Alexander Homenko Neto).
 * **GNI 6º Sem (Manhã/Noite):** LAB Sebrae (Profa. Fatima Penha Leone).
-* **Projeto Josenyr (CDN):** Sala 307.
 
 ---
 
@@ -146,11 +145,27 @@ P.E.T - PRINT EXPERIENCE TECHNOLOGY
 Equipe: ANDRÉ DE OLIVEIRA DIAS, LUIZ MORATO, MURILO HADDAD FERREIRA SOUZA, VITOR FORCASSIN ROSA DA SILVA
 Orientadores: JÚLIA NAELLY MACHADO SILVA (Orientadora), NATHANE DE CASTRO (Coorientadora)
 
-
 Docentes importantes da Fatec Sebrae:
 JOSENYR SANTOS ROSA - Coordenador do curso de Ciência de Dados.
 ROBERTO PADILHA MOIA - Diretor da Fatec Sebrae
 CLAYTON PEDRO CAPELLARI - Coordenador do Curso de Gestão de Negócios e Inovação da FATEC Sebrae.
+
+Trabalhos da Etec Sebrae no Metaday: '
+| Horário | Projeto | Curso/Turma | Professor | Sala |
+| :--- | :--- | :--- | :--- | :--- |
+| 10h00 às 13h00 | A História da Computação: Surgimento à Modernidade | 1º DS | Andre Luiz | 101 |
+| 9h30 às 12h00 | Aplicativo mobile para divulgação dos livros da biblioteca escolar | 2º DS | Francisco | 102 |
+| 10h00 às 12h00 | Oficina 1: Construção de relógio de Sol | 2º DS | Pepo | Laboratório de Ciências |
+| 13h30 às 15h00 | Oficina 2: Construção de espectroscópio | 2º DS | Pepo | Laboratório de Ciências |
+| 10h00 às 12h00 <br> 13h00 às 15h00 | Alice no país das Maravilhas | 2º Ensino Médio | Erica | Auditório |
+| 09h30 às 10h30 <br> 11h00 às 12h00 | Curta metragem "Arte em Ação nas Regiões do Brasil" | 2º Ensino Médio | João Henrique e Marly | Sala Maker |
+| 9h30 às 10h00 | Comunicação social: linguagens, tecnologias e memórias Ebook <br> Site - centro de memória virtual | 3º Ensino Médio | Ana Lúcia | Sala 106 |
+| 10h00 às 12h00 | Artigo Científico "Neuro divergência" | 3º Ensino Médio | João Henrique | Sala 106 |
+| 11h30 às 12h30 <br> 10h00 às 15h00 | Exposição "Plano de Comunicação" | 1º Marketing | Nicole e Marcos Cruz | Expositores |
+| 10h30 às 12h30 | App com uso do Arduíno <br> 1. Alarme de Segurança com sensor de movimento <br> 2. Semáforo para deficientes visuais <br> 3. Alarme a laser | 3º Módulo de Informática para Internet | Renato | Sala 103 |
+| 10h30 às 13h00 | ADMGAME: Jogo de tabuleiro - trilha de conhecimento | 1º AMS-ADM | Cleuseni e Rosania | Sala 105 |
+| 10h00 às 15h00 | Novos Alunos 2026 | 1º AMS-ADM | José Curiaços | Sala 104 |
+'
 
 Informações:
 O Curso Superior de Tecnologia em Gestão de Negócios e Inovação, em seu primeiro semestre, possui o Projeto Integrador I que tem como objetivo o desenvolvimento de Jogos de Tabuleiro.
