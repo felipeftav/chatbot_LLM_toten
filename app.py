@@ -302,7 +302,7 @@ def get_gemini_tts_audio_data(text_to_speak):
         for attempt in range(1, MAX_RETRIES + 1):
             try:
                 url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key={key}"
-                response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=25)
+                response = requests.post(url, headers=headers, data=json.dumps(payload), timeout=60)
                 response.raise_for_status()
 
                 result = response.json()
