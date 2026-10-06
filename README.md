@@ -10,6 +10,15 @@ A **LIA** é uma assistente virtual interativa orientada por Inteligência Artif
 
 ---
 
+## 📸 Demonstração da Interface
+
+| 🚀 Tela Inicial (Identificação) | 💬 Tela do Chat de Voz e Texto (LIA) |
+|:---:|:---:|
+| ![Tela Inicial de Boas-vindas](docs/screenshots/tela_inicial.png) | ![Tela de Chat da LIA](docs/screenshots/tela_chat.png) |
+
+
+---
+
 ## ✨ Funcionalidades Principais
 
 - 🎙️ **Interação por Voz (Speech-to-Text)**: Gravação direta no navegador com transcrição e entendimento de linguagem natural.
@@ -66,6 +75,9 @@ chatbot_LLM_toten/
 ├── data/                               # Dados, planilhas e prompts do sistema
 │   ├── system_instruction.txt          # Diretrizes e personalidade da LIA
 │   └── Base para a IA - MetaDay.xlsx   # Planilha de apoio de informações
+│
+├── docs/                               # Documentação e mídias visuais
+│   └── screenshots/                    # Capturas de tela para o README
 │
 ├── scripts/                            # Scripts utilitários de manutenção
 │   ├── convert_images.py               # Otimização de imagens para WebP
