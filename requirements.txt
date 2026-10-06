@@ -10,3 +10,4 @@ psycopg2-binary
 pytz
 SpeechRecognition
 pydub
+edge-tts>=6.1.12

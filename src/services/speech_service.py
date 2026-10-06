@@ -4,11 +4,13 @@ import io
 import json
 import random
 import base64
+import asyncio
 import requests
+import edge_tts
 from gtts import gTTS
 from pydub import AudioSegment
 import speech_recognition as sr
-from src.config import API_KEYS, MAX_RETRIES
+from src.config import API_KEYS, MAX_RETRIES, DEFAULT_TTS_VOICE, VOZES_TTS_VALIDAS
 
 
 def transcrever_audio_base64(audio_base64: str) -> str:
@@ -37,6 +39,47 @@ def transcrever_audio_base64(audio_base64: str) -> str:
     except Exception as e:
         print(f"⚠️ Erro na transcrição do áudio: {e}")
         return "[Falha na transcrição]"
+
+
+async def _synthesize_edge_tts_async(text: str, voice: str) -> bytes:
+    """Função assíncrona interna para sintetizar áudio via edge_tts Communicate stream."""
+    communicate = edge_tts.Communicate(text, voice=voice)
+    chunks = []
+    async for chunk in communicate.stream():
+        if chunk["type"] == "audio":
+            chunks.append(chunk["data"])
+    return b"".join(chunks)
+
+
+def get_edge_tts_audio_data(text_to_speak: str, voice: str = DEFAULT_TTS_VOICE) -> str:
+    """
+    Sintetiza áudio utilizando Edge-TTS com voz neural (padrão: Thalita Multilingual).
+    Retorna os dados do arquivo MP3 codificados em base64.
+    """
+    try:
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        if loop.is_running():
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                audio_bytes = executor.submit(
+                    asyncio.run, _synthesize_edge_tts_async(text_to_speak, voice)
+                ).result()
+        else:
+            audio_bytes = loop.run_until_complete(
+                _synthesize_edge_tts_async(text_to_speak, voice)
+            )
+
+        if not audio_bytes:
+            raise ValueError("Edge-TTS retornou buffer de áudio vazio.")
+
+        return base64.b64encode(audio_bytes).decode("utf-8")
+    except Exception as e:
+        raise RuntimeError(f"Falha no Edge-TTS ({voice}): {e}")
 
 
 def get_gemini_tts_audio_data(text_to_speak: str) -> str:
@@ -98,7 +141,7 @@ def get_gemini_tts_audio_data(text_to_speak: str) -> str:
 
 
 def get_gtts_audio_data(text_to_speak: str) -> str:
-    """Fallback de síntese de voz usando gTTS."""
+    """Fallback final de síntese de voz usando gTTS."""
     try:
         print("ℹ️ Usando gTTS como alternativa...")
         tts = gTTS(text=text_to_speak, lang="pt-br")
@@ -110,13 +153,22 @@ def get_gtts_audio_data(text_to_speak: str) -> str:
         return ""
 
 
-def get_tts_audio_data(text_to_speak: str) -> str:
+def get_tts_audio_data(text_to_speak: str, voice: str = DEFAULT_TTS_VOICE) -> str:
     """
-    Função principal de TTS: tenta gerar via Gemini TTS e, em caso de erro,
-    recorre ao fallback com gTTS.
+    Função principal de TTS com fallback em cascata:
+    1. Edge-TTS (voz prioritária: pt-BR-ThalitaMultilingualNeural)
+    2. Fallback 1: Gemini TTS
+    3. Fallback 2: gTTS
     """
     try:
+        return get_edge_tts_audio_data(text_to_speak, voice=voice)
+    except Exception as e_edge:
+        print(f"⚠️ Erro no Edge-TTS ({e_edge}). Tentando fallback com Gemini TTS...")
+
+    try:
         return get_gemini_tts_audio_data(text_to_speak)
-    except Exception as e:
-        print(f"⚠️ Erro no Gemini TTS ({e}). Acionando fallback gTTS...")
-        return get_gtts_audio_data(text_to_speak)
+    except Exception as e_gemini:
+        print(f"⚠️ Erro no Gemini TTS ({e_gemini}). Acionando fallback gTTS...")
+
+    return get_gtts_audio_data(text_to_speak)
+

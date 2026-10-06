@@ -4,7 +4,7 @@ import base64
 import json
 import traceback
 from flask import Flask, request, jsonify, render_template, send_from_directory
-from src.config import STATIC_DIR
+from src.config import STATIC_DIR, DEFAULT_TTS_VOICE
 from src.database import log_interaction
 from src.services.faq_service import EVENT_INFO
 from src.services.gemini_service import (
@@ -39,6 +39,7 @@ def register_routes(app: Flask) -> None:
         user_message_to_log = None
         profile = {}
         session_id = None
+        selected_voice = DEFAULT_TTS_VOICE
 
         try:
             # 1. Fluxo de entrada por ÁUDIO (multipart/form-data)
@@ -67,11 +68,13 @@ def register_routes(app: Flask) -> None:
                 user_message_to_log = f"[ÁUDIO ENVIADO]: {texto}"
                 bot_reply_text = response.text
                 tts_is_enabled = True
+                selected_voice = request.form.get("voice", DEFAULT_TTS_VOICE)
 
             # 2. Fluxo de entrada por TEXTO ou PERGUNTA PRESET (JSON)
             elif request.is_json:
                 data = request.json or {}
                 tts_is_enabled = data.get("tts_enabled", False)
+                selected_voice = data.get("voice", DEFAULT_TTS_VOICE)
                 profile = data.get("profile", {})
                 session_id = profile.get("sessionId")
 
@@ -95,9 +98,9 @@ def register_routes(app: Flask) -> None:
                                         audio_base64 = base64.b64encode(f.read()).decode("utf-8")
                                 except Exception as e:
                                     print(f"⚠️ Erro ao carregar áudio preset: {e}")
-                                    audio_base64 = get_tts_audio_data(bot_reply_text)
+                                    audio_base64 = get_tts_audio_data(bot_reply_text, voice=selected_voice)
                             else:
-                                audio_base64 = get_tts_audio_data(bot_reply_text)
+                                audio_base64 = get_tts_audio_data(bot_reply_text, voice=selected_voice)
                     else:
                         convo.send_message(question)
                         bot_reply_text = convo.last.text
@@ -118,7 +121,7 @@ def register_routes(app: Flask) -> None:
 
             # 5. Síntese de voz TTS quando ativado e sem áudio pré-gravado
             if audio_base64 is None and tts_is_enabled and bot_reply_text:
-                audio_base64 = get_tts_audio_data(bot_reply_text)
+                audio_base64 = get_tts_audio_data(bot_reply_text, voice=selected_voice)
 
             return jsonify({
                 "reply": bot_reply_text,
@@ -203,7 +206,8 @@ def register_routes(app: Flask) -> None:
             if not text_to_speak:
                 return jsonify({"error": "Nenhum texto fornecido."}), 400
 
-            audio_base64 = get_tts_audio_data(text_to_speak)
+            voice = data.get("voice", DEFAULT_TTS_VOICE)
+            audio_base64 = get_tts_audio_data(text_to_speak, voice=voice)
             return jsonify({"audioData": audio_base64})
 
         except Exception as e:

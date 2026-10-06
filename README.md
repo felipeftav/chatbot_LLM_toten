@@ -22,7 +22,7 @@ A **LIA** é uma assistente virtual interativa orientada por Inteligência Artif
 ## ✨ Funcionalidades Principais
 
 - 🎙️ **Interação por Voz (Speech-to-Text)**: Gravação direta no navegador com transcrição e entendimento de linguagem natural.
-- 🔊 **Síntese de Voz Humana (Text-to-Speech)**: Respostas faladas naturalmente via **Gemini 2.5 Flash Preview TTS**, com fallback resiliente para **gTTS**.
+- 🔊 **Síntese de Voz Neural (Text-to-Speech)**: Respostas faladas de forma ultra-natural via **Edge-TTS** com a voz prioritária **`Thalita (Multilingual)`** (`pt-BR-ThalitaMultilingualNeural`), catálogo de vozes ativas (`Antonio` e `Francisca`) e fallbacks automáticos em cascata para **Gemini TTS** e **gTTS**.
 - ⚡ **Respostas Instantâneas (FAQ & Áudios Gravados)**: Perguntas frequentes do evento possuem áudios pré-gravados em alta fidelidade para resposta com latência zero.
 - 🎨 **Interface Moderna para Totens**: Layout responsivo com Tailwind CSS, avatar animado, partículas visuais interativas e integração com **VLibras** para acessibilidade.
 - 🛡️ **Arquitetura Segura e Modular**: Separação rigorosa de rotas, serviços de IA, áudio, banco de dados e arquivos estáticos, sem expor arquivos confidenciais.
@@ -54,7 +54,7 @@ sequenceDiagram
     GeminiSvc-->>Flask: Retorna resposta em texto
     
     opt Síntese de Voz Ativada
-        Flask->>AudioSvc: Gera áudio (Gemini TTS / gTTS)
+        Flask->>AudioSvc: Gera áudio (Edge-TTS Thalita -> Gemini TTS -> gTTS)
         AudioSvc-->>Flask: Retorna áudio em Base64
     end
 
@@ -203,7 +203,7 @@ Abra no navegador:
 Na pasta `scripts/`, você encontra utilitários auxiliares:
 
 - **`scripts/create_audio.py`**:
-  Gera previamente os áudios das perguntas frequentes usando o Gemini TTS e salva em `static/audio/respostas_pre_gravadas/`.
+  Gera previamente os áudios das perguntas frequentes em formato MP3 usando **Edge-TTS** (com a voz `pt-BR-ThalitaMultilingualNeural`) e salva em `static/audio/respostas_pre_gravadas/`.
   ```powershell
   python scripts/create_audio.py
   ```

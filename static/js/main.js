@@ -473,7 +473,26 @@ let isTtsEnabled=true;let currentAudio=null;const iconSoundOn=`<svg xmlns="http:
 function base64ToArrayBuffer(b){const s=window.atob(b);const l=s.length;const B=new Uint8Array(l);for(let i=0;i<l;i++){B[i]=s.charCodeAt(i)}return B.buffer}
 function pcmToWavBlob(d){const r=24000;const p=base64ToArrayBuffer(d);const D=new Int16Array(p);const h=new ArrayBuffer(44);const v=new DataView(h);v.setUint32(0,1380533830,false);v.setUint32(4,36+D.byteLength,true);v.setUint32(8,1463899717,false);v.setUint32(12,1718449184,false);v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,r,true);v.setUint32(28,r*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);v.setUint32(36,1684108385,false);v.setUint32(40,D.byteLength,true);return new Blob([h,D],{type:'audio/wav'})}
 
-const playAudioFromData=(d)=>{if(currentAudio){currentAudio.pause()}stopTalkingAnimation();if(!isTtsEnabled||!d)return;try{const b=pcmToWavBlob(d);const u=URL.createObjectURL(b);currentAudio=new Audio(u);currentAudio.addEventListener('play',startTalkingAnimation);currentAudio.addEventListener('ended',stopTalkingAnimation);currentAudio.addEventListener('pause',stopTalkingAnimation);currentAudio.addEventListener('error',stopTalkingAnimation);currentAudio.play()}catch(e){console.error("Erro ao tocar áudio:",e)}};
+function createAudioBlobFromBase64(base64Data){
+    const buffer = base64ToArrayBuffer(base64Data);
+    const bytes = new Uint8Array(buffer);
+    if(bytes.length >= 3){
+        // MP3: Tag ID3 ('ID3') ou Sync frame MPEG (0xFF 0xEx)
+        const isId3 = bytes[0] === 0x49 && bytes[1] === 0x44 && bytes[2] === 0x33;
+        const isMpegSync = bytes[0] === 0xFF && (bytes[1] & 0xE0) === 0xE0;
+        if(isId3 || isMpegSync){
+            return new Blob([buffer], { type: 'audio/mpeg' });
+        }
+        // WAV: Cabeçalho RIFF ('RIFF')
+        if(bytes.length >= 4 && bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46){
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+    }
+    // Fallback: PCM bruto legado (Gemini TTS)
+    return pcmToWavBlob(base64Data);
+}
+
+const playAudioFromData=(d)=>{if(currentAudio){currentAudio.pause()}stopTalkingAnimation();if(!isTtsEnabled||!d)return;try{const b=createAudioBlobFromBase64(d);const u=URL.createObjectURL(b);currentAudio=new Audio(u);currentAudio.addEventListener('play',startTalkingAnimation);currentAudio.addEventListener('ended',stopTalkingAnimation);currentAudio.addEventListener('pause',stopTalkingAnimation);currentAudio.addEventListener('error',stopTalkingAnimation);currentAudio.play()}catch(e){console.error("Erro ao tocar áudio:",e)}};
 const updateTtsButtonIcon=()=>{ttsButton.innerHTML=isTtsEnabled?iconSoundOn:iconSoundOff};
 ttsButton.addEventListener('click',()=>{isTtsEnabled=!isTtsEnabled;updateTtsButtonIcon();if(!isTtsEnabled&&currentAudio){currentAudio.pause()}});
 updateTtsButtonIcon();

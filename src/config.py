@@ -39,6 +39,14 @@ GEMINI_MODELS = [
     "gemini-3.8-flash",       # Fallback 2: alta precisão
 ]
 
+# Configurações de Voz (Edge-TTS)
+VOZES_TTS_VALIDAS = {
+    "Thalita (Multilingual)": "pt-BR-ThalitaMultilingualNeural",
+    "Antonio": "pt-BR-AntonioNeural",
+    "Francisca": "pt-BR-FranciscaNeural",
+}
+DEFAULT_TTS_VOICE = os.getenv("TTS_VOICE", "pt-BR-ThalitaMultilingualNeural")
+
 # Configurações de retentativas
 MAX_RETRIES = 3
 
