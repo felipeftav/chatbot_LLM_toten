@@ -1,3 +1,56 @@
+# Ambientes Virtuais
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Variáveis de ambiente e segredos
 .env
-indexx.html
-api_limit.py
+.env.*
+!.env.example
+
+# Python cache e compilação
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Arquivos temporários de áudio e mídia
+temp_*
+*.temp
+*.tmp
+*.log
+
+# Arquivos de design e backups pesados
+.archive/
+*.psd
+*.zip
+*.bak
+
+# IDEs e Editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db

@@ -25,27 +25,27 @@ TTS_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2
 EVENT_INFO = {
     # "Onde posso ver os projetos de Ciência de Dados para Negócios?": {
     #     "text": "Os projetos de Ciência de Dados para Negócios estão no 3º andar, sala 307! 💡 Lá, os alunos mostram soluções inovadoras e é onde você encontra a LIA — eu! 🤖",
-    #     "audio_path": "respostas_pre_gravadas/projetos_cdn.mp3"
+    #     "audio_path": "static/audio/respostas_pre_gravadas/projetos_cdn.mp3"
     # },
     # "E os trabalhos de Marketing, onde estão?": {
     #     "text": "Os projetos de Marketing estão no 2º andar, nas salas 202, 203, 206, 208, 209, 210 e também na área do ping pong. 🎯 Uma mostra cheia de criatividade e estratégia!",
-    #     "audio_path": "respostas_pre_gravadas/projetos_mkt.mp3"
+    #     "audio_path": "static/audio/respostas_pre_gravadas/projetos_mkt.mp3"
     # },
     # "Onde encontro os projetos de GNI?": {
     #     "text": "Os projetos de Gestão de Negócios e Inovação (GNI) estão espalhados pelo térreo, 2º e 3º andares. 💼 No térreo há a Feira de Empreendedores, e nos outros andares, os projetos acadêmicos e especiais!",
-    #     "audio_path": "respostas_pre_gravadas/projetos_gni.mp3"
+    #     "audio_path": "static/audio/respostas_pre_gravadas/projetos_gni.mp3"
     # },
     # "Onde encontro comidas e doces?": {
     #     "text": "A área de alimentação fica no térreo! 🍔🍰 Você encontra Tati Nasi Confeitaria, Bolindos, Nabru Doces, ZAP Burger, Sorveteria Cris Bom e Cantina das Bentas. Delícias feitas por empreendedores da feira!",
-    #     "audio_path": "respostas_pre_gravadas/empresas_alimentacao.mp3"
+    #     "audio_path": "static/audio/respostas_pre_gravadas/empresas_alimentacao.mp3"
     # },
     # "Quais empresas estão no evento?": {
     #     "text": "No térreo estão várias empresas e parceiros incríveis! 🌟 Como Tati Nasi, Bolindos, Nabru Doces, ZAP Burger, Sorveteria Cris Bom, Cantina das Bentas, Dans Brechó, Anainá Moda Sustentável e muitas outras!",
-    #     "audio_path": "respostas_pre_gravadas/empresas_expondo.mp3"
+    #     "audio_path": "static/audio/respostas_pre_gravadas/empresas_expondo.mp3"
     # },
     "O que é a LIA?": {
         "text": "Sou eu! 😄 Fui criada pelos alunos do 2º semestre de Ciência de Dados para Negócios — Felipe Tavares, Thiago Teles, Paulo Futagawa, Thais Nakazone e Riquelme Nichiyama — com orientação dos profs. Rômulo Maia e Nathane de Castro. Minha missão é ajudar você no Meta Day! 💙🤖",
-        "audio_path": "respostas_pre_gravadas/o_que_e_lia.mp3"
+        "audio_path": "static/audio/respostas_pre_gravadas/o_que_e_lia.mp3"
     }
 }
 

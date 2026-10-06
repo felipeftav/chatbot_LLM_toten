@@ -183,8 +183,8 @@ messageInput.addEventListener('keydown', function(event) {
 
 // --- LÓGICA DE ANIMAÇÃO DO AVATAR ---
 let mouthAnimationInterval;
-const avatar_boca_fechada = './assets/avatar_fechada.webp';
-const avatar_boca_aberta = './assets/avatar_aberta.webp';
+const avatar_boca_fechada = '/static/images/avatar_fechada.webp';
+const avatar_boca_aberta = '/static/images/avatar_aberta.webp';
 
 // Pré-carregar imagens para evitar lag no início
 const imgFechada = new Image();
