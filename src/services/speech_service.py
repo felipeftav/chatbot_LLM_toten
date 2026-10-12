@@ -100,7 +100,7 @@ def get_gemini_tts_audio_data(text_to_speak: str) -> str:
                 }
             },
         },
-        "model": "gemini-2.5-flash-tts",
+        "model": "gemini-3.8-flash-lite-tts",
     }
     headers = {"Content-Type": "application/json"}
 
@@ -111,7 +111,7 @@ def get_gemini_tts_audio_data(text_to_speak: str) -> str:
             try:
                 url = (
                     f"https://generativelanguage.googleapis.com/v1beta/models/"
-                    f"gemini-2.5-flash-preview-tts:generateContent?key={key}"
+                    f"gemini-3.8-flash-lite-tts:generateContent?key={key}"
                 )
                 response = requests.post(
                     url, headers=headers, data=json.dumps(payload), timeout=25

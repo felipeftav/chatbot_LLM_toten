@@ -174,7 +174,7 @@ python app.py
 Você verá a saída de confirmação no terminal:
 ```text
 ✅ Chave Gemini válida configurada: AIzaSy...
-🤖 Modelo Gemini selecionado: gemini-2.5-flash-lite
+🤖 Modelo Gemini ativo em execução: gemini-3.5-flash-lite
  * Running on http://127.0.0.1:5000
 ```
 

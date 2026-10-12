@@ -9,8 +9,8 @@ from src.config import (
     configure_genai_with_available_key,
 )
 
-# Inicializa e valida a chave com o modelo prioritário
-configure_genai_with_available_key()
+# Inicializa e valida a chave com o melhor modelo disponível
+_, selected_model_name = configure_genai_with_available_key()
 
 # Carrega a instrução de sistema da LIA
 prompt_file = DATA_DIR / "system_instruction.txt"
@@ -20,9 +20,7 @@ if prompt_file.exists():
 else:
     SYSTEM_INSTRUCTION = "Você é a LIA, assistente virtual do evento Meta Day."
 
-# Prioriza o modelo mais rápido e econômico (gemini-2.5-flash-lite)
-selected_model_name = GEMINI_MODELS[0]
-print(f"🤖 Modelo Gemini prioritário em execução: {selected_model_name}")
+print(f"🤖 Modelo Gemini ativo em execução: {selected_model_name}")
 
 # Inicializa modelo generativo otimizado para totem e respostas concisas (<= 350 caracteres)
 model = genai.GenerativeModel(
