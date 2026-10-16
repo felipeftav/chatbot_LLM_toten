@@ -19,6 +19,9 @@ app = Flask(
 # Habilita CORS
 CORS(app)
 
+# Configuração de cache para arquivos estáticos (evita downloads repetidos)
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 86400
+
 # Registra rotas da aplicação
 register_routes(app)
 

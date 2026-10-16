@@ -94,7 +94,8 @@ body {
         max-width: 20rem;
     }
 
-    #avatar-image {
+    #avatar-image,
+    .avatar-frame {
         width: 100%;
         height: auto;
         border-radius: 1.5rem;
@@ -124,7 +125,8 @@ body {
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
 
-    #avatar-image {
+    #avatar-image,
+    .avatar-frame {
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -288,7 +290,8 @@ body {
     overflow: hidden;
   }
 
-  #avatar-image {
+  #avatar-image,
+  .avatar-frame {
     object-fit: contain !important; /* mostra a imagem inteira */
     object-position: center;        /* centraliza */
     border-radius: 50%;

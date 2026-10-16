@@ -10,7 +10,9 @@ const summarizeButton = document.getElementById('summarize-button');
 const suggestTopicButton = document.getElementById('suggest-topic-button');
 const sendTextButton = document.getElementById('send-text-button');
 const ttsButton = document.getElementById('toggle-tts-button');
-const avatarImage = document.getElementById('avatar-image');
+const avatarContainer = document.getElementById('avatar-container');
+const avatarImageFechada = document.getElementById('avatar-image-fechada');
+const avatarImageAberta = document.getElementById('avatar-image-aberta');
 const restartButton = document.getElementById('restart-button');
 const presetButtonsContainer = document.getElementById('preset-buttons-container');
 
@@ -183,23 +185,19 @@ messageInput.addEventListener('keydown', function(event) {
 
 // --- LÓGICA DE ANIMAÇÃO DO AVATAR ---
 let mouthAnimationInterval;
-const avatar_boca_fechada = '/static/images/avatar_fechada.webp';
-const avatar_boca_aberta = '/static/images/avatar_aberta.webp';
-
-// Pré-carregar imagens para evitar lag no início
-const imgFechada = new Image();
-const imgAberta = new Image();
-imgFechada.src = avatar_boca_fechada;
-imgAberta.src = avatar_boca_aberta;
 
 function startTalkingAnimation() {
     stopTalkingAnimation(); 
+    if (avatarContainer) avatarContainer.classList.add('speaking');
     let isMouthOpen = false;
 
     mouthAnimationInterval = setInterval(() => {
-        avatarImage.src = isMouthOpen ? imgFechada.src : imgAberta.src;
         isMouthOpen = !isMouthOpen;
-    }, 250);
+        if (avatarImageAberta && avatarImageFechada) {
+            avatarImageAberta.classList.toggle('hidden', !isMouthOpen);
+            avatarImageFechada.classList.toggle('hidden', isMouthOpen);
+        }
+    }, 220);
 }
 
 function stopTalkingAnimation() {
@@ -207,7 +205,11 @@ function stopTalkingAnimation() {
         clearInterval(mouthAnimationInterval);
         mouthAnimationInterval = null;
     }
-    avatarImage.src = imgFechada.src;
+    if (avatarContainer) avatarContainer.classList.remove('speaking');
+    if (avatarImageAberta && avatarImageFechada) {
+        avatarImageAberta.classList.add('hidden');
+        avatarImageFechada.classList.remove('hidden');
+    }
 }
 
 
