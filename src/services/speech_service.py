@@ -91,7 +91,7 @@ def get_gemini_tts_audio_data(text_to_speak: str) -> str:
         raise RuntimeError("Nenhuma chave Gemini disponível.")
 
     payload = {
-        "contents": [{"parts": [{"text": f"Fale de forma natural e clara: {text_to_speak}"}]}],
+        "contents": [{"parts": [{"text": text_to_speak}]}],
         "generationConfig": {
             "responseModalities": ["AUDIO"],
             "speechConfig": {
