@@ -30,6 +30,11 @@ def register_routes(app: Flask) -> None:
         """Renderiza a página principal do chat."""
         return render_template("index.html")
 
+    @app.route("/health", methods=["GET", "HEAD"])
+    def health():
+        """Endpoint leve para keep-alive (UptimeRobot) e checagem de status."""
+        return jsonify({"status": "ok", "service": "LIA Totem"}), 200
+
     @app.route("/chat", methods=["POST"])
     def chat():
         """Rota principal para envio de mensagens via texto ou áudio."""

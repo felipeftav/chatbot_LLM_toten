@@ -445,10 +445,6 @@ function appendMessage(sender, message) {
 
     wrapper.appendChild(bubble);
     chatMessages.appendChild(wrapper);
-
-    if (typeof MathJax !== "undefined" && sender === 'bot') {
-        MathJax.typesetPromise([wrapper]).catch((err) => console.log('Erro MathJax:', err));
-    }
 }
 
 // 🔁 Observa mudanças no chat e rola automaticamente até o final
@@ -464,7 +460,6 @@ function appendSystemMessage(message) {
     const wrapper = document.createElement('div'); wrapper.classList.add('flex', 'justify-center', 'my-4', 'mx-2');
     const bubble = document.createElement('div'); bubble.classList.add('bg-slate-600', 'text-white', 'p-3', 'rounded-xl', 'max-w-xl', 'text-base', 'italic');
     bubble.innerHTML = `✨ **Resumo da Conversa:**<br>${marked.parse(message)}`; wrapper.appendChild(bubble); chatMessages.appendChild(wrapper);
-    if (typeof MathJax !== "undefined") { MathJax.typesetPromise([wrapper]).catch((err) => console.log('Erro MathJax:', err)); }
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 const showTypingIndicator=()=>{const t=document.createElement('div');t.id='typing-indicator';t.classList.add('flex','justify-start','mb-6');t.innerHTML=`<div class="bg-slate-800 text-white p-4 rounded-2xl rounded-bl-none"><div class="flex items-center space-x-1"><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.2s"></span><span class="w-2 h-2 bg-white rounded-full animate-bounce" style="animation-delay:0.4s"></span></div></div>`;chatMessages.appendChild(t);chatMessages.scrollTop=chatMessages.scrollHeight};
