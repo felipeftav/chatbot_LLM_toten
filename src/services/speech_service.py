@@ -17,7 +17,7 @@ from src.config import API_KEYS, MAX_RETRIES, DEFAULT_TTS_VOICE, VOZES_TTS_VALID
 def limpar_texto_para_tts(texto: str) -> str:
     """
     Remove emojis, símbolos gráficos e formatações markdown do texto antes de enviá-lo
-    para o sintetizador de voz (TTS), evitando que a assistente leia os emojis em voz alta.
+    para o sintetizador de voz (TTS), evitando que a assistente leia emojis ou diga 'asterisco'.
     Preserva a pontuação natural e a acentuação.
     """
     if not texto:
@@ -38,16 +38,20 @@ def limpar_texto_para_tts(texto: str) -> str:
     # 1. Remove emojis e pictogramas
     texto_limpo = emoji_pattern.sub("", texto)
 
-    # 2. Remove asteriscos de markdown (ex: **negrito** -> negrito)
-    texto_limpo = re.sub(r"\*{1,3}", "", texto_limpo)
+    # 2. Remove completamente asteriscos (ex: **negrito** ou *itálico* ou asterisco solto)
+    # Evita que o TTS pronuncie a palavra 'asterisco'
+    texto_limpo = texto_limpo.replace("*", "")
 
-    # 3. Remove marcadores de títulos markdown (ex: ### Título -> Título)
-    texto_limpo = re.sub(r"^#+\s*", "", texto_limpo, flags=re.MULTILINE)
+    # 3. Remove outros marcadores markdown que soam estranho em voz alta
+    texto_limpo = re.sub(r"(^|\s)_+([^_]+)_+($|\s)", r"\1\2\3", texto_limpo)  # _itálico_
+    texto_limpo = texto_limpo.replace("`", "")  # crases de código
+    texto_limpo = texto_limpo.replace("~", "")  # tachado
+    texto_limpo = re.sub(r"^#+\s*", "", texto_limpo, flags=re.MULTILINE)      # ### títulos
 
     # 4. Remove múltiplos espaços em branco residuais
     texto_limpo = re.sub(r"[ \t]+", " ", texto_limpo)
 
-    # 5. Ajusta espaços antes de pontuação que ficaram após remover emoji (ex: "Olá !" -> "Olá!")
+    # 5. Ajusta espaços antes de pontuação decorrentes das remoções (ex: "Olá !" -> "Olá!")
     texto_limpo = re.sub(r"\s+([,.:;!?])", r"\1", texto_limpo)
 
     return texto_limpo.strip()
@@ -91,32 +95,36 @@ async def _synthesize_edge_tts_async(text: str, voice: str) -> bytes:
     return b"".join(chunks)
 
 
+def _executar_corrotina_com_timeout(coro, timeout_seg: float = 7.0) -> bytes:
+    """
+    Executa uma corrotina assíncrona em thread isolada com timeout rígido.
+    Evita travamentos de workers do Gunicorn (CRITICAL WORKER TIMEOUT) no Render
+    caso a conexão externa (ex: WebSocket do Edge-TTS) fique pendurada.
+    """
+    import concurrent.futures
+
+    async def _com_timeout():
+        return await asyncio.wait_for(coro, timeout=timeout_seg)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(asyncio.run, _com_timeout())
+        return future.result(timeout=timeout_seg + 1.0)
+
+
 def get_edge_tts_audio_data(text_to_speak: str, voice: str = DEFAULT_TTS_VOICE) -> str:
     """
     Sintetiza áudio utilizando Edge-TTS com voz neural (padrão: Thalita Multilingual).
-    Retorna os dados do arquivo MP3 codificados em base64.
+    Retorna os dados do arquivo MP3 codificados em base64 com timeout protetor.
     """
     texto_limpo = limpar_texto_para_tts(text_to_speak)
     if not texto_limpo:
         return ""
 
     try:
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-
-        if loop.is_running():
-            import concurrent.futures
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                audio_bytes = executor.submit(
-                    asyncio.run, _synthesize_edge_tts_async(texto_limpo, voice)
-                ).result()
-        else:
-            audio_bytes = loop.run_until_complete(
-                _synthesize_edge_tts_async(texto_limpo, voice)
-            )
+        audio_bytes = _executar_corrotina_com_timeout(
+            _synthesize_edge_tts_async(texto_limpo, voice),
+            timeout_seg=7.0,
+        )
 
         if not audio_bytes:
             raise ValueError("Edge-TTS retornou buffer de áudio vazio.")
@@ -129,7 +137,7 @@ def get_edge_tts_audio_data(text_to_speak: str, voice: str = DEFAULT_TTS_VOICE) 
 def get_gemini_tts_audio_data(text_to_speak: str) -> str:
     """
     Chama a API de TTS do Gemini para sintetizar áudio natural.
-    Tenta até MAX_RETRIES com chaves válidas.
+    Tenta com chaves válidas e timeout seguro.
     """
     if not API_KEYS:
         raise RuntimeError("Nenhuma chave Gemini disponível.")
@@ -152,38 +160,35 @@ def get_gemini_tts_audio_data(text_to_speak: str) -> str:
     }
     headers = {"Content-Type": "application/json"}
 
-    keys_to_try = random.sample(API_KEYS, min(3, len(API_KEYS)))
+    keys_to_try = random.sample(API_KEYS, min(2, len(API_KEYS)))
 
     for key in keys_to_try:
-        for _ in range(MAX_RETRIES):
-            try:
-                url = (
-                    f"https://generativelanguage.googleapis.com/v1beta/models/"
-                    f"gemini-3.8-flash-lite-tts:generateContent?key={key}"
-                )
-                response = requests.post(
-                    url, headers=headers, data=json.dumps(payload), timeout=25
-                )
+        try:
+            url = (
+                f"https://generativelanguage.googleapis.com/v1beta/models/"
+                f"gemini-3.8-flash-lite-tts:generateContent?key={key}"
+            )
+            response = requests.post(
+                url, headers=headers, data=json.dumps(payload), timeout=6
+            )
 
-                if not response.ok:
-                    print(f"⚠️ Gemini TTS HTTP {response.status_code}: {response.text[:200]}")
-                    if response.status_code in (402, 403, 429):
-                        break  # Tentar próxima chave
-                    continue
+            if not response.ok:
+                print(f"⚠️ Gemini TTS HTTP {response.status_code}: {response.text[:200]}")
+                continue
 
-                result = response.json()
-                candidates = result.get("candidates", [])
-                if not candidates:
-                    continue
+            result = response.json()
+            candidates = result.get("candidates", [])
+            if not candidates:
+                continue
 
-                parts = candidates[0].get("content", {}).get("parts", [])
-                for part in parts:
-                    inline_data = part.get("inlineData")
-                    if inline_data and "data" in inline_data:
-                        return inline_data["data"]
+            parts = candidates[0].get("content", {}).get("parts", [])
+            for part in parts:
+                inline_data = part.get("inlineData")
+                if inline_data and "data" in inline_data:
+                    return inline_data["data"]
 
-            except requests.RequestException as e:
-                print(f"⚠️ Erro de rede na chamada TTS: {e}")
+        except requests.RequestException as e:
+            print(f"⚠️ Erro de rede na chamada Gemini TTS: {e}")
 
     raise RuntimeError("Todas as tentativas com Gemini TTS falharam.")
 

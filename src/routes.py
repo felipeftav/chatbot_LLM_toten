@@ -126,7 +126,11 @@ def register_routes(app: Flask) -> None:
 
             # 5. Síntese de voz TTS quando ativado e sem áudio pré-gravado
             if audio_base64 is None and tts_is_enabled and bot_reply_text:
-                audio_base64 = get_tts_audio_data(bot_reply_text, voice=selected_voice)
+                try:
+                    audio_base64 = get_tts_audio_data(bot_reply_text, voice=selected_voice)
+                except Exception as e_tts:
+                    print(f"⚠️ Erro ao gerar áudio TTS: {e_tts}")
+                    audio_base64 = None
 
             return jsonify({
                 "reply": bot_reply_text,
