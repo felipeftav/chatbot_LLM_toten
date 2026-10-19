@@ -10,6 +10,7 @@ if str(PROJECT_ROOT) not in sys.path:
 import edge_tts
 from src.config import STATIC_DIR, VOZES_TTS_VALIDAS, DEFAULT_TTS_VOICE
 from src.services.faq_service import EVENT_INFO
+from src.services.speech_service import limpar_texto_para_tts
 
 # Vozes atualizadas e confirmadas como ativas pelo sistema
 vozes_validas = {
@@ -23,9 +24,10 @@ VOZ_PADRAO = DEFAULT_TTS_VOICE
 async def generate_and_save_audio(text_to_speak: str, output_path: Path, voice: str = VOZ_PADRAO) -> bool:
     """Sintetiza o texto em áudio MP3 utilizando Edge-TTS e salva no disco."""
     try:
+        texto_limpo = limpar_texto_para_tts(text_to_speak)
         output_path.parent.mkdir(parents=True, exist_ok=True)
         print(f"🎙️ Gerando áudio com '{voice}' para: '{output_path.name}'...")
-        communicate = edge_tts.Communicate(text_to_speak, voice=voice)
+        communicate = edge_tts.Communicate(texto_limpo, voice=voice)
         await communicate.save(str(output_path))
         print(f"✅ Salvo com sucesso: {output_path}")
         return True

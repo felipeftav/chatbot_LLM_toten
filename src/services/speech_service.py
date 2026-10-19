@@ -1,6 +1,7 @@
 """Serviços de voz: Reconhecimento de Fala (STT) e Síntese de Voz (TTS)."""
 
 import io
+import re
 import json
 import random
 import base64
@@ -11,6 +12,45 @@ from gtts import gTTS
 from pydub import AudioSegment
 import speech_recognition as sr
 from src.config import API_KEYS, MAX_RETRIES, DEFAULT_TTS_VOICE, VOZES_TTS_VALIDAS
+
+
+def limpar_texto_para_tts(texto: str) -> str:
+    """
+    Remove emojis, símbolos gráficos e formatações markdown do texto antes de enviá-lo
+    para o sintetizador de voz (TTS), evitando que a assistente leia os emojis em voz alta.
+    Preserva a pontuação natural e a acentuação.
+    """
+    if not texto:
+        return ""
+
+    # Padrão Unicode para capturar emojis, símbolos gráficos e seletores
+    emoji_pattern = re.compile(
+        "["
+        "\U00010000-\U0010FFFF"  # Emojis suplementares (rostos, objetos, gestos)
+        "\u2600-\u27BF"          # Símbolos diversos e Dingbats (✨, ☕, ⚡, etc.)
+        "\u2300-\u23FF"          # Símbolos técnicos diversos (⏰, ⏳, etc.)
+        "\u2B50\u2B55"          # Estrela, círculo
+        "\uFE00-\uFE0F"          # Variation selectors
+        "\u200D"                 # Zero Width Joiner
+        "]+",
+        flags=re.UNICODE,
+    )
+    # 1. Remove emojis e pictogramas
+    texto_limpo = emoji_pattern.sub("", texto)
+
+    # 2. Remove asteriscos de markdown (ex: **negrito** -> negrito)
+    texto_limpo = re.sub(r"\*{1,3}", "", texto_limpo)
+
+    # 3. Remove marcadores de títulos markdown (ex: ### Título -> Título)
+    texto_limpo = re.sub(r"^#+\s*", "", texto_limpo, flags=re.MULTILINE)
+
+    # 4. Remove múltiplos espaços em branco residuais
+    texto_limpo = re.sub(r"[ \t]+", " ", texto_limpo)
+
+    # 5. Ajusta espaços antes de pontuação que ficaram após remover emoji (ex: "Olá !" -> "Olá!")
+    texto_limpo = re.sub(r"\s+([,.:;!?])", r"\1", texto_limpo)
+
+    return texto_limpo.strip()
 
 
 def transcrever_audio_base64(audio_base64: str) -> str:
@@ -56,6 +96,10 @@ def get_edge_tts_audio_data(text_to_speak: str, voice: str = DEFAULT_TTS_VOICE) 
     Sintetiza áudio utilizando Edge-TTS com voz neural (padrão: Thalita Multilingual).
     Retorna os dados do arquivo MP3 codificados em base64.
     """
+    texto_limpo = limpar_texto_para_tts(text_to_speak)
+    if not texto_limpo:
+        return ""
+
     try:
         try:
             loop = asyncio.get_event_loop()
@@ -67,11 +111,11 @@ def get_edge_tts_audio_data(text_to_speak: str, voice: str = DEFAULT_TTS_VOICE) 
             import concurrent.futures
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 audio_bytes = executor.submit(
-                    asyncio.run, _synthesize_edge_tts_async(text_to_speak, voice)
+                    asyncio.run, _synthesize_edge_tts_async(texto_limpo, voice)
                 ).result()
         else:
             audio_bytes = loop.run_until_complete(
-                _synthesize_edge_tts_async(text_to_speak, voice)
+                _synthesize_edge_tts_async(texto_limpo, voice)
             )
 
         if not audio_bytes:
@@ -90,8 +134,12 @@ def get_gemini_tts_audio_data(text_to_speak: str) -> str:
     if not API_KEYS:
         raise RuntimeError("Nenhuma chave Gemini disponível.")
 
+    texto_limpo = limpar_texto_para_tts(text_to_speak)
+    if not texto_limpo:
+        return ""
+
     payload = {
-        "contents": [{"parts": [{"text": text_to_speak}]}],
+        "contents": [{"parts": [{"text": texto_limpo}]}],
         "generationConfig": {
             "responseModalities": ["AUDIO"],
             "speechConfig": {
@@ -143,8 +191,12 @@ def get_gemini_tts_audio_data(text_to_speak: str) -> str:
 def get_gtts_audio_data(text_to_speak: str) -> str:
     """Fallback final de síntese de voz usando gTTS."""
     try:
+        texto_limpo = limpar_texto_para_tts(text_to_speak)
+        if not texto_limpo:
+            return ""
+
         print("ℹ️ Usando gTTS como alternativa...")
-        tts = gTTS(text=text_to_speak, lang="pt-br")
+        tts = gTTS(text=texto_limpo, lang="pt-br")
         buffer = io.BytesIO()
         tts.write_to_fp(buffer)
         return base64.b64encode(buffer.getvalue()).decode("utf-8")
@@ -160,15 +212,19 @@ def get_tts_audio_data(text_to_speak: str, voice: str = DEFAULT_TTS_VOICE) -> st
     2. Fallback 1: Gemini TTS
     3. Fallback 2: gTTS
     """
+    texto_limpo = limpar_texto_para_tts(text_to_speak)
+    if not texto_limpo:
+        return ""
+
     try:
-        return get_edge_tts_audio_data(text_to_speak, voice=voice)
+        return get_edge_tts_audio_data(texto_limpo, voice=voice)
     except Exception as e_edge:
         print(f"⚠️ Erro no Edge-TTS ({e_edge}). Tentando fallback com Gemini TTS...")
 
     try:
-        return get_gemini_tts_audio_data(text_to_speak)
+        return get_gemini_tts_audio_data(texto_limpo)
     except Exception as e_gemini:
         print(f"⚠️ Erro no Gemini TTS ({e_gemini}). Acionando fallback gTTS...")
 
-    return get_gtts_audio_data(text_to_speak)
+    return get_gtts_audio_data(texto_limpo)
 
